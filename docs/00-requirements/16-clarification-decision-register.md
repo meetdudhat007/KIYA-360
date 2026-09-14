@@ -103,13 +103,15 @@ The register and linked records must allow a reviewer to determine the triggerin
 
 Decision status is not requirement status. An approved CD may enable requirements work; it does not change the Phase 0B requirement lifecycle or approve a detailed requirement by itself.
 
-## 11. Current Register - Initial State
+## 11. Current Register
 
-No clarification decision record has been created and no business decision has been approved by this framework. The following existing questions remain unresolved; a CD ID will be assigned only if a candidate decision record is created from captured evidence.
+The following clarification decisions have been formally created and approved in accordance with this governance framework. Remaining questions OQ-003 through OQ-015 remain open.
 
 | Related OQ | Decision ID | Status | Decision statement / approval evidence | Source |
-| --- | --- | --- | --- | --- |
-| OQ-001 to OQ-015 | NOT YET CREATED | OPEN - clarification planned | NOT YET AVAILABLE | `06-open-questions.md`; `15-critical-clarification-plan.md` |
+|---|---|---|---|---|
+| `OQ-001` | `CD-001` | **APPROVED** | Adopt a HYBRID scope-expansion approach: fully detail core business flows (C2C, P2P, A2S) for Phase 0B-2; use proven ERP-standard behavior as traceable reference baseline for standard non-specified features; zero automatic ERPNext coupling; explicit KIYA differentiators and documented exceptions. Approved 14 Sept 2026. | `docs/00-requirements/29-cd001-scope-expansion-hybrid-model.md`; Stakeholder Direction CS-CG01-01 |
+| `OQ-002` | `CD-002` | **APPROVED** | Use BUSINESS STATUS as the primary transactional lifecycle/status model representing operational progress. Explicitly reject ERPNext's technical dual docstatus (Draft/Submitted/Cancelled) model. Do not invent detailed status values yet; define progressively during Phase 0B-2. Approved 14 Sept 2026. | `docs/00-requirements/30-cd002-transactional-lifecycle-business-status.md`; Stakeholder Direction CS-CG01-01 |
+| `OQ-003` to `OQ-015` | `NOT YET CREATED` | OPEN - clarification planned | Awaiting scheduled stakeholder clarification sessions (CG-02 through CG-07) | `06-open-questions.md`; `15-critical-clarification-plan.md` |
 
 ## 12. Hypothetical Lifecycle Example
 
