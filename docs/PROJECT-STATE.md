@@ -97,6 +97,8 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 - `docs/00-requirements/34-shared-foundation-requirements-baseline.md`
 - `docs/00-requirements/35-remaining-module-baselines.md`
 - `docs/00-requirements/36-phase-0-completion-assessment.md`
+- `docs/00-requirements/37-erpnext-source-component-reuse-inventory.md`
+- `docs/00-requirements/38-four-role-evidence-controlled-erp-crm-delivery-guide.md`
 - `docs/02-architecture/01-architecture-strategy-and-decision-framework.md`
 - `docs/02-architecture/02-candidate-architecture-evaluation.md`
 - `docs/02-architecture/03-architecture-decision-readiness.md`
