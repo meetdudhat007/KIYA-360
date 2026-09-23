@@ -99,6 +99,8 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 - `docs/00-requirements/36-phase-0-completion-assessment.md`
 - `docs/00-requirements/37-erpnext-source-component-reuse-inventory.md`
 - `docs/00-requirements/38-four-role-evidence-controlled-erp-crm-delivery-guide.md`
+- `docs/00-requirements/39-kelvin360-material-requirements-delta.md`
+- `docs/00-requirements/40-cd005-product-rename-knit.md`
 - `docs/02-architecture/01-architecture-strategy-and-decision-framework.md`
 - `docs/02-architecture/02-candidate-architecture-evaluation.md`
 - `docs/02-architecture/03-architecture-decision-readiness.md`
@@ -136,6 +138,8 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 ## Open Issues
 
 - OQ-001 and OQ-002 are formally resolved via approved decisions `CD-001` and `CD-002`.
+- `CD-005`..`CD-008` recorded 23 September 2026: product renamed to **KNIT**; Sales Order approval uses the KNIT business status adapter (not Frappe Workflow); the Default lifecycle keeps nine states; database engine is MariaDB (`40-cd005-product-rename-knit.md`). `OQ-016` is resolved.
+- `OQ-017` through `OQ-020` raised by supplementary flow material (`39-kelvin360-material-requirements-delta.md`); `OQ-016` (KELVIN/KIYA naming), `OQ-017` (PCB scope) and `OQ-018` (Module Connection Map platform) are blocking.
 - Questions OQ-003 through OQ-015 remain open and unresolved, governed by Stakeholder Gates `STK-01` through `STK-04` and technical PoCs in `ARCH-08`.
 - Platform architecture baseline is complete; implementation commitments remain deferred to Phase 2.
 
