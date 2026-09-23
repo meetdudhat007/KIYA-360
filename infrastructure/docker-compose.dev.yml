@@ -1,6 +1,6 @@
-# KNIT local development stack.
+# KNIT 360 local development stack.
 #
-# Bare Frappe only: no ERPNext, no HRMS. knit_core must install on a site where
+# Bare Frappe only: no ERPNext, no HRMS. knit360_core must install on a site where
 # Frappe is the only app, and this stack is what proves it.
 #
 #   docker compose -f infrastructure/docker-compose.dev.yml up -d
@@ -44,7 +44,7 @@ services:
       SHELL: /bin/bash
     volumes:
       - bench-home:/home/frappe
-      # The KNIT apps, edited on the host.
+      # The KNIT 360 apps, edited on the host.
       - ../backend:/mnt/knit:rw
     ports:
       - "8000:8000"   # Frappe web

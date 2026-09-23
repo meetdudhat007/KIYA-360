@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-SALES-001 - Item list on a Customer Enquiry (DR-C2C-003 Inputs).",
+ "field_order": [
+  "item_code",
+  "description",
+  "qty",
+  "uom"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-SALES-001: item list (DR-C2C-003 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "description": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "description": "FR-SALES-001: BRD-DERIVED; becomes a Link once the UOM Master (FR-PADM-1.4.7) exists"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT 360 Enquiry Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

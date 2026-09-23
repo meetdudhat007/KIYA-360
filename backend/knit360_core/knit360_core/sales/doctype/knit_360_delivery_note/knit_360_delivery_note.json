@@ -1,0 +1,150 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SALES-005 - DR-C2C-012 Dispatch and Delivery Note. Moves stock (FR-INV-002), so it submits.",
+ "field_order": [
+  "sales_order",
+  "company",
+  "delivery_note_date",
+  "col1",
+  "packing_slip_id",
+  "tracking_number",
+  "knit360_business_status",
+  "sec1",
+  "carrier_details",
+  "vehicle_number",
+  "col2",
+  "driver_details",
+  "ship_to_address",
+  "sec2",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "description": "FR-SALES-005: Sales Order reference (DR-C2C-012 Inputs)",
+   "options": "KNIT 360 Sales Order",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SALES-005: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "delivery_note_date",
+   "fieldtype": "Date",
+   "label": "Delivery Note Date",
+   "description": "FR-SALES-005: delivery note date (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "packing_slip_id",
+   "fieldtype": "Data",
+   "label": "Packing Slip ID",
+   "description": "FR-SALES-005: Packing Slip ID (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "tracking_number",
+   "fieldtype": "Data",
+   "label": "Tracking Number",
+   "description": "FR-SALES-005: tracking number (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-SALES-005: CD-002 lifecycle (PROPOSED, DR-C2C-012). Set only via knit360_core.business_status.engine.transition",
+   "options": "Draft\nDispatched / In Transit\nDelivered\nReturn Initiated\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Carrier"
+  },
+  {
+   "fieldname": "carrier_details",
+   "fieldtype": "Small Text",
+   "label": "Carrier Details",
+   "description": "FR-SALES-005: carrier details (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Data",
+   "label": "Vehicle Number",
+   "description": "FR-SALES-005: vehicle number (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "driver_details",
+   "fieldtype": "Small Text",
+   "label": "Driver Details",
+   "description": "FR-SALES-005: driver details (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "ship_to_address",
+   "fieldtype": "Small Text",
+   "label": "Ship To Address",
+   "description": "FR-SALES-005: ship-to address (DR-C2C-012 Inputs)"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-SALES-005: BRD-DERIVED from the Sales Order reference",
+   "options": "KNIT 360 Delivery Note Item"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT 360 Delivery Note",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:DN-{YYYY}-{####}",
+ "title_field": "sales_order"
+}

@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-TAX-001 - FR-TAX-001 Global Tax Engine template. MOD-18 is a KNIT 360-owned seam; India GST localisation is absent from the ERPNext reference tree (doc 24).",
+ "field_order": [
+  "template_name",
+  "company",
+  "col_37",
+  "place_of_supply",
+  "sec_27",
+  "taxes"
+ ],
+ "fields": [
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "label": "Template Name",
+   "description": "FR-TAX-001: tax template (DR-C2C-004 Inputs)",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-TAX-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "place_of_supply",
+   "fieldtype": "Data",
+   "label": "Place of Supply",
+   "description": "FR-TAX-001: Place of supply (DR-P2P-010 Inputs)"
+  },
+  {
+   "fieldname": "sec_27",
+   "fieldtype": "Section Break",
+   "label": "Components"
+  },
+  {
+   "fieldname": "taxes",
+   "fieldtype": "Table",
+   "label": "Taxes",
+   "description": "FR-TAX-001: claimed tax rates",
+   "options": "KNIT 360 Tax Template Row"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Tax",
+ "name": "KNIT 360 Tax Template",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "template_name",
+ "autoname": "field:template_name"
+}

@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PROC-002 - DR-P2P-003 Request for Quotation & Request for Proposal.",
+ "field_order": [
+  "title",
+  "requisition",
+  "company",
+  "col_9",
+  "bid_closing_date",
+  "delivery_deadline",
+  "knit360_business_status",
+  "sec_6",
+  "suppliers",
+  "sec_7",
+  "items",
+  "sec_8",
+  "technical_drawings_boq",
+  "terms_and_conditions"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "description": "FR-PROC-002: BRD-DERIVED: identifying label",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "requisition",
+   "fieldtype": "Link",
+   "label": "Purchase Requisition",
+   "description": "FR-PROC-002: requisition reference, optional",
+   "options": "KNIT 360 Purchase Requisition"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PROC-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bid_closing_date",
+   "fieldtype": "Date",
+   "label": "Bid Closing Date",
+   "description": "FR-PROC-002: bid submission deadline (bid_closing_date)"
+  },
+  {
+   "fieldname": "delivery_deadline",
+   "fieldtype": "Date",
+   "label": "Delivery Deadline",
+   "description": "FR-PROC-002: delivery deadlines"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nPublished / Sent\nBidding Open\nBidding Closed\nEvaluated\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-PROC-002: CD-002 'Request for Quotation' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_6",
+   "fieldtype": "Section Break",
+   "label": "Suppliers Invited"
+  },
+  {
+   "fieldname": "suppliers",
+   "fieldtype": "Table",
+   "label": "Suppliers",
+   "description": "FR-PROC-002: target supplier list",
+   "options": "KNIT 360 RFQ Supplier"
+  },
+  {
+   "fieldname": "sec_7",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-PROC-002: requested items/services, quantities",
+   "options": "KNIT 360 RFQ Item"
+  },
+  {
+   "fieldname": "sec_8",
+   "fieldtype": "Section Break",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "technical_drawings_boq",
+   "fieldtype": "Text",
+   "label": "Technical Drawings / BOQ",
+   "description": "FR-PROC-002: technical drawings/BOQ"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Text",
+   "label": "Terms and Conditions",
+   "description": "FR-PROC-002: terms and conditions"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT 360 Request for Quotation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "title",
+ "autoname": "format:RFQ-{YYYY}-{####}"
+}

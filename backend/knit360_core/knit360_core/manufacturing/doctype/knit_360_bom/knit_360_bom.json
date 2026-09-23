@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFG-001 - FR-MFG-001 BOM Management. Version control is FR-MFG-001 plus the revision-locking rule recorded in doc 39 (OQ-017, not yet approved scope).",
+ "field_order": [
+  "item_code",
+  "quantity",
+  "company",
+  "col_24",
+  "version",
+  "is_active",
+  "sec_19",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Produced Item",
+   "description": "FR-MFG-001: Bill of Materials (DR-C2C-008 Inputs); becomes a Link once the Item Master (FR-INV-001) is populated",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "description": "FR-MFG-001: BRD-DERIVED: BOM yield",
+   "default": "1"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFG-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Data",
+   "label": "Version",
+   "description": "FR-MFG-001: BOM Management versioning (FR-MFG-001); revision locking is OQ-017"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "description": "FR-MFG-001: BRD-DERIVED: current version flag"
+  },
+  {
+   "fieldname": "sec_19",
+   "fieldtype": "Section Break",
+   "label": "Components"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Components",
+   "description": "FR-MFG-001: Bill of Materials",
+   "options": "KNIT 360 BOM Item"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "KNIT 360 BOM",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "item_code",
+ "autoname": "format:BOM-{YYYY}-{####}"
+}

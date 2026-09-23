@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:department_name",
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PADM-1.1.4 \u2014 Department -- department master, head, cost center, reporting line",
+ "field_order": [
+  "department_name",
+  "company",
+  "head",
+  "col1",
+  "cost_center",
+  "reporting_line"
+ ],
+ "fields": [
+  {
+   "fieldname": "department_name",
+   "fieldtype": "Data",
+   "label": "Department Name",
+   "description": "FR-PADM-1.1.4: department master",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.4: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "head",
+   "fieldtype": "Link",
+   "label": "Head",
+   "description": "FR-PADM-1.1.4: head; links to User until the Employee master (FR-PADM-1.4) exists",
+   "options": "User"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center",
+   "description": "FR-PADM-1.1.4: cost center; becomes a Link once MOD-17 Finance masters exist"
+  },
+  {
+   "fieldname": "reporting_line",
+   "fieldtype": "Link",
+   "label": "Reports To",
+   "description": "FR-PADM-1.1.4: reporting line",
+   "options": "KNIT 360 Department"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Platform",
+ "name": "KNIT 360 Department",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "department_name",
+ "track_changes": 1
+}

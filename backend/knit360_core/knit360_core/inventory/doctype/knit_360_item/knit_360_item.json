@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-INV-001 / FR-PADM-1.4.3 - Item Master. The BRD gives 'item code, category, HSN/SAC' (FR-PADM-1.4) and the worked example IF-1500 / Induction Furnace / HSN 8514 / UOM Nos.",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "item_group",
+  "col_16",
+  "stock_uom",
+  "hsn_sac_code",
+  "is_batch_tracked",
+  "is_serial_tracked",
+  "sec_15",
+  "safety_stock",
+  "col_17",
+  "valuation_method"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: item code (FR-PADM-1.4 Item Master)",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: BRD-DERIVED"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "label": "Category",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: category (FR-PADM-1.4 Item Master); category master is TBD"
+  },
+  {
+   "fieldname": "col_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "stock_uom",
+   "fieldtype": "Data",
+   "label": "Stock UOM",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7"
+  },
+  {
+   "fieldname": "hsn_sac_code",
+   "fieldtype": "Data",
+   "label": "HSN / SAC Code",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: HSN/SAC (FR-PADM-1.4 Item Master); BRD example 8514"
+  },
+  {
+   "fieldname": "is_batch_tracked",
+   "fieldtype": "Check",
+   "label": "Batch Tracked",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)"
+  },
+  {
+   "fieldname": "is_serial_tracked",
+   "fieldtype": "Check",
+   "label": "Serial Tracked",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)"
+  },
+  {
+   "fieldname": "sec_15",
+   "fieldtype": "Section Break",
+   "label": "Planning"
+  },
+  {
+   "fieldname": "safety_stock",
+   "fieldtype": "Float",
+   "label": "Safety Stock",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: safety stock thresholds (DR-C2C-008 Inputs)"
+  },
+  {
+   "fieldname": "col_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valuation_method",
+   "fieldtype": "Data",
+   "label": "Valuation Method",
+   "description": "FR-INV-001 / FR-PADM-1.4.3: Stock Valuation (FR-INV-006); BRD example FIFO, enumeration TBD"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "KNIT 360 Item",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "item_code",
+ "autoname": "field:item_code"
+}

@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-TAX-001 - Tax component rows.",
+ "field_order": [
+  "tax_component",
+  "rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "tax_component",
+   "fieldtype": "Data",
+   "label": "Component",
+   "description": "FR-TAX-001: claimed tax rates (DR-P2P-010 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Percent",
+   "label": "Rate",
+   "description": "FR-TAX-001: claimed tax rates",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Tax",
+ "name": "KNIT 360 Tax Template Row",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

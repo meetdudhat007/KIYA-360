@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-AST-001 / FR-AST-002 / FR-AST-003 - DR-A2S-001 Asset / Installed Equipment Registry. This is the CUSTOMER INSTALLED BASE. Doc 33 requires it be kept architecturally distinct from corporate fixed assets.",
+ "field_order": [
+  "asset_name",
+  "asset_identifier",
+  "item_code",
+  "serial_number",
+  "company",
+  "col_27",
+  "customer",
+  "parent_asset",
+  "iot_identifier",
+  "commissioning_date",
+  "knit360_business_status",
+  "sec_21",
+  "site_address",
+  "col_28",
+  "site_contact_person",
+  "operating_parameters"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
+   "label": "Asset Name / Model",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: asset name/model",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "asset_identifier",
+   "fieldtype": "Data",
+   "label": "Asset / Machine Identifier",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Asset/Machine identifier"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Master",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Item Master link; becomes a Link once the Item Master (FR-INV-001) is populated"
+  },
+  {
+   "fieldname": "serial_number",
+   "fieldtype": "Data",
+   "label": "Serial Number",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Serial Number"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_27",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Customer link",
+   "options": "KNIT 360 Customer"
+  },
+  {
+   "fieldname": "parent_asset",
+   "fieldtype": "Link",
+   "label": "Parent Equipment",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: parent equipment link (for sub-assemblies)",
+   "options": "KNIT 360 Asset"
+  },
+  {
+   "fieldname": "iot_identifier",
+   "fieldtype": "Data",
+   "label": "MAC / IoT Identifier",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: MAC address / IoT identifier, optional"
+  },
+  {
+   "fieldname": "commissioning_date",
+   "fieldtype": "Date",
+   "label": "Commissioning Date",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: commissioning date"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Registered\nCommissioned / Operational\nUnder Maintenance\nDegraded / Limited\nDecommissioned\nScrapped",
+   "default": "Registered",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: CD-002 'Asset' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_21",
+   "fieldtype": "Section Break",
+   "label": "Installation Site"
+  },
+  {
+   "fieldname": "site_address",
+   "fieldtype": "Small Text",
+   "label": "Installation Site Address",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Installation site address"
+  },
+  {
+   "fieldname": "col_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "site_contact_person",
+   "fieldtype": "Data",
+   "label": "Site Contact Person",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: contact person"
+  },
+  {
+   "fieldname": "operating_parameters",
+   "fieldtype": "Text",
+   "label": "Operating Parameters",
+   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: operating parameters"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Asset Management",
+ "name": "KNIT 360 Asset",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "asset_name",
+ "autoname": "format:AST-{YYYY}-{####}"
+}

@@ -1,0 +1,167 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-CRM-001 - DR-C2C-001 Lead Acquisition and Qualification. Inputs: prospect name, organization name, contact details, lead source, estimated requirement, assigned territory.",
+ "field_order": [
+  "lead_name",
+  "organization_name",
+  "lead_source",
+  "col1",
+  "company",
+  "territory",
+  "knit360_business_status",
+  "sec1",
+  "email",
+  "phone",
+  "col2",
+  "address",
+  "sec2",
+  "estimated_requirement",
+  "sec3",
+  "converted_customer",
+  "converted_opportunity"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead_name",
+   "fieldtype": "Data",
+   "label": "Prospect Name",
+   "description": "FR-CRM-001: prospect name (DR-C2C-001 Inputs)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "organization_name",
+   "fieldtype": "Data",
+   "label": "Organization Name",
+   "description": "FR-CRM-001: organization name (DR-C2C-001 Inputs)"
+  },
+  {
+   "fieldname": "lead_source",
+   "fieldtype": "Data",
+   "label": "Lead Source",
+   "description": "FR-CRM-001: lead source (DR-C2C-001 Inputs); source master is BRD-DERIVED and TBD"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-CRM-001: BRD-DERIVED: Company and Branch context active (DR-C2C-001 Preconditions)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Data",
+   "label": "Assigned Territory",
+   "description": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs)"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-CRM-001: CD-002 lifecycle (PROPOSED, DR-C2C-001). Set only via knit360_core.business_status.engine.transition",
+   "options": "New\nContacted\nQualified\nConverted\nDisqualified\nLost",
+   "default": "New",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Contact Details"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address",
+   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Requirement"
+  },
+  {
+   "fieldname": "estimated_requirement",
+   "fieldtype": "Small Text",
+   "label": "Estimated Requirement",
+   "description": "FR-CRM-001: estimated requirement (DR-C2C-001 Inputs)"
+  },
+  {
+   "fieldname": "sec3",
+   "fieldtype": "Section Break",
+   "label": "Conversion"
+  },
+  {
+   "fieldname": "converted_customer",
+   "fieldtype": "Link",
+   "label": "Converted Customer",
+   "description": "FR-CRM-001: conversion creates or links a unified Customer Master (DR-C2C-001)",
+   "options": "KNIT 360 Customer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "converted_opportunity",
+   "fieldtype": "Link",
+   "label": "Converted Opportunity",
+   "description": "FR-CRM-001: conversion generates an Opportunity (DR-C2C-001)",
+   "options": "KNIT 360 Opportunity",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "KNIT 360 Lead",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "lead_name",
+ "autoname": "format:LEAD-{YYYY}-{####}"
+}

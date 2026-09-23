@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:business_unit_name",
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PADM-1.1.3 \u2014 Business Unit -- unit master, product line, profit center, cost center",
+ "field_order": [
+  "business_unit_name",
+  "company",
+  "product_line",
+  "col1",
+  "profit_center",
+  "cost_center"
+ ],
+ "fields": [
+  {
+   "fieldname": "business_unit_name",
+   "fieldtype": "Data",
+   "label": "Business Unit Name",
+   "description": "FR-PADM-1.1.3: unit master",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.3: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "product_line",
+   "fieldtype": "Data",
+   "label": "Product Line",
+   "description": "FR-PADM-1.1.3: product line"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "profit_center",
+   "fieldtype": "Data",
+   "label": "Profit Center",
+   "description": "FR-PADM-1.1.3: profit center; becomes a Link once MOD-17 Finance masters exist"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center",
+   "description": "FR-PADM-1.1.3: cost center; becomes a Link once MOD-17 Finance masters exist"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Platform",
+ "name": "KNIT 360 Business Unit",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "business_unit_name",
+ "track_changes": 1
+}

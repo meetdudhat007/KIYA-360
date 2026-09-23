@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SUPM-003 / FR-SUPM-005 - DR-P2P-012 Supplier Performance & Scorecard Analytics.",
+ "field_order": [
+  "supplier",
+  "period_start",
+  "period_end",
+  "col_6",
+  "knit360_business_status",
+  "sec_4",
+  "on_time_delivery_rate",
+  "acceptance_rate",
+  "col_7",
+  "quality_rejection_ppm",
+  "price_variance",
+  "response_turnaround_hours"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "description": "FR-SUPM-003 / FR-SUPM-005: supplier under evaluation",
+   "options": "KNIT 360 Supplier",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "period_start",
+   "fieldtype": "Date",
+   "label": "Period Start",
+   "description": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period"
+  },
+  {
+   "fieldname": "period_end",
+   "fieldtype": "Date",
+   "label": "Period End",
+   "description": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period"
+  },
+  {
+   "fieldname": "col_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Period Open\nCalculating\nPublished / Rated\nArchived",
+   "default": "Period Open",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-SUPM-003 / FR-SUPM-005: CD-002 'Supplier Scorecard' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_4",
+   "fieldtype": "Section Break",
+   "label": "Measures"
+  },
+  {
+   "fieldname": "on_time_delivery_rate",
+   "fieldtype": "Percent",
+   "label": "On-Time Delivery Rate",
+   "description": "FR-SUPM-003 / FR-SUPM-005: PO promised delivery dates vs actual receipt dates"
+  },
+  {
+   "fieldname": "acceptance_rate",
+   "fieldtype": "Percent",
+   "label": "Acceptance Rate",
+   "description": "FR-SUPM-003 / FR-SUPM-005: received quantities vs accepted quantities"
+  },
+  {
+   "fieldname": "col_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quality_rejection_ppm",
+   "fieldtype": "Float",
+   "label": "Quality Rejection PPM",
+   "description": "FR-SUPM-003 / FR-SUPM-005: quality rejection ppm"
+  },
+  {
+   "fieldname": "price_variance",
+   "fieldtype": "Percent",
+   "label": "Invoice Price Variance",
+   "description": "FR-SUPM-003 / FR-SUPM-005: invoice price variances"
+  },
+  {
+   "fieldname": "response_turnaround_hours",
+   "fieldtype": "Float",
+   "label": "Response Turnaround (hours)",
+   "description": "FR-SUPM-003 / FR-SUPM-005: supplier response turnaround times"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Supplier Management",
+ "name": "KNIT 360 Supplier Scorecard",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "supplier",
+ "autoname": "format:SCR-{YYYY}-{####}"
+}

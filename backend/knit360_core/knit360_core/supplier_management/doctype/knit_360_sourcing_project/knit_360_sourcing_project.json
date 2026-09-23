@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SUPM-002 / FR-PROC-001 - DR-P2P-002 Supplier Sourcing & Qualification.",
+ "field_order": [
+  "title",
+  "company",
+  "col_4",
+  "commodity_categories",
+  "estimated_annual_spend",
+  "knit360_business_status",
+  "sec_3",
+  "technical_capability_criteria",
+  "col_5",
+  "quality_certification_requirements",
+  "geographical_constraints"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Sourcing Requirement",
+   "description": "FR-SUPM-002 / FR-PROC-001: sourcing requirement",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SUPM-002 / FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "commodity_categories",
+   "fieldtype": "Small Text",
+   "label": "Target Item / Commodity Categories",
+   "description": "FR-SUPM-002 / FR-PROC-001: target item/commodity categories"
+  },
+  {
+   "fieldname": "estimated_annual_spend",
+   "fieldtype": "Currency",
+   "label": "Estimated Annual Spend",
+   "description": "FR-SUPM-002 / FR-PROC-001: estimated annual spend"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Initiated\nSupplier Discovery\nEvaluation / Auditing\nQualified\nRejected / Ineligible",
+   "default": "Initiated",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-SUPM-002 / FR-PROC-001: CD-002 'Sourcing Project' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_3",
+   "fieldtype": "Section Break",
+   "label": "Criteria"
+  },
+  {
+   "fieldname": "technical_capability_criteria",
+   "fieldtype": "Text",
+   "label": "Technical Capability Criteria",
+   "description": "FR-SUPM-002 / FR-PROC-001: technical capability criteria"
+  },
+  {
+   "fieldname": "col_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quality_certification_requirements",
+   "fieldtype": "Text",
+   "label": "Quality Certification Requirements",
+   "description": "FR-SUPM-002 / FR-PROC-001: quality certification requirements"
+  },
+  {
+   "fieldname": "geographical_constraints",
+   "fieldtype": "Small Text",
+   "label": "Geographical Constraints",
+   "description": "FR-SUPM-002 / FR-PROC-001: geographical constraints"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Supplier Management",
+ "name": "KNIT 360 Sourcing Project",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "title",
+ "autoname": "format:SRC-{YYYY}-{####}"
+}

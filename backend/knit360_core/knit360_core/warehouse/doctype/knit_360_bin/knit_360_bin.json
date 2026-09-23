@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-WH-002 - Physical bin location. DR-P2P-008 requires aisle, rack, shelf and bin coordinates; this is a physical address, not a stock-balance cache.",
+ "field_order": [
+  "bin_code",
+  "warehouse",
+  "col_20",
+  "aisle",
+  "rack",
+  "shelf"
+ ],
+ "fields": [
+  {
+   "fieldname": "bin_code",
+   "fieldtype": "Data",
+   "label": "Bin Code",
+   "description": "FR-WH-002: target physical storage bins",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "description": "FR-WH-002: warehouse hierarchy (FR-WH-001)",
+   "options": "KNIT 360 Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "aisle",
+   "fieldtype": "Data",
+   "label": "Aisle",
+   "description": "FR-WH-002: target physical storage bins (aisle)"
+  },
+  {
+   "fieldname": "rack",
+   "fieldtype": "Data",
+   "label": "Rack",
+   "description": "FR-WH-002: target physical storage bins (rack)"
+  },
+  {
+   "fieldname": "shelf",
+   "fieldtype": "Data",
+   "label": "Shelf",
+   "description": "FR-WH-002: target physical storage bins (shelf)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Warehouse",
+ "name": "KNIT 360 Bin",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "bin_code",
+ "autoname": "field:bin_code"
+}

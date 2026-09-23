@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-PROC-003 - Quoted lines.",
+ "field_order": [
+  "item_code",
+  "qty",
+  "rate",
+  "lead_time_days"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-PROC-003: item rates; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "description": "FR-PROC-003: quantity price breaks",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "description": "FR-PROC-003: item rates",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "lead_time_days",
+   "fieldtype": "Float",
+   "label": "Lead Time (days)",
+   "description": "FR-PROC-003: lead times"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT 360 Supplier Quotation Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

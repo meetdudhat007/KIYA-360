@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-MRP-002 - Planned requirement lines.",
+ "field_order": [
+  "item_code",
+  "required_qty",
+  "on_hand_qty",
+  "shortage_qty",
+  "required_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-MRP-002: material requirements; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "required_qty",
+   "fieldtype": "Float",
+   "label": "Required Qty",
+   "description": "FR-MRP-002: Sales Order shortage lines",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "on_hand_qty",
+   "fieldtype": "Float",
+   "label": "On Hand",
+   "description": "FR-MRP-002: on-hand stock",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "shortage_qty",
+   "fieldtype": "Float",
+   "label": "Shortage",
+   "description": "FR-MRP-002: Sales Order shortage lines",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "required_by",
+   "fieldtype": "Date",
+   "label": "Required By",
+   "description": "FR-MRP-002: required delivery dates",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "MRP",
+ "name": "KNIT 360 Material Plan Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

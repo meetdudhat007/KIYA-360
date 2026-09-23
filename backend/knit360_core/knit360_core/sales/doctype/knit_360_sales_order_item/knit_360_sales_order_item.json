@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-SALES-003 - Ordered items with per-line delivery dates (DR-C2C-005 Inputs).",
+ "field_order": [
+  "item_code",
+  "description",
+  "qty",
+  "uom",
+  "rate",
+  "delivery_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "description": "FR-SALES-003: quantities (DR-C2C-005 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "UOM",
+   "description": "FR-SALES-003: BRD-DERIVED"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Agreed Rate",
+   "description": "FR-SALES-003: agreed rates (DR-C2C-005 Inputs)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date",
+   "description": "FR-SALES-003: delivery dates per line (DR-C2C-005 Inputs)",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT 360 Sales Order Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

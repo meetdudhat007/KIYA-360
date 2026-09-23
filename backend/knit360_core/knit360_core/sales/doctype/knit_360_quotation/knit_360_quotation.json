@@ -1,0 +1,148 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SALES-002 / FR-SALES-004 - DR-C2C-004 Sales Quotation, including Pricing and Discounts (FR-SALES-004).",
+ "field_order": [
+  "customer",
+  "enquiry",
+  "opportunity",
+  "company",
+  "col1",
+  "currency",
+  "price_list",
+  "valid_till",
+  "knit360_business_status",
+  "sec1",
+  "items",
+  "sec2",
+  "tax_template",
+  "payment_terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-SALES-002 / FR-SALES-004: Customer reference (DR-C2C-004 Inputs)",
+   "options": "KNIT 360 Customer",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enquiry",
+   "fieldtype": "Link",
+   "label": "Enquiry",
+   "description": "FR-SALES-002 / FR-SALES-004: Enquiry reference (DR-C2C-004 Inputs)",
+   "options": "KNIT 360 Enquiry"
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "description": "FR-SALES-002 / FR-SALES-004: Opportunity reference (DR-C2C-004 Inputs)",
+   "options": "KNIT 360 Opportunity"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SALES-002 / FR-SALES-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "description": "FR-SALES-002 / FR-SALES-004: currency (DR-C2C-004 Inputs)",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Data",
+   "label": "Price List",
+   "description": "FR-SALES-002 / FR-SALES-004: price list (DR-C2C-004 Inputs); price list master is BRD-DERIVED and TBD"
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till",
+   "description": "FR-SALES-002 / FR-SALES-004: quotation validity expiry date (DR-C2C-004 Inputs)"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-SALES-002 / FR-SALES-004: CD-002 lifecycle (PROPOSED, DR-C2C-004). Set only via knit360_core.business_status.engine.transition",
+   "options": "Draft\nPending Approval\nIssued / Sent\nAccepted\nOrdered\nExpired\nDeclined",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+   "options": "KNIT 360 Quotation Item"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Commercial Terms"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Data",
+   "label": "Tax Template",
+   "description": "FR-SALES-002 / FR-SALES-004: tax template (DR-C2C-004 Inputs); becomes a Link once MOD-18 Tax masters exist"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms",
+   "description": "FR-SALES-002 / FR-SALES-004: payment terms (DR-C2C-004 Inputs)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT 360 Quotation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:QTN-{YYYY}-{####}",
+ "title_field": "customer"
+}

@@ -1,0 +1,192 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SUPM-001 / FR-SUPM-002 - DR-P2P-001 Supplier Master & Registry.",
+ "field_order": [
+  "supplier_name",
+  "trade_name",
+  "supplier_classification",
+  "company",
+  "col_1",
+  "tax_registration_number",
+  "default_currency",
+  "payment_terms",
+  "knit360_business_status",
+  "sec_1",
+  "corporate_address",
+  "col_2",
+  "contact_person",
+  "contact_phone",
+  "contact_email",
+  "sec_2",
+  "bank_account_number",
+  "col_3",
+  "bank_ifsc",
+  "bank_swift",
+  "bank_iban"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier_name",
+   "fieldtype": "Data",
+   "label": "Legal Vendor Name",
+   "description": "FR-SUPM-001 / FR-SUPM-002: legal vendor name",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "trade_name",
+   "fieldtype": "Data",
+   "label": "Trade Name",
+   "description": "FR-SUPM-001 / FR-SUPM-002: trade name"
+  },
+  {
+   "fieldname": "supplier_classification",
+   "fieldtype": "Data",
+   "label": "Classification Category",
+   "description": "FR-SUPM-001 / FR-SUPM-002: supplier classification category (FR-SUPM-002); enumeration TBD"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SUPM-001 / FR-SUPM-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_registration_number",
+   "fieldtype": "Data",
+   "label": "Tax Registration Number",
+   "description": "FR-SUPM-001 / FR-SUPM-002: tax registration number (GSTIN / PAN / VAT / Tax ID)"
+  },
+  {
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "description": "FR-SUPM-001 / FR-SUPM-002: default currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Standard Payment Terms",
+   "description": "FR-SUPM-001 / FR-SUPM-002: standard payment terms"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Prospect / Draft\nUnder Compliance Review\nApproved / Active\nSuspended / On Hold\nDeactivated / Blacklisted",
+   "default": "Prospect / Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-SUPM-001 / FR-SUPM-002: CD-002 'Supplier' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_1",
+   "fieldtype": "Section Break",
+   "label": "Address & Contact"
+  },
+  {
+   "fieldname": "corporate_address",
+   "fieldtype": "Small Text",
+   "label": "Corporate Address",
+   "description": "FR-SUPM-001 / FR-SUPM-002: corporate address"
+  },
+  {
+   "fieldname": "col_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_person",
+   "fieldtype": "Data",
+   "label": "Contact Person",
+   "description": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)"
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "description": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "description": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)",
+   "options": "Email"
+  },
+  {
+   "fieldname": "sec_2",
+   "fieldtype": "Section Break",
+   "label": "Bank Details"
+  },
+  {
+   "fieldname": "bank_account_number",
+   "fieldtype": "Data",
+   "label": "Bank Account Number",
+   "description": "FR-SUPM-001 / FR-SUPM-002: bank account details"
+  },
+  {
+   "fieldname": "col_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_ifsc",
+   "fieldtype": "Data",
+   "label": "IFSC",
+   "description": "FR-SUPM-001 / FR-SUPM-002: bank account details (IFSC)"
+  },
+  {
+   "fieldname": "bank_swift",
+   "fieldtype": "Data",
+   "label": "SWIFT",
+   "description": "FR-SUPM-001 / FR-SUPM-002: bank account details (SWIFT)"
+  },
+  {
+   "fieldname": "bank_iban",
+   "fieldtype": "Data",
+   "label": "IBAN",
+   "description": "FR-SUPM-001 / FR-SUPM-002: bank account details (IBAN)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Supplier Management",
+ "name": "KNIT 360 Supplier",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "supplier_name",
+ "autoname": "field:supplier_name"
+}

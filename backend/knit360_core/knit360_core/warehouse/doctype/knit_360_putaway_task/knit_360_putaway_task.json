@@ -1,0 +1,106 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-WH-003 / FR-INV-002 - DR-P2P-008 Inventory Putaway & Storage Execution.",
+ "field_order": [
+  "goods_receipt",
+  "quality_inspection",
+  "company",
+  "col_21",
+  "item_code",
+  "accepted_qty",
+  "target_bin",
+  "knit360_business_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "goods_receipt",
+   "fieldtype": "Link",
+   "label": "Goods Receipt",
+   "description": "FR-WH-003 / FR-INV-002: Goods Receipt reference",
+   "options": "KNIT 360 Goods Receipt",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "quality_inspection",
+   "fieldtype": "Link",
+   "label": "Quality Inspection",
+   "description": "FR-WH-003 / FR-INV-002: Quality Inspection reference",
+   "options": "KNIT 360 Quality Inspection"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-WH-003 / FR-INV-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-WH-003 / FR-INV-002: item codes; becomes a Link once the Item Master (FR-INV-001) is populated"
+  },
+  {
+   "fieldname": "accepted_qty",
+   "fieldtype": "Float",
+   "label": "Accepted Quantity",
+   "description": "FR-WH-003 / FR-INV-002: accepted quantities"
+  },
+  {
+   "fieldname": "target_bin",
+   "fieldtype": "Link",
+   "label": "Target Bin",
+   "description": "FR-WH-003 / FR-INV-002: target physical storage bins",
+   "options": "KNIT 360 Bin"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Task Generated\nAssigned\nMoving\nCompleted / Binned\nCancelled",
+   "default": "Task Generated",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-WH-003 / FR-INV-002: CD-002 'Putaway Task' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Warehouse",
+ "name": "KNIT 360 Putaway Task",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "goods_receipt",
+ "autoname": "format:PUT-{YYYY}-{####}"
+}
