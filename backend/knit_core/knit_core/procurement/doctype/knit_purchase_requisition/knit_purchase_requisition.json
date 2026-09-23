@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PROC-001 - FR-PROC-001 Purchase Requisition. Upstream of DR-P2P-003.",
+ "field_order": [
+  "title",
+  "company",
+  "col_8",
+  "required_by",
+  "sec_5",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Requisition Title",
+   "description": "FR-PROC-001: BRD-DERIVED: identifying label",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "required_by",
+   "fieldtype": "Date",
+   "label": "Required By",
+   "description": "FR-PROC-001: delivery deadlines (DR-P2P-003 Inputs)"
+  },
+  {
+   "fieldname": "sec_5",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-PROC-001: requested items/services",
+   "options": "KNIT Purchase Requisition Item"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT Purchase Requisition",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "title",
+ "autoname": "format:PR-{YYYY}-{####}"
+}

@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:company_name",
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PADM-1.1.1 \u2014 Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
+ "field_order": [
+  "company_name",
+  "business_type",
+  "legal_entity",
+  "col1",
+  "default_currency",
+  "tax_registration_number",
+  "country",
+  "sec1",
+  "fiscal_year_start_date",
+  "fiscal_year_end_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name",
+   "description": "FR-PADM-1.1.1: company details",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "business_type",
+   "fieldtype": "Data",
+   "label": "Business Type",
+   "description": "FR-PADM-1.1.1: business type; enumeration TBD"
+  },
+  {
+   "fieldname": "legal_entity",
+   "fieldtype": "Data",
+   "label": "Legal Entity",
+   "description": "FR-PADM-1.1.1: legal entity; enumeration TBD"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "description": "FR-PADM-1.1.1: currency",
+   "options": "Currency",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax_registration_number",
+   "fieldtype": "Data",
+   "label": "Tax Registration Number",
+   "description": "FR-PADM-1.1.1: tax registration"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "description": "FR-PADM-1.1.1: BRD-DERIVED from company details",
+   "options": "Country"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Fiscal Year"
+  },
+  {
+   "fieldname": "fiscal_year_start_date",
+   "fieldtype": "Date",
+   "label": "Fiscal Year Start Date",
+   "description": "FR-PADM-1.1.1: fiscal year"
+  },
+  {
+   "fieldname": "fiscal_year_end_date",
+   "fieldtype": "Date",
+   "label": "Fiscal Year End Date",
+   "description": "FR-PADM-1.1.1: fiscal year"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Platform",
+ "name": "KNIT Company",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "company_name",
+ "track_changes": 1
+}

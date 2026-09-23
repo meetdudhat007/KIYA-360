@@ -1,0 +1,43 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-PROC-002 - Invited bidders.",
+ "field_order": [
+  "supplier",
+  "responded"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "description": "FR-PROC-002: target supplier list",
+   "options": "KNIT Supplier",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "responded",
+   "fieldtype": "Check",
+   "label": "Responded",
+   "description": "FR-PROC-002: BRD-DERIVED: bid tracking",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT RFQ Supplier",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

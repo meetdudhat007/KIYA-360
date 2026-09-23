@@ -1,0 +1,137 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PROC-005 / FR-WH-001 - DR-P2P-006 Goods Receipt & Inward Gate Entry. Moves stock, so it posts.",
+ "field_order": [
+  "purchase_order",
+  "company",
+  "col_14",
+  "challan_number",
+  "challan_date",
+  "knit_business_status",
+  "sec_13",
+  "carrier_name",
+  "vehicle_number",
+  "col_15",
+  "receiving_warehouse",
+  "sec_14",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "description": "FR-PROC-005 / FR-WH-001: Purchase Order reference",
+   "options": "KNIT Purchase Order",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PROC-005 / FR-WH-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "challan_number",
+   "fieldtype": "Data",
+   "label": "Delivery Challan / Packing Slip No",
+   "description": "FR-PROC-005 / FR-WH-001: supplier delivery challan / packing slip number"
+  },
+  {
+   "fieldname": "challan_date",
+   "fieldtype": "Date",
+   "label": "Challan Date",
+   "description": "FR-PROC-005 / FR-WH-001: supplier delivery challan date"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft / Gate Logged\nReceived in Bay\nPending Inspection\nAccepted & Staged\nRejected at Gate\nCancelled",
+   "default": "Draft / Gate Logged",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-PROC-005 / FR-WH-001: CD-002 'Goods Receipt' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_13",
+   "fieldtype": "Section Break",
+   "label": "Inward Gate"
+  },
+  {
+   "fieldname": "carrier_name",
+   "fieldtype": "Data",
+   "label": "Carrier Name",
+   "description": "FR-PROC-005 / FR-WH-001: carrier name"
+  },
+  {
+   "fieldname": "vehicle_number",
+   "fieldtype": "Data",
+   "label": "Vehicle Number",
+   "description": "FR-PROC-005 / FR-WH-001: vehicle number"
+  },
+  {
+   "fieldname": "col_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiving_warehouse",
+   "fieldtype": "Link",
+   "label": "Receiving Warehouse / Bay",
+   "description": "FR-PROC-005 / FR-WH-001: target receiving warehouse/bay",
+   "options": "KNIT Warehouse"
+  },
+  {
+   "fieldname": "sec_14",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-PROC-005 / FR-WH-001: received item codes, arrived quantities",
+   "options": "KNIT Goods Receipt Item"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT Goods Receipt",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "purchase_order",
+ "autoname": "format:GRN-{YYYY}-{####}"
+}

@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFS-007 / FR-MFS-001 - DR-A2S-005 Technician Assignment & Dispatch.",
+ "field_order": [
+  "service_request",
+  "assigned_technician",
+  "company",
+  "col_33",
+  "scheduled_datetime",
+  "required_competencies",
+  "knit_business_status",
+  "sec_24",
+  "site_latitude",
+  "site_longitude"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_request",
+   "fieldtype": "Link",
+   "label": "Service Request",
+   "description": "FR-MFS-007 / FR-MFS-001: Service Request reference",
+   "options": "KNIT Service Request",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "assigned_technician",
+   "fieldtype": "Link",
+   "label": "Assigned Technician",
+   "description": "FR-MFS-007 / FR-MFS-001: Assigned technician identifier",
+   "options": "User"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFS-007 / FR-MFS-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scheduled_datetime",
+   "fieldtype": "Datetime",
+   "label": "Scheduled Appointment",
+   "description": "FR-MFS-007 / FR-MFS-001: Scheduled appointment date/time slot"
+  },
+  {
+   "fieldname": "required_competencies",
+   "fieldtype": "Small Text",
+   "label": "Required Competencies",
+   "description": "FR-MFS-007 / FR-MFS-001: Required technical competencies"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Unassigned\nAssigned\nDispatched / En Route\nOn Site\nWork Started\nReassigned\nRescheduled",
+   "default": "Unassigned",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-MFS-007 / FR-MFS-001: CD-002 'Service Dispatch' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_24",
+   "fieldtype": "Section Break",
+   "label": "Site"
+  },
+  {
+   "fieldname": "site_latitude",
+   "fieldtype": "Float",
+   "label": "Site Latitude",
+   "description": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates",
+   "precision": "6"
+  },
+  {
+   "fieldname": "site_longitude",
+   "fieldtype": "Float",
+   "label": "Site Longitude",
+   "description": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates",
+   "precision": "6"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT Service Dispatch",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "service_request",
+ "autoname": "format:DSP-{YYYY}-{####}"
+}

@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-PROC-005 - Received lines.",
+ "field_order": [
+  "item_code",
+  "qty_arrived",
+  "qty_rejected_on_arrival",
+  "batch_no",
+  "expiry_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-PROC-005: received item codes; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty_arrived",
+   "fieldtype": "Float",
+   "label": "Arrived Qty",
+   "description": "FR-PROC-005: arrived quantities",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "qty_rejected_on_arrival",
+   "fieldtype": "Float",
+   "label": "Rejected on Arrival",
+   "description": "FR-PROC-005: rejected on arrival (damaged packaging)",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Data",
+   "label": "Batch / Lot",
+   "description": "FR-PROC-005: batch/lot numbers (DR-P2P-008 Inputs)"
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date",
+   "description": "FR-PROC-005: manufacturer expiry dates (DR-P2P-008 Inputs)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT Goods Receipt Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

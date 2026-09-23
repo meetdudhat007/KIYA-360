@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1 - Unified single customer record across CRM, Sales and Receivables (SF-004, DEC-007). The BRD's CRM 'Accounts' requirement and the Customer Master are the same entity.",
+ "field_order": [
+  "customer_name",
+  "company",
+  "customer_type",
+  "col1",
+  "default_currency",
+  "territory",
+  "sec1",
+  "email",
+  "phone",
+  "col2",
+  "address"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: unified Customer Master (DR-C2C-001)",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED; enumeration TBD"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: currency must match an active Currency Master (DR-C2C-002)",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "territory",
+   "fieldtype": "Data",
+   "label": "Territory",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: assigned territory (DR-C2C-001 Inputs); territory master is BRD-DERIVED and TBD"
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Primary Contact"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address",
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "KNIT Customer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "customer_name",
+ "autoname": "field:customer_name"
+}

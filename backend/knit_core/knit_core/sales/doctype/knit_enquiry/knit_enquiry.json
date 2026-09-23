@@ -1,0 +1,152 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SALES-001 - DR-C2C-003 Customer Enquiry. An explicit BRD flow stage and a dedicated entity, not a variant of Quotation.",
+ "field_order": [
+  "title",
+  "customer",
+  "opportunity",
+  "company",
+  "col1",
+  "receipt_date",
+  "response_deadline",
+  "knit_business_status",
+  "sec1",
+  "technical_specifications",
+  "delivery_location",
+  "col2",
+  "customer_target_price",
+  "sec2",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Enquiry Title",
+   "description": "FR-SALES-001: BRD-DERIVED: identifying label",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-SALES-001: Customer reference (DR-C2C-003 Inputs)",
+   "options": "KNIT Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "description": "FR-SALES-001: Opportunity reference, optional (DR-C2C-003 Inputs)",
+   "options": "KNIT Opportunity"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SALES-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receipt_date",
+   "fieldtype": "Date",
+   "label": "Enquiry Receipt Date",
+   "description": "FR-SALES-001: enquiry receipt date (DR-C2C-003 Inputs)"
+  },
+  {
+   "fieldname": "response_deadline",
+   "fieldtype": "Date",
+   "label": "Requested Response Deadline",
+   "description": "FR-SALES-001: requested response deadline (DR-C2C-003 Inputs)"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-SALES-001: CD-002 lifecycle (PROPOSED, DR-C2C-003). Set only via knit_core.business_status.engine.transition",
+   "options": "Received\nUnder Review\nFeasibility Confirmed\nQuoted\nDeclined / Regret",
+   "default": "Received",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Requirement"
+  },
+  {
+   "fieldname": "technical_specifications",
+   "fieldtype": "Text",
+   "label": "Technical Specifications",
+   "description": "FR-SALES-001: technical specifications (DR-C2C-003 Inputs)"
+  },
+  {
+   "fieldname": "delivery_location",
+   "fieldtype": "Small Text",
+   "label": "Delivery Location",
+   "description": "FR-SALES-001: delivery location (DR-C2C-003 Inputs)"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_target_price",
+   "fieldtype": "Currency",
+   "label": "Customer Target Price",
+   "description": "FR-SALES-001: customer target price, optional (DR-C2C-003 Inputs)"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+   "options": "KNIT Enquiry Item"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT Enquiry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:ENQ-{YYYY}-{####}",
+ "title_field": "title"
+}

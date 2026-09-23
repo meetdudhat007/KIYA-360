@@ -1,0 +1,15 @@
+Business Status
+Platform
+CRM
+Sales
+Asset Management
+Finance
+Inventory
+MRP
+Maintenance
+Manufacturing
+Procurement
+Quality
+Supplier Management
+Tax
+Warehouse

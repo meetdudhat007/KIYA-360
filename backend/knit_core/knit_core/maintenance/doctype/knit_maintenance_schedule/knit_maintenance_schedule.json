@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFS-003 / FR-MFS-004 - DR-A2S-008 Maintenance Execution (Preventive & Corrective).",
+ "field_order": [
+  "asset",
+  "service_contract",
+  "company",
+  "col_36",
+  "trigger_type",
+  "trigger_value",
+  "sec_26",
+  "tasks"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Asset",
+   "description": "FR-MFS-003 / FR-MFS-004: Asset reference",
+   "options": "KNIT Asset",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "service_contract",
+   "fieldtype": "Link",
+   "label": "Service Contract",
+   "description": "FR-MFS-003 / FR-MFS-004: Service contract linkage",
+   "options": "KNIT Service Contract"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFS-003 / FR-MFS-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_36",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "trigger_type",
+   "fieldtype": "Data",
+   "label": "Trigger Type",
+   "description": "FR-MFS-003 / FR-MFS-004: Trigger rules (calendar interval, operating hours, run cycles)"
+  },
+  {
+   "fieldname": "trigger_value",
+   "fieldtype": "Float",
+   "label": "Trigger Value",
+   "description": "FR-MFS-003 / FR-MFS-004: Trigger rules"
+  },
+  {
+   "fieldname": "sec_26",
+   "fieldtype": "Section Break",
+   "label": "Tasks"
+  },
+  {
+   "fieldname": "tasks",
+   "fieldtype": "Text",
+   "label": "Maintenance Tasks / Checklist",
+   "description": "FR-MFS-003 / FR-MFS-004: Maintenance tasks/checklists"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT Maintenance Schedule",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "asset",
+ "autoname": "format:MS-{YYYY}-{####}"
+}

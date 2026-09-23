@@ -1,0 +1,143 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-AST-003 / FR-MFS-006 - DR-A2S-003 Warranty & Service Contract Management.",
+ "field_order": [
+  "asset",
+  "contract_type",
+  "company",
+  "col_29",
+  "start_date",
+  "end_date",
+  "sla_tier",
+  "knit_business_status",
+  "sec_22",
+  "parts_covered",
+  "labor_covered",
+  "travel_covered",
+  "col_30",
+  "exclusions"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Asset",
+   "description": "FR-AST-003 / FR-MFS-006: Asset reference",
+   "options": "KNIT Asset",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "contract_type",
+   "fieldtype": "Data",
+   "label": "Contract Type",
+   "description": "FR-AST-003 / FR-MFS-006: Contract type (Standard Warranty, Extended Warranty, AMC, CMC)"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-AST-003 / FR-MFS-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_29",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "description": "FR-AST-003 / FR-MFS-006: Start date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "description": "FR-AST-003 / FR-MFS-006: End date"
+  },
+  {
+   "fieldname": "sla_tier",
+   "fieldtype": "Data",
+   "label": "SLA Tier",
+   "description": "FR-AST-003 / FR-MFS-006: SLA tier, optional"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nActive / In Coverage\nExpiring Soon\nExpired\nVoided / Terminated",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-AST-003 / FR-MFS-006: CD-002 'Service Contract' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_22",
+   "fieldtype": "Section Break",
+   "label": "Coverage"
+  },
+  {
+   "fieldname": "parts_covered",
+   "fieldtype": "Check",
+   "label": "Parts Covered",
+   "description": "FR-AST-003 / FR-MFS-006: Coverage terms (parts covered)"
+  },
+  {
+   "fieldname": "labor_covered",
+   "fieldtype": "Check",
+   "label": "Labour Covered",
+   "description": "FR-AST-003 / FR-MFS-006: Coverage terms (labor covered)"
+  },
+  {
+   "fieldname": "travel_covered",
+   "fieldtype": "Check",
+   "label": "Travel Covered",
+   "description": "FR-AST-003 / FR-MFS-006: Coverage terms (travel covered)"
+  },
+  {
+   "fieldname": "col_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "exclusions",
+   "fieldtype": "Text",
+   "label": "Exclusions",
+   "description": "FR-AST-003 / FR-MFS-006: Exclusions"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT Service Contract",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "asset",
+ "autoname": "format:SC-{YYYY}-{####}"
+}

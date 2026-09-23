@@ -1,0 +1,151 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SALES-003 - DR-C2C-005 Sales Order Commitment.",
+ "field_order": [
+  "customer",
+  "quotation",
+  "company",
+  "col1",
+  "customer_po_number",
+  "customer_po_date",
+  "knit_business_status",
+  "sec1",
+  "items",
+  "sec2",
+  "billing_address",
+  "shipping_address",
+  "col2",
+  "tax_gstin_context",
+  "payment_terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-SALES-003: Customer reference (DR-C2C-005 Inputs)",
+   "options": "KNIT Customer",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "description": "FR-SALES-003: linked Quotation ID, if applicable (DR-C2C-005 Inputs)",
+   "options": "KNIT Quotation"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-SALES-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_po_number",
+   "fieldtype": "Data",
+   "label": "Customer PO Number",
+   "description": "FR-SALES-003: Customer PO number (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "customer_po_date",
+   "fieldtype": "Date",
+   "label": "Customer PO Date",
+   "description": "FR-SALES-003: Customer PO date (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-SALES-003: CD-002 lifecycle (PROPOSED, DR-C2C-005). Set only via knit_core.business_status.engine.transition",
+   "options": "Draft\nConfirmed / Booked\nIn Fulfillment\nOn Hold\nDelivered\nClosed\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs)",
+   "options": "KNIT Sales Order Item"
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Addresses and Terms"
+  },
+  {
+   "fieldname": "billing_address",
+   "fieldtype": "Small Text",
+   "label": "Billing Address",
+   "description": "FR-SALES-003: billing address (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "shipping_address",
+   "fieldtype": "Small Text",
+   "label": "Shipping Address",
+   "description": "FR-SALES-003: shipping address (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_gstin_context",
+   "fieldtype": "Data",
+   "label": "Tax GSTIN Context",
+   "description": "FR-SALES-003: tax GSTIN context (DR-C2C-005 Inputs); MOD-18 owns the tax engine"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms",
+   "description": "FR-SALES-003: payment terms (DR-C2C-005 Inputs)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Sales",
+ "name": "KNIT Sales Order",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:SO-{YYYY}-{####}",
+ "title_field": "customer"
+}

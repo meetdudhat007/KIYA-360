@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFS-004 / FR-MFS-007 - DR-A2S-004 Service Request (Customer Incident & Triage).",
+ "field_order": [
+  "asset",
+  "customer",
+  "request_timestamp",
+  "company",
+  "col_31",
+  "fault_symptom_code",
+  "priority",
+  "contact_details",
+  "sec_23",
+  "problem_description",
+  "col_32",
+  "site_access_constraints"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Installed Asset",
+   "description": "FR-MFS-004 / FR-MFS-007: Installed Asset / Serial No",
+   "options": "KNIT Asset",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-MFS-004 / FR-MFS-007: Customer reference",
+   "options": "KNIT Customer"
+  },
+  {
+   "fieldname": "request_timestamp",
+   "fieldtype": "Datetime",
+   "label": "Request Timestamp",
+   "description": "FR-MFS-004 / FR-MFS-007: Request timestamp"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFS-004 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fault_symptom_code",
+   "fieldtype": "Data",
+   "label": "Fault Symptom Code",
+   "description": "FR-MFS-004 / FR-MFS-007: Fault symptom code"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Data",
+   "label": "Urgency / Priority",
+   "description": "FR-MFS-004 / FR-MFS-007: Urgency/Priority indicator; enumeration TBD"
+  },
+  {
+   "fieldname": "contact_details",
+   "fieldtype": "Data",
+   "label": "Contact Details",
+   "description": "FR-MFS-004 / FR-MFS-007: Contact details"
+  },
+  {
+   "fieldname": "sec_23",
+   "fieldtype": "Section Break",
+   "label": "Detail"
+  },
+  {
+   "fieldname": "problem_description",
+   "fieldtype": "Text",
+   "label": "Problem Description",
+   "description": "FR-MFS-004 / FR-MFS-007: Problem description"
+  },
+  {
+   "fieldname": "col_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "site_access_constraints",
+   "fieldtype": "Text",
+   "label": "Site Access Constraints",
+   "description": "FR-MFS-004 / FR-MFS-007: Site access constraints"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT Service Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "asset",
+ "autoname": "format:SR-{YYYY}-{####}"
+}

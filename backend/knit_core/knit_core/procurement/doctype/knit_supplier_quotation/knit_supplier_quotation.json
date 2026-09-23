@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PROC-003 - DR-P2P-004 Supplier Quotation & Bid Evaluation.",
+ "field_order": [
+  "supplier",
+  "rfq",
+  "company",
+  "col_10",
+  "currency",
+  "valid_till",
+  "technical_score",
+  "knit_business_status",
+  "sec_9",
+  "items",
+  "sec_10",
+  "taxes",
+  "col_11",
+  "payment_terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "description": "FR-PROC-003: supplier reference",
+   "options": "KNIT Supplier",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "rfq",
+   "fieldtype": "Link",
+   "label": "Against RFQ",
+   "description": "FR-PROC-003: linked RFQ/RFP reference",
+   "options": "KNIT Request for Quotation"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PROC-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "description": "FR-PROC-003: currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till",
+   "description": "FR-PROC-003: quote validity date (valid_till)"
+  },
+  {
+   "fieldname": "technical_score",
+   "fieldtype": "Float",
+   "label": "Technical Score",
+   "description": "FR-PROC-003: technical scores"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft / Received\nUnder Evaluation\nShortlisted\nAwarded\nRejected\nExpired",
+   "default": "Draft / Received",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-PROC-003: CD-002 'Supplier Quotation' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_9",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-PROC-003: item rates, quantity price breaks",
+   "options": "KNIT Supplier Quotation Item"
+  },
+  {
+   "fieldname": "sec_10",
+   "fieldtype": "Section Break",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "taxes",
+   "fieldtype": "Small Text",
+   "label": "Taxes",
+   "description": "FR-PROC-003: taxes"
+  },
+  {
+   "fieldname": "col_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms",
+   "description": "FR-PROC-003: payment terms"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Procurement",
+ "name": "KNIT Supplier Quotation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "supplier",
+ "autoname": "format:SQ-{YYYY}-{####}"
+}

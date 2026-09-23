@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006 - DR-P2P-007 Inward Quality Gate & Inspection. Also serves in-process and final inspection (FR-QLTY-003, FR-QLTY-004) via inspection_type.",
+ "field_order": [
+  "inspection_type",
+  "reference_name",
+  "purchase_order",
+  "company",
+  "col_22",
+  "item_code",
+  "batch_no",
+  "inspection_template",
+  "sample_size",
+  "knit_business_status",
+  "sec_17",
+  "readings"
+ ],
+ "fields": [
+  {
+   "fieldname": "inspection_type",
+   "fieldtype": "Data",
+   "label": "Inspection Type",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Incoming / In-Process / Final (FR-QLTY-002..004); enumeration TBD"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Link",
+   "label": "Against Goods Receipt",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Reference Goods Receipt ID",
+   "options": "KNIT Goods Receipt",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Purchase Order reference",
+   "options": "KNIT Purchase Order"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Item Master; becomes a Link once the Item Master (FR-INV-001) is populated"
+  },
+  {
+   "fieldname": "batch_no",
+   "fieldtype": "Data",
+   "label": "Lot / Batch Number",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: lot/batch number"
+  },
+  {
+   "fieldname": "inspection_template",
+   "fieldtype": "Link",
+   "label": "Inspection Template",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: inspection template",
+   "options": "KNIT Inspection Template"
+  },
+  {
+   "fieldname": "sample_size",
+   "fieldtype": "Float",
+   "label": "Sample Size",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: sample size"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Pending Inspection\nUnder Testing\nQuarantined\nAccepted\nRejected\nAccepted with Concession",
+   "default": "Pending Inspection",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: CD-002 'Quality Inspection' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_17",
+   "fieldtype": "Section Break",
+   "label": "Readings"
+  },
+  {
+   "fieldname": "readings",
+   "fieldtype": "Table",
+   "label": "Readings",
+   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: observed test parameter readings",
+   "options": "KNIT Inspection Reading"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Quality",
+ "name": "KNIT Quality Inspection",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "reference_name",
+ "autoname": "format:QI-{YYYY}-{####}"
+}

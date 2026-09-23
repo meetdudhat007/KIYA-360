@@ -1,0 +1,147 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT Work Order (manufacturing) \u2014 doc 33 forbids sharing that schema.",
+ "field_order": [
+  "service_request",
+  "asset",
+  "assigned_technician",
+  "company",
+  "col_34",
+  "planned_start",
+  "planned_end",
+  "actual_labor_hours",
+  "travel_hours",
+  "sec_25",
+  "sop",
+  "findings",
+  "col_35",
+  "customer_signature",
+  "warranty_entitlement"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_request",
+   "fieldtype": "Link",
+   "label": "Service Request",
+   "description": "FR-MFS-002 / FR-MFS-007: Service Request reference",
+   "options": "KNIT Service Request",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Asset",
+   "description": "FR-MFS-002 / FR-MFS-007: Asset identifier",
+   "options": "KNIT Asset"
+  },
+  {
+   "fieldname": "assigned_technician",
+   "fieldtype": "Link",
+   "label": "Assigned Technician",
+   "description": "FR-MFS-002 / FR-MFS-007: Assigned technician",
+   "options": "User"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFS-002 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_34",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "planned_start",
+   "fieldtype": "Datetime",
+   "label": "Planned Start",
+   "description": "FR-MFS-002 / FR-MFS-007: Planned work start"
+  },
+  {
+   "fieldname": "planned_end",
+   "fieldtype": "Datetime",
+   "label": "Planned End",
+   "description": "FR-MFS-002 / FR-MFS-007: Planned work end"
+  },
+  {
+   "fieldname": "actual_labor_hours",
+   "fieldtype": "Float",
+   "label": "Actual Labour Hours",
+   "description": "FR-MFS-002 / FR-MFS-007: Actual labor hours"
+  },
+  {
+   "fieldname": "travel_hours",
+   "fieldtype": "Float",
+   "label": "Travel Hours",
+   "description": "FR-MFS-002 / FR-MFS-007: Travel hours"
+  },
+  {
+   "fieldname": "sec_25",
+   "fieldtype": "Section Break",
+   "label": "Execution"
+  },
+  {
+   "fieldname": "sop",
+   "fieldtype": "Text",
+   "label": "Standard Operating Procedures",
+   "description": "FR-MFS-002 / FR-MFS-007: Standard operating procedures (SOP)"
+  },
+  {
+   "fieldname": "findings",
+   "fieldtype": "Text",
+   "label": "Findings / Action Notes",
+   "description": "FR-MFS-002 / FR-MFS-007: Findings/Action notes"
+  },
+  {
+   "fieldname": "col_35",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_signature",
+   "fieldtype": "Data",
+   "label": "Customer Signature",
+   "description": "FR-MFS-002 / FR-MFS-007: Customer signature"
+  },
+  {
+   "fieldname": "warranty_entitlement",
+   "fieldtype": "Check",
+   "label": "Under Warranty",
+   "description": "FR-MFS-002 / FR-MFS-007: Warranty entitlement flag (DR-A2S-006 Inputs)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT Field Work Order",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "service_request",
+ "autoname": "format:FWO-{YYYY}-{####}"
+}

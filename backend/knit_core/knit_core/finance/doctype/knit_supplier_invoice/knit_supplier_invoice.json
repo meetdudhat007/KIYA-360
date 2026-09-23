@@ -1,0 +1,168 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PROC-006 / FR-FIN-002 - DR-P2P-009 Supplier Invoice & 3-Way Matching. Approval creates the payable.",
+ "field_order": [
+  "supplier",
+  "bill_no",
+  "bill_date",
+  "company",
+  "col_38",
+  "purchase_order",
+  "goods_receipt",
+  "currency",
+  "knit_business_status",
+  "sec_28",
+  "items",
+  "sec_29",
+  "freight_and_ancillary",
+  "tax_template",
+  "col_39",
+  "statutory_tax_amount",
+  "payment_terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "description": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED from the PO reference",
+   "options": "KNIT Supplier",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "bill_no",
+   "fieldtype": "Data",
+   "label": "Vendor Invoice Number",
+   "description": "FR-PROC-006 / FR-FIN-002: Vendor invoice number"
+  },
+  {
+   "fieldname": "bill_date",
+   "fieldtype": "Date",
+   "label": "Vendor Invoice Date",
+   "description": "FR-PROC-006 / FR-FIN-002: Vendor invoice date"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_38",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_order",
+   "fieldtype": "Link",
+   "label": "Purchase Order",
+   "description": "FR-PROC-006 / FR-FIN-002: PO reference (3-way match)",
+   "options": "KNIT Purchase Order"
+  },
+  {
+   "fieldname": "goods_receipt",
+   "fieldtype": "Link",
+   "label": "Goods Receipt",
+   "description": "FR-PROC-006 / FR-FIN-002: Goods Receipt reference (3-way match)",
+   "options": "KNIT Goods Receipt"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "description": "FR-PROC-006 / FR-FIN-002: currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "knit_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nOn Hold / Variance Pending\nMatched & Approved\nPartially Paid\nPaid in Full\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "FR-PROC-006 / FR-FIN-002: CD-002 'Supplier Invoice' lifecycle (PROPOSED). Set only via knit_core.business_status.engine.transition"
+  },
+  {
+   "fieldname": "sec_28",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-PROC-006 / FR-FIN-002: vendor billed quantities, unit rates",
+   "options": "KNIT Supplier Invoice Item"
+  },
+  {
+   "fieldname": "sec_29",
+   "fieldtype": "Section Break",
+   "label": "Charges & Tax"
+  },
+  {
+   "fieldname": "freight_and_ancillary",
+   "fieldtype": "Currency",
+   "label": "Freight / Ancillary Charges",
+   "description": "FR-PROC-006 / FR-FIN-002: freight/ancillary charges"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "description": "FR-PROC-006 / FR-FIN-002: statutory tax amounts",
+   "options": "KNIT Tax Template"
+  },
+  {
+   "fieldname": "col_39",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "statutory_tax_amount",
+   "fieldtype": "Currency",
+   "label": "Statutory Tax Amount",
+   "description": "FR-PROC-006 / FR-FIN-002: statutory tax amounts"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms",
+   "description": "FR-PROC-006 / FR-FIN-002: payment terms"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT Supplier Invoice",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "supplier",
+ "autoname": "format:PINV-{YYYY}-{####}"
+}

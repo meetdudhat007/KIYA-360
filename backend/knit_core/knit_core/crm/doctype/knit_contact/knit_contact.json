@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-CRM-004 - Contact persons against a Customer.",
+ "field_order": [
+  "contact_name",
+  "customer",
+  "is_primary",
+  "col1",
+  "email",
+  "phone",
+  "designation"
+ ],
+ "fields": [
+  {
+   "fieldname": "contact_name",
+   "fieldtype": "Data",
+   "label": "Contact Name",
+   "description": "FR-CRM-004: Contacts (FR-CRM-004)",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-CRM-004: BRD-DERIVED: contacts belong to the unified Customer Master",
+   "options": "KNIT Customer"
+  },
+  {
+   "fieldname": "is_primary",
+   "fieldtype": "Check",
+   "label": "Is Primary Contact",
+   "description": "FR-CRM-004: PROPOSED: DR-C2C-001 requires a primary contact channel before conversion"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "description": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "description": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation",
+   "description": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "CRM",
+ "name": "KNIT Contact",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "contact_name",
+ "autoname": "field:contact_name"
+}

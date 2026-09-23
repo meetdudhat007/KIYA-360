@@ -1,0 +1,100 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-MFG-003 - DR-C2C-009 Shop Floor Production Execution. Distinct from the field-service work order (DR-A2S-007); doc 33 requires the two not share a schema.",
+ "field_order": [
+  "production_item",
+  "bom",
+  "qty_to_produce",
+  "company",
+  "col_25",
+  "routing_sequence",
+  "assigned_workstations",
+  "sales_order"
+ ],
+ "fields": [
+  {
+   "fieldname": "production_item",
+   "fieldtype": "Data",
+   "label": "Target Item",
+   "description": "FR-MFG-003: target item; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "bom",
+   "fieldtype": "Link",
+   "label": "BOM",
+   "description": "FR-MFG-003: BOM reference",
+   "options": "KNIT BOM"
+  },
+  {
+   "fieldname": "qty_to_produce",
+   "fieldtype": "Float",
+   "label": "Quantity to Produce",
+   "description": "FR-MFG-003: quantity to produce"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-MFG-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "options": "KNIT Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_25",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "routing_sequence",
+   "fieldtype": "Small Text",
+   "label": "Routing Sequence",
+   "description": "FR-MFG-003: routing sequence (FR-MFG-002)"
+  },
+  {
+   "fieldname": "assigned_workstations",
+   "fieldtype": "Small Text",
+   "label": "Assigned Workstations",
+   "description": "FR-MFG-003: assigned workstations"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Against Sales Order",
+   "description": "FR-MFG-003: BRD-DERIVED: C2C linkage (DEP-001)",
+   "options": "KNIT Sales Order"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-22 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "KNIT Work Order",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "production_item",
+ "autoname": "format:WO-{YYYY}-{####}"
+}
