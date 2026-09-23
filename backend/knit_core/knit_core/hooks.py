@@ -13,3 +13,17 @@ app_publisher = "KNIT"
 app_description = "KNIT platform. Built to the BRD on the Frappe framework."
 app_email = "TBD"
 app_license = "TBD"
+
+# --- Branding -----------------------------------------------------------
+# Hooks are only the fallback: Website Settings and Navbar Settings take
+# precedence, so knit_core.branding writes those too.
+app_logo_url = "/assets/knit_core/images/knit-logo.svg"
+
+website_context = {
+	"favicon": "/assets/knit_core/images/knit-logo.svg",
+	"splash_image": "/assets/knit_core/images/knit-logo.svg",
+	"brand_html": "KNIT",
+}
+
+after_install = "knit_core.branding.after_install"
+after_migrate = "knit_core.branding.after_migrate"
