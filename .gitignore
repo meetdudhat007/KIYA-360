@@ -16,3 +16,14 @@ yarn-error.log*
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Standalone preview database
+backend/knit_core/standalone/*.db
+
+# Python packaging artifacts
+*.egg-info/
+.eggs/

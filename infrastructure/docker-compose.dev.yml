@@ -1,0 +1,62 @@
+# KNIT local development stack.
+#
+# Bare Frappe only: no ERPNext, no HRMS. knit_core must install on a site where
+# Frappe is the only app, and this stack is what proves it.
+#
+#   docker compose -f infrastructure/docker-compose.dev.yml up -d
+#
+# The bench container idles; work happens through `docker compose exec bench`.
+# backend/ is bind-mounted, so edits on the host are visible inside instantly.
+
+services:
+  db:
+    image: mariadb:10.6
+    container_name: knit-db
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MARIADB_ROOT_PASSWORD: knitdev
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 20
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: knit-redis-cache
+
+  redis-queue:
+    image: redis:7-alpine
+    container_name: knit-redis-queue
+
+  bench:
+    image: frappe/bench:latest
+    container_name: knit-bench
+    command: sleep infinity
+    working_dir: /home/frappe
+    user: frappe
+    environment:
+      SHELL: /bin/bash
+    volumes:
+      - bench-home:/home/frappe
+      # The KNIT apps, edited on the host.
+      - ../backend:/mnt/knit:rw
+    ports:
+      - "8000:8000"   # Frappe web
+      - "9000:9000"   # socketio
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+
+volumes:
+  db-data:
+  bench-home:

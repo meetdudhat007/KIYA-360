@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "knit-preview",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["backend/run_preview.py"],
+      "port": 8321
+    }
+  ]
+}
