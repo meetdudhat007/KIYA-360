@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" data-user="{{ user }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KNIT — Customer to Cash</title>
+<link rel="icon" href="/assets/knit_core/images/knit-logo.svg">
+<script>window.frappe = window.frappe || {};</script>
+<!-- csrf_token -->
+<style>
+:root {
+  --brand: #1d4ed8;
+  --brand-soft: #eff4ff;
+  --ink: #17191c;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --ok: #047857;
+  --warn: #b45309;
+  --bad: #b91c1c;
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+button { font: inherit; cursor: pointer; }
+a { color: var(--brand); }
+
+header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line);
+}
+header img { height: 26px; width: 26px; }
+header h1 { font-size: 15px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+header .flow { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+header .who { color: var(--muted); font-size: 12px; }
+
+.layout { display: grid; grid-template-columns: 210px minmax(280px, 1fr) minmax(320px, 1.3fr); gap: 1px; background: var(--line); min-height: calc(100vh - 47px); }
+.layout > * { background: var(--bg); padding: 14px; overflow-y: auto; max-height: calc(100vh - 47px); }
+.pane-detail { background: var(--panel); }
+
+h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+
+.stage {
+  width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 9px 11px; margin-bottom: 7px;
+}
+.stage:hover { border-color: var(--brand); }
+.stage[aria-current="true"] { border-color: var(--brand); background: var(--brand-soft); }
+.stage .name { font-weight: 600; display: flex; justify-content: space-between; }
+.stage .count { color: var(--muted); font-weight: 400; }
+.stage .states { margin-top: 5px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.stage .states span.has { color: var(--ink); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.chip {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
+  padding: 3px 10px; font-size: 12px; color: var(--muted);
+}
+.chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.row {
+  width: 100%; text-align: left; display: flex; align-items: center; gap: 10px;
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--line);
+  border-radius: var(--radius); padding: 9px 11px; margin-bottom: 6px;
+}
+.row:hover { border-color: var(--brand); border-left-color: var(--brand); }
+.row[aria-current="true"] { border-color: var(--brand); border-left-color: var(--brand); background: var(--brand-soft); }
+.row .main { flex: 1; min-width: 0; }
+.row .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { font-size: 11px; color: var(--muted); }
+.row .chev { color: var(--muted); }
+
+.pill {
+  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  background: var(--brand-soft); color: var(--brand); border: 1px solid #c7d7fe; white-space: nowrap;
+}
+.pill.terminal { background: #f3f4f6; color: var(--muted); border-color: var(--line); }
+.ds { font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.ds1 { color: var(--ok); border-color: #a7f3d0; background: #ecfdf5; }
+.ds2 { color: var(--bad); border-color: #fecaca; background: #fef2f2; }
+
+.detail-head { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; }
+.detail-head .name { font-size: 17px; font-weight: 600; }
+.detail-head .meta { color: var(--muted); font-size: 12px; margin-top: 2px; display: flex; gap: 8px; align-items: center; }
+
+.act { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.btn {
+  border: 1px solid var(--brand); background: var(--brand); color: #fff;
+  border-radius: 6px; padding: 5px 11px; font-size: 13px;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: var(--panel); color: var(--brand); }
+.btn.ghost:hover { background: var(--brand-soft); }
+.btn[disabled] { background: #f3f4f6; border-color: var(--line); color: #9ca3af; cursor: not-allowed; filter: none; }
+.hint { font-size: 11px; color: var(--muted); margin: 0 0 12px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+td.k { color: var(--muted); width: 40%; }
+
+section.block { margin-top: 16px; }
+.empty { color: var(--muted); font-size: 13px; padding: 20px 0; }
+
+form.new { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; margin-bottom: 12px; }
+form.new label { display: block; font-size: 11px; color: var(--muted); margin: 6px 0 2px; }
+form.new input, form.new select, form.new textarea {
+  width: 100%; padding: 5px 7px; border: 1px solid var(--line); border-radius: 5px; font: inherit;
+}
+form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+#toast {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  max-width: 620px; padding: 10px 14px; border-radius: var(--radius); font-size: 13px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.16); display: none; z-index: 20;
+}
+#toast.err { background: #fef2f2; color: var(--bad); border: 1px solid #fecaca; }
+#toast.ok { background: #ecfdf5; color: var(--ok); border: 1px solid #a7f3d0; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .layout > * { max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="/assets/knit_core/images/knit-logo.svg" alt="KNIT">
+  <div>
+    <h1>KNIT</h1>
+    <div class="flow">Customer to Cash — Lead → Opportunity → Quotation</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="who" id="who"></div>
+  <a class="who" href="/app">Desk</a>
+</header>
+
+<div class="layout">
+  <nav class="pane-stages">
+    <h2>Stages</h2>
+    <div id="stages"></div>
+  </nav>
+
+  <div class="pane-list">
+    <h2 id="list-heading">Documents</h2>
+    <div id="new-area"></div>
+    <div class="filters" id="filters"></div>
+    <div id="rows"></div>
+  </div>
+
+  <div class="pane-detail" id="detail">
+    <p class="empty">Select a document on the left.</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+{% raw %}
+<script>
+const API = "/api/method/knit_core.api.c2c.";
+
+const state = {
+  stages: [],
+  companies: [],
+  stage: "lead",
+  status: null,
+  rows: [],
+  selected: null,
+  detail: null,
+};
+
+/* ---------- transport ---------- */
+
+function serverMessage(body) {
+  // Frappe returns thrown messages as a JSON-encoded list of JSON strings.
+  try {
+    const list = JSON.parse(body._server_messages || "[]");
+    const texts = list.map(entry => {
+      try { return JSON.parse(entry).message; } catch (e) { return entry; }
+    });
+    if (texts.length) return texts.join(" ").replace(/<[^>]+>/g, "");
+  } catch (e) { /* fall through */ }
+  return body.exception || body.exc_type || "Request failed.";
+}
+
+async function call(method, args) {
+  const res = await fetch(API + method, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Frappe-CSRF-Token": window.frappe.csrf_token || "",
+    },
+    body: JSON.stringify(args || {}),
+  });
+  let body;
+  try { body = await res.json(); } catch (e) { body = {}; }
+  if (!res.ok) throw new Error(serverMessage(body));
+  return body.message;
+}
+
+function toast(text, kind) {
+  const el = document.getElementById("toast");
+  el.textContent = text;
+  el.className = kind;
+  el.style.display = "block";
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = "none"; }, kind === "err" ? 8000 : 3500);
+}
+
+async function guard(fn) {
+  try { await fn(); }
+  catch (e) { toast(e.message, "err"); }
+}
+
+/* ---------- rendering ---------- */
+
+const el = (tag, props, kids) => {
+  const node = Object.assign(document.createElement(tag), props || {});
+  (kids || []).forEach(k => node.append(k));
+  return node;
+};
+
+function stageSpec(key) {
+  return state.stages.find(s => s.key === key);
+}
+
+function pill(status, stage) {
+  const terminal = stage && stage.terminal.includes(status);
+  return el("span", { className: "pill" + (terminal ? " terminal" : ""), textContent: status });
+}
+
+function docstatusTag(n) {
+  const label = ["Draft", "Submitted", "Cancelled"][n] || String(n);
+  return el("span", { className: "ds ds" + n, textContent: "docstatus " + n + " · " + label });
+}
+
+function renderStages() {
+  const host = document.getElementById("stages");
+  host.replaceChildren();
+  state.stages.forEach(stage => {
+    const states = el("div", { className: "states" });
+    stage.states.forEach(s => {
+      const n = stage.counts[s] || 0;
+      states.append(el("span", { className: n ? "has" : "", textContent: s + " " + n }));
+    });
+    const btn = el("button", { className: "stage", type: "button" }, [
+      el("div", { className: "name" }, [
+        el("span", { textContent: stage.label }),
+        el("span", { className: "count", textContent: stage.total }),
+      ]),
+      states,
+    ]);
+    btn.setAttribute("aria-current", String(stage.key === state.stage));
+    btn.onclick = () => select(stage.key, null);
+    host.append(btn);
+  });
+}
+
+function renderFilters() {
+  const stage = stageSpec(state.stage);
+  const host = document.getElementById("filters");
+  host.replaceChildren();
+  if (!stage) return;
+  const all = el("button", { className: "chip", type: "button", textContent: "All " + stage.total });
+  all.setAttribute("aria-pressed", String(state.status === null));
+  all.onclick = () => select(state.stage, null);
+  host.append(all);
+  stage.states.forEach(s => {
+    const n = stage.counts[s] || 0;
+    const chip = el("button", { className: "chip", type: "button", textContent: s + " " + n });
+    chip.setAttribute("aria-pressed", String(state.status === s));
+    chip.onclick = () => select(state.stage, s);
+    host.append(chip);
+  });
+}
+
+function renderRows() {
+  const stage = stageSpec(state.stage);
+  document.getElementById("list-heading").textContent = stage ? stage.label : "Documents";
+  const host = document.getElementById("rows");
+  host.replaceChildren();
+
+  if (!state.rows.length) {
+    host.append(el("p", { className: "empty", textContent: "Nothing here yet." }));
+    return;
+  }
+
+  state.rows.forEach(row => {
+    const sub = [row.name, row.customer, row.organization_name, row.lead_source]
+      .filter(Boolean).join(" · ");
+    const btn = el("button", { className: "row", type: "button" }, [
+      el("div", { className: "main" }, [
+        el("div", { className: "title", textContent: row.title }),
+        el("div", { className: "sub", textContent: sub }),
+      ]),
+      pill(row.status, stage),
+      el("span", { className: "chev", textContent: "›" }),
+    ]);
+    btn.setAttribute("aria-current", String(row.name === state.selected));
+    // The button's children are unlabelled divs, so screen readers and keyboard
+    // users get nothing without this.
+    btn.setAttribute("aria-label", row.title + ", " + row.name + ", " + row.status);
+    btn.onclick = () => guard(() => openDoc(state.stage, row.name));
+    host.append(btn);
+  });
+}
+
+function table(rows, head) {
+  const t = el("table");
+  if (head) {
+    const tr = el("tr");
+    head.forEach(h => tr.append(el("th", { textContent: h })));
+    t.append(el("thead", null, [tr]));
+  }
+  const body = el("tbody");
+  rows.forEach(cells => {
+    const tr = el("tr");
+    cells.forEach((c, i) => tr.append(el("td", { textContent: c === null || c === undefined ? "" : String(c), className: (!head && i === 0) ? "k" : "" })));
+    body.append(tr);
+  });
+  t.append(body);
+  return t;
+}
+
+function renderDetail() {
+  const host = document.getElementById("detail");
+  host.replaceChildren();
+  const d = state.detail;
+  if (!d) {
+    host.append(el("p", { className: "empty", textContent: "Select a document on the left." }));
+    return;
+  }
+  const stage = stageSpec(d.stage);
+
+  const meta = el("div", { className: "meta" }, [
+    el("span", { textContent: d.name }),
+    pill(d.status, stage),
+    docstatusTag(d.docstatus),
+  ]);
+  host.append(el("div", { className: "detail-head" }, [
+    el("div", { className: "name", textContent: d.title }),
+    meta,
+  ]));
+
+  // Transitions available from the current status.
+  const moves = el("div", { className: "act" });
+  if (d.allowed_next.length) {
+    d.allowed_next.forEach(next => {
+      const b = el("button", { className: "btn", type: "button", textContent: "→ " + next });
+      b.onclick = () => guard(async () => {
+        const updated = await call("advance", { stage: d.stage, name: d.name, to_status: next });
+        toast(d.name + " is now " + updated.status, "ok");
+        state.detail = updated;
+        await refresh();
+        renderDetail();
+      });
+      moves.append(b);
+    });
+  } else {
+    moves.append(el("span", { className: "hint", textContent: "'" + d.status + "' is a terminal state. No further transitions." }));
+  }
+  host.append(moves);
+
+  // Actions that create the next document in the flow.
+  const acts = el("div", { className: "act" });
+  d.actions.forEach(a => {
+    const b = el("button", { className: "btn ghost", type: "button", textContent: a.label, disabled: !a.enabled });
+    if (a.reason) b.title = a.reason;
+    b.onclick = () => guard(async () => {
+      if (a.key === "convert_lead") {
+        const r = await call("convert_lead", { name: d.name });
+        toast("Created customer " + r.customer + " and opportunity " + r.opportunity, "ok");
+        await refresh();
+        await select(a.goes_to, null);
+        await openDoc(a.goes_to, r.opportunity);
+      } else if (a.key === "create_quotation") {
+        const q = await call("create_quotation", { opportunity: d.name });
+        toast("Created quotation " + q.name, "ok");
+        await refresh();
+        await select(a.goes_to, null);
+        await openDoc(a.goes_to, q.name);
+      }
+    });
+    acts.append(b);
+  });
+  if (acts.childElementCount) host.append(acts);
+
+  const blocked = d.actions.filter(a => !a.enabled && a.reason);
+  blocked.forEach(a => host.append(el("p", { className: "hint", textContent: a.reason })));
+
+  host.append(el("section", { className: "block" }, [
+    el("h2", { textContent: "Details" }),
+    table(d.fields.map(f => [f.label, f.value])),
+  ]));
+
+  if (d.items) {
+    host.append(el("section", { className: "block" }, [
+      el("h2", { textContent: d.items.label }),
+      d.items.editable
+        ? itemEditor(d)
+        : d.items.rows.length
+          ? table(d.items.rows.map(r => d.items.columns.map(c => r[c])), d.items.column_labels)
+          : el("p", { className: "empty", textContent: "No lines." }),
+    ]));
+  }
+
+  host.append(el("section", { className: "block" }, [
+    el("h2", { textContent: "Status history" }),
+    d.history.length
+      ? table(
+          d.history.map(h => [
+            (h.from_status || "—") + " → " + h.to_status,
+            "docstatus " + h.from_docstatus + " → " + h.to_docstatus,
+            h.transitioned_at,
+            h.transitioned_by,
+          ]),
+          ["Transition", "Docstatus", "When", "By"]
+        )
+      : el("p", { className: "empty", textContent: "No recorded transitions." }),
+  ]));
+}
+
+function itemEditor(d) {
+  // A draft's lines are edited as a whole table and saved in one call, which is
+  // what set_items expects. Columns come from the server, so a new column on
+  // the child doctype appears here without a change to this file.
+  const cols = d.items.columns;
+  const draft = d.items.rows.map(r => Object.assign({}, r));
+
+  const body = el("tbody");
+  const wrap = el("div");
+
+  function paint() {
+    body.replaceChildren();
+    draft.forEach((row, i) => {
+      const tr = el("tr");
+      cols.forEach(c => {
+        const numeric = c === "qty" || c === "unit_rate" || c === "discount_percentage";
+        const input = el("input", {
+          value: row[c] === null || row[c] === undefined ? "" : row[c],
+          type: numeric ? "number" : "text",
+          step: "any",
+          style: "width:100%;border:1px solid var(--line);border-radius:4px;padding:3px 5px;font:inherit",
+        });
+        input.oninput = () => { row[c] = numeric ? (input.value === "" ? null : Number(input.value)) : input.value; };
+        tr.append(el("td", null, [input]));
+      });
+      const del = el("button", { className: "btn ghost", type: "button", textContent: "×", title: "Remove line" });
+      del.onclick = () => { draft.splice(i, 1); paint(); };
+      tr.append(el("td", null, [del]));
+      body.append(tr);
+    });
+    if (!draft.length) {
+      body.append(el("tr", null, [el("td", { colSpan: cols.length + 1, className: "empty", textContent: "No lines yet." })]));
+    }
+  }
+
+  const head = el("tr");
+  cols.forEach((c, i) => head.append(el("th", { textContent: d.items.column_labels[i] })));
+  head.append(el("th"));
+  const t = el("table", null, [el("thead", null, [head]), body]);
+  paint();
+
+  const add = el("button", { className: "btn ghost", type: "button", textContent: "+ Add line" });
+  add.onclick = () => { draft.push(Object.fromEntries(cols.map(c => [c, null]))); paint(); };
+
+  const save = el("button", { className: "btn", type: "button", textContent: "Save lines" });
+  save.onclick = () => guard(async () => {
+    const updated = await call("set_items", { stage: d.stage, name: d.name, items: JSON.stringify(draft) });
+    toast("Saved " + draft.length + " line(s) on " + d.name, "ok");
+    state.detail = updated;
+    renderDetail();
+  });
+
+  wrap.append(t, el("div", { className: "act", style: "margin-top:8px" }, [add, save]));
+  return wrap;
+}
+
+function renderNewLead() {
+  const host = document.getElementById("new-area");
+  host.replaceChildren();
+  if (state.stage !== "lead") return;
+
+  const company = el("select", { name: "company", required: true });
+  state.companies.forEach(c => company.append(el("option", { value: c.name, textContent: c.name })));
+
+  const form = el("form", { className: "new" }, [
+    el("label", { textContent: "Prospect name" }),
+    el("input", { name: "lead_name", required: true, placeholder: "Who you spoke to" }),
+    el("div", { className: "pair" }, [
+      el("div", null, [
+        el("label", { textContent: "Organisation" }),
+        el("input", { name: "organization_name", placeholder: "Becomes the customer on conversion" }),
+      ]),
+      el("div", null, [
+        el("label", { textContent: "Company" }),
+        company,
+      ]),
+    ]),
+    el("div", { className: "pair" }, [
+      el("div", null, [
+        el("label", { textContent: "Email" }),
+        el("input", { name: "email", type: "email" }),
+      ]),
+      el("div", null, [
+        el("label", { textContent: "Phone" }),
+        el("input", { name: "phone" }),
+      ]),
+    ]),
+    el("label", { textContent: "Source" }),
+    el("input", { name: "lead_source", placeholder: "Referral, web, trade show…" }),
+    el("div", { style: "margin-top:10px" }, [
+      el("button", { className: "btn", type: "submit", textContent: "Create lead" }),
+    ]),
+  ]);
+
+  if (!state.companies.length) {
+    form.replaceChildren(el("p", { className: "hint", textContent: "No KNIT Company exists yet. Create one in the Desk before adding leads." }));
+    host.append(form);
+    return;
+  }
+
+  form.onsubmit = ev => {
+    ev.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    guard(async () => {
+      const created = await call("create_lead", data);
+      toast("Created " + created.name, "ok");
+      form.reset();
+      await refresh();
+      await openDoc("lead", created.name);
+    });
+  };
+  host.append(form);
+}
+
+/* ---------- flow ---------- */
+
+async function refresh() {
+  state.stages = await call("stages");
+  state.rows = await call("documents", { stage: state.stage, status: state.status });
+  renderStages();
+  renderFilters();
+  renderRows();
+}
+
+async function select(stage, status) {
+  state.stage = stage;
+  state.status = status;
+  state.selected = null;
+  state.detail = null;
+  await refresh();
+  renderNewLead();
+  renderDetail();
+}
+
+async function openDoc(stage, name) {
+  state.stage = stage;
+  state.selected = name;
+  state.detail = await call("document", { stage: stage, name: name });
+  renderRows();
+  renderDetail();
+}
+
+(async function start() {
+  document.getElementById("who").textContent = document.documentElement.dataset.user || "";
+  await guard(async () => {
+    state.companies = await call("companies");
+    await select("lead", null);
+  });
+})();
+</script>
+{% endraw %}
+</body>
+</html>
