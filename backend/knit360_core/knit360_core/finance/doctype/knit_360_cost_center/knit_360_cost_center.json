@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-006 -- Cost Accounting: the dimension postings are attributed to.",
+ "field_order": [
+  "cost_center_name",
+  "cost_center_number",
+  "company",
+  "sec_cc_1",
+  "parent_cost_center",
+  "is_group",
+  "lft",
+  "rgt",
+  "old_parent",
+  "sec_cc_2",
+  "disabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "cost_center_name",
+   "fieldtype": "Data",
+   "label": "Cost Center Name",
+   "description": "FR-FIN-006: Cost Accounting -- cost centre name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "cost_center_number",
+   "fieldtype": "Data",
+   "label": "Cost Center Number",
+   "description": "FR-FIN-006: Cost Accounting -- cost centre code"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: a cost centre belongs to one company",
+   "options": "KNIT 360 Company",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec_cc_1",
+   "fieldtype": "Section Break",
+   "label": "Hierarchy"
+  },
+  {
+   "fieldname": "parent_cost_center",
+   "fieldtype": "Link",
+   "label": "Parent",
+   "description": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
+   "options": "KNIT 360 Cost Center",
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group",
+   "description": "FR-FIN-001: BRD-DERIVED: a group node holds children and takes no postings"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "label": "lft",
+   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "label": "rgt",
+   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Data",
+   "label": "Old Parent",
+   "description": "FR-FIN-001: BRD-DERIVED: previous parent, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "sec_cc_2",
+   "fieldtype": "Section Break",
+   "label": "Controls"
+  },
+  {
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled",
+   "description": "FR-FIN-006: BRD-DERIVED: a disabled cost centre takes no new postings"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Cost Center",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "cost_center_name",
+ "is_tree": 1,
+ "nsm_parent_field": "parent_cost_center"
+}

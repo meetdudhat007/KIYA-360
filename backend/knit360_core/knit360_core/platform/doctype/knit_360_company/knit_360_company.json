@@ -6,7 +6,7 @@
  "doctype": "DocType",
  "editable_grid": 0,
  "engine": "InnoDB",
- "description": "FR-PADM-1.1.1 \u2014 Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
+ "description": "FR-PADM-1.1.1 — Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
  "field_order": [
   "company_name",
   "business_type",
@@ -17,7 +17,18 @@
   "country",
   "sec1",
   "fiscal_year_start_date",
-  "fiscal_year_end_date"
+  "fiscal_year_end_date",
+  "abbreviation",
+  "sec_defaults",
+  "default_receivable_account",
+  "default_payable_account",
+  "default_income_account",
+  "col_defaults",
+  "default_expense_account",
+  "default_cash_account",
+  "default_bank_account",
+  "round_off_account",
+  "default_cost_center"
  ],
  "fields": [
   {
@@ -82,6 +93,77 @@
    "fieldtype": "Date",
    "label": "Fiscal Year End Date",
    "description": "FR-PADM-1.1.1: fiscal year"
+  },
+  {
+   "fieldname": "abbreviation",
+   "fieldtype": "Data",
+   "label": "Abbreviation",
+   "description": "FR-PADM-1.1.1: BRD-DERIVED: short code appended to account and cost centre names, so two companies can both own an account called 'Debtors'."
+  },
+  {
+   "fieldname": "sec_defaults",
+   "fieldtype": "Section Break",
+   "label": "Default Accounts"
+  },
+  {
+   "fieldname": "default_receivable_account",
+   "fieldtype": "Link",
+   "label": "Default Receivable Account",
+   "description": "FR-FIN-003: Accounts Receivable -- the account a customer invoice debits",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_payable_account",
+   "fieldtype": "Link",
+   "label": "Default Payable Account",
+   "description": "FR-FIN-002: Accounts Payable -- the account a supplier invoice credits",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_income_account",
+   "fieldtype": "Link",
+   "label": "Default Income Account",
+   "description": "FR-FIN-003: Accounts Receivable -- the revenue account an invoice line credits",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "col_defaults",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_expense_account",
+   "fieldtype": "Link",
+   "label": "Default Expense Account",
+   "description": "FR-FIN-002: Accounts Payable -- the expense account a supplier invoice line debits",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_cash_account",
+   "fieldtype": "Link",
+   "label": "Default Cash Account",
+   "description": "FR-FIN-004: Cash & Bank -- the account cash payments settle through",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_bank_account",
+   "fieldtype": "Link",
+   "label": "Default Bank Account",
+   "description": "FR-FIN-004: Cash & Bank -- the account bank payments settle through",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "round_off_account",
+   "fieldtype": "Link",
+   "label": "Round Off Account",
+   "description": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_cost_center",
+   "fieldtype": "Link",
+   "label": "Default Cost Center",
+   "description": "FR-FIN-006: Cost Accounting -- attribution used when a document names none",
+   "options": "KNIT 360 Cost Center"
   }
  ],
  "index_web_pages_for_search": 0,

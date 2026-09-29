@@ -13,7 +13,7 @@ updates status on a submitted document.
 import frappe
 from frappe.utils import now
 
-from knit360_core.business_status import model
+from knit360_core.business_status import guard, model
 
 FIELD = model.FIELD
 LOG_DOCTYPE = "KNIT 360 Business Status Log"
@@ -38,6 +38,9 @@ def _apply_docstatus(doc, target):
 	if doc.docstatus == target:
 		return
 
+	# guard.py refuses a submit or cancel that does not carry this flag, so
+	# this is the only place in the app that can move docstatus.
+	doc.flags[guard.FLAG] = True
 	if doc.docstatus == 0 and target == 1:
 		doc.submit()
 	elif doc.docstatus == 1 and target == 2:

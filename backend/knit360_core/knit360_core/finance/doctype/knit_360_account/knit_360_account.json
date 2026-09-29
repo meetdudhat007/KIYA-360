@@ -1,0 +1,176 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-001 -- General Ledger: the chart of accounts.",
+ "field_order": [
+  "account_name",
+  "account_number",
+  "company",
+  "col_acc_1",
+  "root_type",
+  "account_type",
+  "account_currency",
+  "sec_acc_1",
+  "parent_account",
+  "is_group",
+  "lft",
+  "rgt",
+  "old_parent",
+  "sec_acc_2",
+  "balance_must_be",
+  "col_acc_2",
+  "disabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_name",
+   "fieldtype": "Data",
+   "label": "Account Name",
+   "description": "FR-FIN-001: General Ledger -- account name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "label": "Account Number",
+   "description": "FR-FIN-001: General Ledger -- account code",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: a chart of accounts belongs to one company",
+   "options": "KNIT 360 Company",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_acc_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "root_type",
+   "fieldtype": "Select",
+   "label": "Root Type",
+   "description": "FR-FIN-001: General Ledger -- the five account roots. Determines whether a debit increases or decreases the balance.",
+   "options": "Asset\nLiability\nIncome\nExpense\nEquity",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "account_type",
+   "fieldtype": "Select",
+   "label": "Account Type",
+   "description": "FR-FIN-001: General Ledger -- what the account is used for. Drives which accounts a posting rule may select.",
+   "options": "\nAccumulated Depreciation\nBank\nCash\nCost of Goods Sold\nDepreciation\nEquity\nExpense Account\nFixed Asset\nIncome Account\nPayable\nReceivable\nRound Off\nStock\nStock Received But Not Billed\nTax\nWork In Progress"
+  },
+  {
+   "fieldname": "account_currency",
+   "fieldtype": "Link",
+   "label": "Account Currency",
+   "description": "FR-PADM-1.4.6: Currency Master",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "sec_acc_1",
+   "fieldtype": "Section Break",
+   "label": "Hierarchy"
+  },
+  {
+   "fieldname": "parent_account",
+   "fieldtype": "Link",
+   "label": "Parent",
+   "description": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
+   "options": "KNIT 360 Account",
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group",
+   "description": "FR-FIN-001: BRD-DERIVED: a group node holds children and takes no postings"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "label": "lft",
+   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "label": "rgt",
+   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Data",
+   "label": "Old Parent",
+   "description": "FR-FIN-001: BRD-DERIVED: previous parent, maintained by the framework",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "sec_acc_2",
+   "fieldtype": "Section Break",
+   "label": "Controls"
+  },
+  {
+   "fieldname": "balance_must_be",
+   "fieldtype": "Select",
+   "label": "Balance Must Be",
+   "description": "FR-FIN-001: General Ledger -- expected sign. A receivable holding a credit balance is usually an error.",
+   "options": "\nDebit\nCredit"
+  },
+  {
+   "fieldname": "col_acc_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled",
+   "description": "FR-FIN-001: BRD-DERIVED: a disabled account takes no new postings"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Account",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "account_name",
+ "is_tree": 1,
+ "nsm_parent_field": "parent_account"
+}

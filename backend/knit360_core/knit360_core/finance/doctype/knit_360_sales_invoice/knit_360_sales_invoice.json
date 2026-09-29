@@ -1,0 +1,218 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-003 -- Accounts Receivable: the customer invoice, and the document that debits the receivable.",
+ "field_order": [
+  "customer",
+  "company",
+  "posting_date",
+  "due_date",
+  "col_si_1",
+  "sales_order",
+  "delivery_note",
+  "currency",
+  "knit360_business_status",
+  "sec_si_1",
+  "items",
+  "sec_si_2",
+  "tax_template",
+  "col_si_2",
+  "total_taxes",
+  "sec_si_3",
+  "net_total",
+  "grand_total",
+  "col_si_3",
+  "outstanding_amount",
+  "debit_to",
+  "sec_si_4",
+  "payment_terms"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "description": "FR-FIN-003: Accounts Receivable -- the party billed",
+   "options": "KNIT 360 Customer",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: the company issuing the invoice",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "description": "FR-FIN-001: General Ledger -- the date the invoice lands in the books",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "label": "Due Date",
+   "description": "FR-FIN-003: Accounts Receivable -- when payment falls due"
+  },
+  {
+   "fieldname": "col_si_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "description": "FR-SALES-003: BRD-DERIVED: the order being billed",
+   "options": "KNIT 360 Sales Order"
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "label": "Delivery Note",
+   "description": "FR-SALES-005: BRD-DERIVED: the dispatch being billed. DR-C2C requires dispatch before invoice.",
+   "options": "KNIT 360 Delivery Note"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "description": "FR-PADM-1.4.6: Currency Master",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-FIN-003: CD-002 lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+   "options": "Draft\nPending Approval\nPosted / Unpaid\nPartly Paid\nOverdue\nPaid\nCancelled",
+   "default": "Draft",
+   "in_list_view": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_si_1",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "description": "FR-FIN-003: Accounts Receivable -- what is billed",
+   "options": "KNIT 360 Sales Invoice Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_si_2",
+   "fieldtype": "Section Break",
+   "label": "Taxes"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "description": "FR-TAX-001: the tax treatment applied",
+   "options": "KNIT 360 Tax Template"
+  },
+  {
+   "fieldname": "col_si_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_taxes",
+   "fieldtype": "Currency",
+   "label": "Total Taxes",
+   "description": "FR-TAX-001: tax total, computed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_si_3",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "description": "FR-FIN-003: Accounts Receivable -- sum of line amounts, computed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "description": "FR-FIN-003: Accounts Receivable -- net plus taxes, computed",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_si_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Amount",
+   "description": "FR-FIN-003: Accounts Receivable -- grand total less what has been settled against it",
+   "read_only": 1
+  },
+  {
+   "fieldname": "debit_to",
+   "fieldtype": "Link",
+   "label": "Debit To",
+   "description": "FR-FIN-003: the receivable account this invoice debits. Defaults from the company.",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "sec_si_4",
+   "fieldtype": "Section Break",
+   "label": "Terms"
+  },
+  {
+   "fieldname": "payment_terms",
+   "fieldtype": "Small Text",
+   "label": "Payment Terms",
+   "description": "FR-FIN-003: Accounts Receivable -- agreed terms"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Sales Invoice",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:SINV-{YYYY}-{####}",
+ "title_field": "customer",
+ "is_submittable": 1
+}

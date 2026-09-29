@@ -1,0 +1,157 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-001 -- General Ledger: a manual double-entry posting.",
+ "field_order": [
+  "posting_date",
+  "company",
+  "entry_type",
+  "col_je_1",
+  "knit360_business_status",
+  "reference_number",
+  "reference_date",
+  "sec_je_1",
+  "accounts",
+  "sec_je_2",
+  "total_debit",
+  "col_je_2",
+  "total_credit",
+  "sec_je_3",
+  "user_remark"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "description": "FR-FIN-001: General Ledger -- the date the entry lands in the books",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: the company whose books this affects",
+   "options": "KNIT 360 Company",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "entry_type",
+   "fieldtype": "Select",
+   "label": "Entry Type",
+   "description": "FR-FIN-001 / FR-FIN-004: what kind of entry this is. Cash and Bank entries are the FR-FIN-004 treasury cases.",
+   "options": "Journal Entry\nBank Entry\nCash Entry\nOpening Entry\nDepreciation Entry\nWrite Off Entry",
+   "default": "Journal Entry"
+  },
+  {
+   "fieldname": "col_je_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "description": "FR-FIN-001: CD-002 lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+   "options": "Draft\nPending Approval\nPosted\nCancelled",
+   "default": "Draft",
+   "in_list_view": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number",
+   "description": "FR-FIN-004: Cash & Bank -- cheque or transfer reference"
+  },
+  {
+   "fieldname": "reference_date",
+   "fieldtype": "Date",
+   "label": "Reference Date",
+   "description": "FR-FIN-004: Cash & Bank -- date on the instrument"
+  },
+  {
+   "fieldname": "sec_je_1",
+   "fieldtype": "Section Break",
+   "label": "Accounts"
+  },
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "description": "FR-FIN-001: General Ledger -- the lines of the entry",
+   "options": "KNIT 360 Journal Entry Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_je_2",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit",
+   "description": "FR-FIN-001: General Ledger -- sum of debits, computed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_je_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit",
+   "description": "FR-FIN-001: General Ledger -- sum of credits, computed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_je_3",
+   "fieldtype": "Section Break",
+   "label": "Narration"
+  },
+  {
+   "fieldname": "user_remark",
+   "fieldtype": "Small Text",
+   "label": "User Remark",
+   "description": "FR-FIN-001: General Ledger -- narration"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Journal Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:JV-{YYYY}-{####}",
+ "title_field": "entry_type",
+ "is_submittable": 1
+}

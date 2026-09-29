@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-003 -- Accounts Receivable: one credit term.",
+ "field_order": [
+  "term_name",
+  "credit_days",
+  "invoice_portion",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "term_name",
+   "fieldtype": "Data",
+   "label": "Term Name",
+   "description": "FR-FIN-003: Accounts Receivable -- named credit term",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "credit_days",
+   "fieldtype": "Int",
+   "label": "Credit Days",
+   "description": "FR-FIN-003: Accounts Receivable -- days until due",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "invoice_portion",
+   "fieldtype": "Percent",
+   "label": "Invoice Portion",
+   "description": "FR-FIN-003: Accounts Receivable -- share of the invoice due under this term, for staged terms",
+   "default": "100"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-FIN-003: Accounts Receivable -- the term as written to the customer"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Payment Term",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:term_name",
+ "title_field": "term_name"
+}

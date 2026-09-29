@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-FIN-003 -- Accounts Receivable: one term within a template.",
+ "field_order": [
+  "payment_term",
+  "credit_days",
+  "invoice_portion"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_term",
+   "fieldtype": "Link",
+   "label": "Payment Term",
+   "description": "FR-FIN-003: Accounts Receivable -- the term applied",
+   "options": "KNIT 360 Payment Term",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "credit_days",
+   "fieldtype": "Int",
+   "label": "Credit Days",
+   "description": "FR-FIN-003: Accounts Receivable -- days until due",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "invoice_portion",
+   "fieldtype": "Percent",
+   "label": "Invoice Portion",
+   "description": "FR-FIN-003: Accounts Receivable -- share due under this term",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 Payment Terms Template Row",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

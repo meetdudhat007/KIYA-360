@@ -429,7 +429,47 @@ SERVICE_DISPATCH = Lifecycle(
 	draft_states={"Unassigned", "Assigned", "Dispatched / En Route", "On Site", "Work Started", "Reassigned", "Rescheduled"},
 )
 
+# FR-FIN-001. No DR- record specifies a journal entry lifecycle, so this is the
+# minimum a manual posting needs: it is drafted, it may be reviewed, it posts,
+# and a posted entry is reversed rather than edited. PROPOSED.
+JOURNAL_ENTRY = Lifecycle(
+	name="Journal Entry",
+	initial="Draft",
+	transitions={
+		"Draft": {"Pending Approval", "Posted", "Cancelled"},
+		"Pending Approval": {"Posted", "Draft", "Cancelled"},
+		"Posted": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft", "Pending Approval"},
+	submitted_states={"Posted"},
+	cancelling_states={"Cancelled"},
+)
+
+# FR-FIN-003. Accounts Receivable. Posted / Unpaid is where the receivable comes
+# into existence, so that is the first submitted state. Partly Paid, Paid and
+# Overdue stay submitted: settlement changes what is outstanding, not whether
+# the invoice was issued. PROPOSED -- the BRD gives no enumeration.
+SALES_INVOICE = Lifecycle(
+	name="Sales Invoice",
+	initial="Draft",
+	transitions={
+		"Draft": {"Pending Approval", "Posted / Unpaid", "Cancelled"},
+		"Pending Approval": {"Posted / Unpaid", "Draft", "Cancelled"},
+		"Posted / Unpaid": {"Partly Paid", "Paid", "Overdue", "Cancelled"},
+		"Partly Paid": {"Paid", "Overdue", "Cancelled"},
+		"Overdue": {"Partly Paid", "Paid", "Cancelled"},
+		"Paid": set(),
+		"Cancelled": set(),
+	},
+	draft_states={"Draft", "Pending Approval"},
+	submitted_states={"Posted / Unpaid", "Partly Paid", "Paid", "Overdue"},
+	cancelling_states={"Cancelled"},
+)
+
 REGISTRY = {
+	"KNIT 360 Journal Entry": JOURNAL_ENTRY,
+	"KNIT 360 Sales Invoice": SALES_INVOICE,
 	"KNIT 360 Lead": LEAD,
 	"KNIT 360 Opportunity": OPPORTUNITY,
 	"KNIT 360 Enquiry": ENQUIRY,

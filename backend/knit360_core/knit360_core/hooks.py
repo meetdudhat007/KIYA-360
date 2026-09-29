@@ -27,3 +27,14 @@ website_context = {
 
 after_install = "knit360_core.branding.after_install"
 after_migrate = "knit360_core.branding.after_migrate"
+
+# --- Lifecycle integrity -------------------------------------------------
+# CD-002 makes the business status the lifecycle. These refuse a submit or
+# cancel that did not come through the adapter, on any doctype that has a
+# registered lifecycle. See knit360_core/business_status/guard.py.
+doc_events = {
+	"*": {
+		"before_submit": "knit360_core.business_status.guard.before_submit",
+		"before_cancel": "knit360_core.business_status.guard.before_cancel",
+	}
+}

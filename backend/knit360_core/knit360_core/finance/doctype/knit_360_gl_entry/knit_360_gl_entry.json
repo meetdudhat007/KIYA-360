@@ -1,0 +1,198 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-29 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-FIN-001 -- General Ledger: one side of one posting. Written only by knit360_core.finance.ledger.",
+ "field_order": [
+  "posting_date",
+  "account",
+  "debit",
+  "credit",
+  "col_gl_1",
+  "company",
+  "cost_center",
+  "fiscal_year",
+  "sec_gl_1",
+  "party_type",
+  "col_gl_2",
+  "party",
+  "sec_gl_2",
+  "voucher_type",
+  "voucher_no",
+  "col_gl_3",
+  "against_voucher_type",
+  "against_voucher",
+  "sec_gl_3",
+  "against_account",
+  "remarks",
+  "is_cancelled"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "description": "FR-FIN-001: General Ledger -- the date the entry lands in the books",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "description": "FR-FIN-001: General Ledger -- the account debited or credited",
+   "options": "KNIT 360 Account",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "debit",
+   "fieldtype": "Currency",
+   "label": "Debit",
+   "description": "FR-FIN-001: General Ledger -- debit amount",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "credit",
+   "fieldtype": "Currency",
+   "label": "Credit",
+   "description": "FR-FIN-001: General Ledger -- credit amount",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "col_gl_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: the company whose books this entry belongs to",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "description": "FR-FIN-006: Cost Accounting -- attribution",
+   "options": "KNIT 360 Cost Center"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "description": "FR-FIN-007: Financial Reporting -- the period this entry falls in",
+   "options": "KNIT 360 Fiscal Year"
+  },
+  {
+   "fieldname": "sec_gl_1",
+   "fieldtype": "Section Break",
+   "label": "Party"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Data",
+   "label": "Party Type",
+   "description": "FR-FIN-002 / FR-FIN-003: which subsidiary ledger -- customer or supplier"
+  },
+  {
+   "fieldname": "col_gl_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Data",
+   "label": "Party",
+   "description": "FR-FIN-002 / FR-FIN-003: the customer or supplier this entry is against"
+  },
+  {
+   "fieldname": "sec_gl_2",
+   "fieldtype": "Section Break",
+   "label": "Source Document"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Data",
+   "label": "Voucher Type",
+   "description": "FR-FIN-001: General Ledger -- the doctype that posted this entry",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Data",
+   "label": "Voucher No",
+   "description": "FR-FIN-001: General Ledger -- the document that posted this entry",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_gl_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "against_voucher_type",
+   "fieldtype": "Data",
+   "label": "Against Voucher Type",
+   "description": "FR-FIN-003: Accounts Receivable -- the document being settled"
+  },
+  {
+   "fieldname": "against_voucher",
+   "fieldtype": "Data",
+   "label": "Against Voucher",
+   "description": "FR-FIN-003: Accounts Receivable -- the invoice a payment is applied to"
+  },
+  {
+   "fieldname": "sec_gl_3",
+   "fieldtype": "Section Break",
+   "label": "Narration"
+  },
+  {
+   "fieldname": "against_account",
+   "fieldtype": "Small Text",
+   "label": "Against Account",
+   "description": "FR-FIN-001: General Ledger -- the contra side, for readability"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "description": "FR-FIN-001: General Ledger -- narration"
+  },
+  {
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+   "description": "FR-FIN-001: General Ledger -- a reversed entry is flagged, never deleted. CD-002 requires reversal rather than rewriting."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-29 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Finance",
+ "name": "KNIT 360 GL Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:GL-{YYYY}-{######}",
+ "title_field": "account"
+}
