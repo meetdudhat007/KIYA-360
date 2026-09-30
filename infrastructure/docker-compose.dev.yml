@@ -5,6 +5,15 @@
 #
 #   docker compose -f infrastructure/docker-compose.dev.yml up -d
 #
+# Then open http://knit360.localhost:8000 -- NOT http://localhost:8000.
+#
+# Cookies are scoped by hostname and ignore the port, so a second Frappe site on
+# localhost:8080 (an ERPNext instance kept for reference, say) shares one cookie
+# jar with this one. Frappe sets `sid` with no Domain attribute, so logging into
+# either site overwrites the other's session and the first silently logs out.
+# Two hostnames, two cookie jars, both sessions alive at once. *.localhost
+# resolves to 127.0.0.1 in browsers with no hosts-file entry needed.
+#
 # The bench container idles; work happens through `docker compose exec bench`.
 # backend/ is bind-mounted, so edits on the host are visible inside instantly.
 
