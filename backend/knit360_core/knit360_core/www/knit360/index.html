@@ -10,157 +10,206 @@
 <style>
 :root {
   --brand: #1d4ed8;
+  --brand-dark: #1e40af;
   --brand-soft: #eff4ff;
-  --ink: #17191c;
+  --brand-line: #c7d7fe;
+  --ink: #15181d;
+  --ink-soft: #4b5563;
   --muted: #6b7280;
   --line: #e5e7eb;
-  --bg: #f7f8fa;
-  --panel: #ffffff;
+  --bg: #f6f7f9;
+  --panel: #fff;
   --ok: #047857;
+  --ok-soft: #ecfdf5;
+  --ok-line: #a7f3d0;
   --warn: #b45309;
+  --warn-soft: #fffbeb;
+  --warn-line: #fde68a;
   --bad: #b91c1c;
-  --radius: 8px;
+  --bad-soft: #fef2f2;
+  --bad-line: #fecaca;
+  --r: 10px;
 }
 * { box-sizing: border-box; }
+html, body { height: 100%; }
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font: 14px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-button { font: inherit; cursor: pointer; }
-a { color: var(--brand); }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 10px; font-weight: 700; }
 
+/* ---------- header ---------- */
 header {
   display: flex; align-items: center; gap: 12px;
-  padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line);
 }
-header img { height: 26px; width: 26px; }
-header h1 { font-size: 15px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
-header .flow { color: var(--muted); font-size: 12px; }
+header img { height: 30px; width: 30px; }
+header .brand b { font-size: 16px; letter-spacing: -.01em; display: block; }
+header .brand span { font-size: 12px; color: var(--muted); }
 header .spacer { flex: 1; }
-header .who { color: var(--muted); font-size: 12px; }
+header a, header .who { color: var(--muted); font-size: 13px; text-decoration: none; }
+header a:hover { color: var(--brand); }
 
-.layout { display: grid; grid-template-columns: 210px minmax(280px, 1fr) minmax(320px, 1.3fr); gap: 1px; background: var(--line); min-height: calc(100vh - 47px); }
-.layout > * { background: var(--bg); padding: 14px; overflow-y: auto; max-height: calc(100vh - 47px); }
+/* ---------- journey ---------- */
+.journey { background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px 16px; }
+.journey .lead-in { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.steps { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+.step {
+  flex: 1 1 200px; text-align: left; background: var(--panel);
+  border: 2px solid var(--line); border-radius: var(--r); padding: 11px 14px; position: relative;
+}
+.step:hover { border-color: var(--brand-line); }
+.step[aria-current="true"] { border-color: var(--brand); background: var(--brand-soft); }
+.step .n {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; border-radius: 50%; background: var(--line);
+  color: var(--ink-soft); font-size: 11px; font-weight: 700; margin-right: 8px;
+}
+.step[aria-current="true"] .n { background: var(--brand); color: #fff; }
+.step .name { font-weight: 650; font-size: 15px; }
+.step .count { font-size: 12.5px; color: var(--muted); margin-top: 3px; margin-left: 29px; }
+.arrow { display: flex; align-items: center; padding: 0 9px; color: #c3c8d0; font-size: 19px; }
+
+/* ---------- layout ---------- */
+.wrap { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 1px; background: var(--line); }
+.wrap > * { background: var(--bg); padding: 16px 18px; min-height: calc(100vh - 160px); }
 .pane-detail { background: var(--panel); }
 
-h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
+/* ---------- list ---------- */
+.toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+.toolbar input { flex: 1; padding: 8px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.toolbar input:focus { outline: 2px solid var(--brand-line); border-color: var(--brand); }
 
-.stage {
-  width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 9px 11px; margin-bottom: 7px;
-}
-.stage:hover { border-color: var(--brand); }
-.stage[aria-current="true"] { border-color: var(--brand); background: var(--brand-soft); }
-.stage .name { font-weight: 600; display: flex; justify-content: space-between; }
-.stage .count { color: var(--muted); font-weight: 400; }
-.stage .states { margin-top: 5px; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 8px; }
-.stage .states span.has { color: var(--ink); }
-
-.filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.chip {
-  border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
-  padding: 3px 10px; font-size: 12px; color: var(--muted);
-}
+.filters { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.chip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; color: var(--ink-soft); }
+.chip:hover { border-color: var(--brand-line); }
 .chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
 
 .row {
   width: 100%; text-align: left; display: flex; align-items: center; gap: 10px;
-  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--line);
-  border-radius: var(--radius); padding: 9px 11px; margin-bottom: 6px;
+  background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line);
+  border-radius: var(--r); padding: 11px 13px; margin-bottom: 7px;
 }
-.row:hover { border-color: var(--brand); border-left-color: var(--brand); }
+.row:hover { border-color: var(--brand-line); border-left-color: var(--brand); }
 .row[aria-current="true"] { border-color: var(--brand); border-left-color: var(--brand); background: var(--brand-soft); }
 .row .main { flex: 1; min-width: 0; }
-.row .title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row .sub { font-size: 11px; color: var(--muted); }
-.row .chev { color: var(--muted); }
+.row .title { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .chev { color: #b8bec8; font-size: 18px; }
 
-.pill {
-  display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
-  background: var(--brand-soft); color: var(--brand); border: 1px solid #c7d7fe; white-space: nowrap;
-}
-.pill.terminal { background: #f3f4f6; color: var(--muted); border-color: var(--line); }
-.ds { font-size: 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
-.ds1 { color: var(--ok); border-color: #a7f3d0; background: #ecfdf5; }
-.ds2 { color: var(--bad); border-color: #fecaca; background: #fef2f2; }
+.pill { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+        background: var(--brand-soft); color: var(--brand-dark); border: 1px solid var(--brand-line); }
+.pill.done { background: var(--ok-soft); color: var(--ok); border-color: var(--ok-line); }
+.pill.stop { background: #f3f4f6; color: var(--muted); border-color: var(--line); }
 
-.detail-head { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; }
-.detail-head .name { font-size: 17px; font-weight: 600; }
-.detail-head .meta { color: var(--muted); font-size: 12px; margin-top: 2px; display: flex; gap: 8px; align-items: center; }
+/* ---------- empty / callouts ---------- */
+.empty { text-align: center; padding: 34px 18px; color: var(--muted); }
+.empty .big { font-size: 15px; color: var(--ink-soft); font-weight: 600; margin-bottom: 4px; }
+.callout { border: 1px solid var(--brand-line); background: var(--brand-soft); color: var(--brand-dark);
+           border-radius: var(--r); padding: 11px 13px; font-size: 13.5px; margin-bottom: 14px; }
+.callout.warn { border-color: var(--warn-line); background: var(--warn-soft); color: var(--warn); }
+.callout.stop { border-color: var(--line); background: #f9fafb; color: var(--ink-soft); }
+.callout b { display: block; margin-bottom: 2px; }
 
-.act { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
-.btn {
-  border: 1px solid var(--brand); background: var(--brand); color: #fff;
-  border-radius: 6px; padding: 5px 11px; font-size: 13px;
-}
-.btn:hover { filter: brightness(1.08); }
+/* ---------- detail ---------- */
+.detail-head { border-bottom: 1px solid var(--line); padding-bottom: 13px; margin-bottom: 15px; }
+.detail-head .name { font-size: 20px; font-weight: 680; letter-spacing: -.01em; }
+.detail-head .id { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.status-line { display: flex; align-items: center; gap: 9px; margin-top: 10px; flex-wrap: wrap; }
+.lock { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: #f9fafb; }
+.lock.locked { color: var(--warn); border-color: var(--warn-line); background: var(--warn-soft); }
+.meaning { font-size: 13.5px; color: var(--ink-soft); margin-top: 9px; }
+
+.btn { border: 1px solid var(--brand); background: var(--brand); color: #fff; border-radius: 8px; padding: 9px 16px; font-size: 14px; font-weight: 600; }
+.btn:hover { background: var(--brand-dark); }
 .btn.ghost { background: var(--panel); color: var(--brand); }
 .btn.ghost:hover { background: var(--brand-soft); }
-.btn[disabled] { background: #f3f4f6; border-color: var(--line); color: #9ca3af; cursor: not-allowed; filter: none; }
-.hint { font-size: 11px; color: var(--muted); margin: 0 0 12px; }
+.btn.quiet { background: var(--panel); color: var(--ink-soft); border-color: var(--line); font-weight: 500; }
+.btn.quiet:hover { border-color: var(--muted); }
+.btn.small { padding: 5px 11px; font-size: 13px; }
+.btn[disabled] { background: #f3f4f6; border-color: var(--line); color: #9ca3af; cursor: not-allowed; }
 
-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-td.k { color: var(--muted); width: 40%; }
+.act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+details.more { margin-top: 11px; }
+details.more summary { cursor: pointer; font-size: 13px; color: var(--muted); user-select: none; }
+details.more summary:hover { color: var(--brand); }
+details.more .act { margin-top: 9px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 6px 0 0; }
 
-section.block { margin-top: 16px; }
-.empty { color: var(--muted); font-size: 13px; padding: 20px 0; }
+section.block { margin-top: 22px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 650; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+td.k { color: var(--muted); width: 38%; }
+tr:last-child td { border-bottom: none; }
 
-form.new { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; margin-bottom: 12px; }
-form.new label { display: block; font-size: 11px; color: var(--muted); margin: 6px 0 2px; }
-form.new input, form.new select, form.new textarea {
-  width: 100%; padding: 5px 7px; border: 1px solid var(--line); border-radius: 5px; font: inherit;
-}
-form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* ---------- forms ---------- */
+form.new { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-bottom: 14px; }
+form.new .lede { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+form.new label { display: block; font-size: 12px; color: var(--ink-soft); font-weight: 600; margin: 9px 0 3px; }
+form.new label .opt { color: var(--muted); font-weight: 400; }
+form.new input, form.new select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; }
+form.new input:focus, form.new select:focus { outline: 2px solid var(--brand-line); border-color: var(--brand); }
+form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.editor input { width: 100%; border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; }
+.editor input:focus { outline: 2px solid var(--brand-line); border-color: var(--brand); }
 
-#toast {
-  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
-  max-width: 620px; padding: 10px 14px; border-radius: var(--radius); font-size: 13px;
-  box-shadow: 0 6px 22px rgba(0,0,0,.16); display: none; z-index: 20;
-}
-#toast.err { background: #fef2f2; color: var(--bad); border: 1px solid #fecaca; }
-#toast.ok { background: #ecfdf5; color: var(--ok); border: 1px solid #a7f3d0; }
+/* ---------- modal ---------- */
+.scrim { position: fixed; inset: 0; background: rgba(15,20,30,.45); display: none; align-items: center; justify-content: center; z-index: 40; padding: 20px; }
+.scrim.open { display: flex; }
+.modal { background: var(--panel); border-radius: 14px; max-width: 460px; width: 100%; padding: 22px; box-shadow: 0 18px 50px rgba(0,0,0,.25); }
+.modal h3 { margin: 0 0 8px; font-size: 17px; }
+.modal p { margin: 0 0 8px; color: var(--ink-soft); font-size: 14px; }
+.modal .act { margin-top: 18px; justify-content: flex-end; }
 
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .layout > * { max-height: none; }
+/* ---------- toast ---------- */
+#toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+         max-width: 640px; padding: 12px 16px; border-radius: var(--r); font-size: 14px;
+         box-shadow: 0 8px 26px rgba(0,0,0,.17); display: none; z-index: 50; }
+#toast.err { background: var(--bad-soft); color: var(--bad); border: 1px solid var(--bad-line); }
+#toast.ok  { background: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok-line); }
+
+@media (max-width: 950px) {
+  .wrap { grid-template-columns: 1fr; }
+  .wrap > * { min-height: 0; }
+  .arrow { display: none; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <img src="/assets/knit360_core/images/knit360-logo.svg" alt="KNIT 360">
-  <div>
-    <h1>KNIT 360</h1>
-    <div class="flow">Customer to Cash — Lead → Opportunity → Quotation</div>
+  <img src="/assets/knit360_core/images/knit360-logo.svg" alt="">
+  <div class="brand">
+    <b>KNIT 360</b>
+    <span>Customer to Cash</span>
   </div>
   <div class="spacer"></div>
-  <div class="who" id="who"></div>
-  <a class="who" href="/app">Desk</a>
+  <span class="who" id="who"></span>
+  <a href="/app" title="Administration">Admin</a>
 </header>
 
-<div class="layout">
-  <nav class="pane-stages">
-    <h2>Stages</h2>
-    <div id="stages"></div>
-  </nav>
+<div class="journey">
+  <div class="lead-in">Work moves left to right. Pick a stage to see what is in it.</div>
+  <div class="steps" id="steps"></div>
+</div>
 
+<div class="wrap">
   <div class="pane-list">
-    <h2 id="list-heading">Documents</h2>
     <div id="new-area"></div>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search by name or number…" autocomplete="off">
+    </div>
     <div class="filters" id="filters"></div>
     <div id="rows"></div>
   </div>
-
-  <div class="pane-detail" id="detail">
-    <p class="empty">Select a document on the left.</p>
-  </div>
+  <div class="pane-detail" id="detail"></div>
 </div>
 
+<div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
 <div id="toast"></div>
 
 {% raw %}
@@ -168,16 +217,11 @@ form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 const API = "/api/method/knit360_core.api.c2c.";
 
 const state = {
-  stages: [],
-  companies: [],
-  stage: "lead",
-  status: null,
-  rows: [],
-  selected: null,
-  detail: null,
+  stages: [], companies: [], stage: "lead", status: null,
+  rows: [], query: "", selected: null, detail: null,
 };
 
-/* ---------- transport ---------- */
+/* ================= transport ================= */
 
 function serverMessage(body) {
   // Frappe returns thrown messages as a JSON-encoded list of JSON strings.
@@ -188,7 +232,8 @@ function serverMessage(body) {
     });
     if (texts.length) return texts.join(" ").replace(/<[^>]+>/g, "");
   } catch (e) { /* fall through */ }
-  return body.exception || body.exc_type || "Request failed.";
+  if (body.exc_type === "ValidationError") return "That is not allowed here.";
+  return "Something went wrong. Nothing was changed.";
 }
 
 async function call(method, args) {
@@ -212,15 +257,14 @@ function toast(text, kind) {
   el.className = kind;
   el.style.display = "block";
   clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.display = "none"; }, kind === "err" ? 8000 : 3500);
+  el._t = setTimeout(() => { el.style.display = "none"; }, kind === "err" ? 9000 : 4000);
 }
 
 async function guard(fn) {
-  try { await fn(); }
-  catch (e) { toast(e.message, "err"); }
+  try { await fn(); } catch (e) { toast(e.message, "err"); }
 }
 
-/* ---------- rendering ---------- */
+/* ================= helpers ================= */
 
 const el = (tag, props, kids) => {
   const node = Object.assign(document.createElement(tag), props || {});
@@ -228,72 +272,117 @@ const el = (tag, props, kids) => {
   return node;
 };
 
-function stageSpec(key) {
-  return state.stages.find(s => s.key === key);
-}
+const stageSpec = key => state.stages.find(s => s.key === key);
 
 function pill(status, stage) {
-  const terminal = stage && stage.terminal.includes(status);
-  return el("span", { className: "pill" + (terminal ? " terminal" : ""), textContent: status });
+  let cls = "pill";
+  if (stage) {
+    const last = stage.happy_path[stage.happy_path.length - 1];
+    if (status === last) cls += " done";
+    else if (stage.terminal.includes(status)) cls += " stop";
+  }
+  return el("span", { className: cls, textContent: status });
 }
 
-function docstatusTag(n) {
-  const label = ["Draft", "Submitted", "Cancelled"][n] || String(n);
-  return el("span", { className: "ds ds" + n, textContent: "docstatus " + n + " · " + label });
+function confirmThen(title, body, confirmLabel, onYes) {
+  const scrim = document.getElementById("scrim");
+  const modal = document.getElementById("modal");
+  const close = () => { scrim.classList.remove("open"); };
+
+  const yes = el("button", { className: "btn", type: "button", textContent: confirmLabel });
+  yes.onclick = () => { close(); onYes(); };
+  const no = el("button", { className: "btn quiet", type: "button", textContent: "Cancel" });
+  no.onclick = close;
+
+  modal.replaceChildren(
+    el("h3", { textContent: title }),
+    ...body.map(text => el("p", { textContent: text })),
+    el("div", { className: "act" }, [no, yes]),
+  );
+  scrim.classList.add("open");
+  scrim.onclick = ev => { if (ev.target === scrim) close(); };
+  yes.focus();
 }
 
-function renderStages() {
-  const host = document.getElementById("stages");
+/* ================= journey ================= */
+
+function renderSteps() {
+  const host = document.getElementById("steps");
   host.replaceChildren();
-  state.stages.forEach(stage => {
-    const states = el("div", { className: "states" });
-    stage.states.forEach(s => {
-      const n = stage.counts[s] || 0;
-      states.append(el("span", { className: n ? "has" : "", textContent: s + " " + n }));
-    });
-    const btn = el("button", { className: "stage", type: "button" }, [
-      el("div", { className: "name" }, [
-        el("span", { textContent: stage.label }),
-        el("span", { className: "count", textContent: stage.total }),
+  state.stages.forEach((stage, i) => {
+    if (i) host.append(el("div", { className: "arrow", textContent: "→" }));
+    const open = stage.total - stage.states
+      .filter(s => stage.terminal.includes(s))
+      .reduce((n, s) => n + (stage.counts[s] || 0), 0);
+    const btn = el("button", { className: "step", type: "button" }, [
+      el("div", null, [
+        el("span", { className: "n", textContent: String(i + 1) }),
+        el("span", { className: "name", textContent: stage.label }),
       ]),
-      states,
+      el("div", {
+        className: "count",
+        textContent: stage.total
+          ? `${stage.total} total · ${open} still open`
+          : "nothing here yet",
+      }),
     ]);
     btn.setAttribute("aria-current", String(stage.key === state.stage));
-    btn.onclick = () => select(stage.key, null);
+    btn.setAttribute("aria-label", `${stage.label}, ${stage.total} total`);
+    btn.onclick = () => guard(() => select(stage.key, null));
     host.append(btn);
   });
 }
+
+/* ================= list ================= */
 
 function renderFilters() {
   const stage = stageSpec(state.stage);
   const host = document.getElementById("filters");
   host.replaceChildren();
   if (!stage) return;
-  const all = el("button", { className: "chip", type: "button", textContent: "All " + stage.total });
-  all.setAttribute("aria-pressed", String(state.status === null));
-  all.onclick = () => select(state.stage, null);
-  host.append(all);
+  const mk = (label, active, onClick) => {
+    const chip = el("button", { className: "chip", type: "button", textContent: label });
+    chip.setAttribute("aria-pressed", String(active));
+    chip.onclick = onClick;
+    return chip;
+  };
+  host.append(mk(`Everything (${stage.total})`, state.status === null, () => guard(() => select(state.stage, null))));
   stage.states.forEach(s => {
     const n = stage.counts[s] || 0;
-    const chip = el("button", { className: "chip", type: "button", textContent: s + " " + n });
-    chip.setAttribute("aria-pressed", String(state.status === s));
-    chip.onclick = () => select(state.stage, s);
-    host.append(chip);
+    if (!n && state.status !== s) return;   // hide statuses nothing is in
+    host.append(mk(`${s} (${n})`, state.status === s, () => guard(() => select(state.stage, s))));
   });
+}
+
+function visibleRows() {
+  const q = state.query.trim().toLowerCase();
+  if (!q) return state.rows;
+  return state.rows.filter(r =>
+    Object.values(r).some(v => v && String(v).toLowerCase().includes(q)));
 }
 
 function renderRows() {
   const stage = stageSpec(state.stage);
-  document.getElementById("list-heading").textContent = stage ? stage.label : "Documents";
   const host = document.getElementById("rows");
   host.replaceChildren();
+  const rows = visibleRows();
 
-  if (!state.rows.length) {
-    host.append(el("p", { className: "empty", textContent: "Nothing here yet." }));
+  if (!rows.length) {
+    const first = state.stage === "lead";
+    host.append(el("div", { className: "empty" }, [
+      el("div", { className: "big", textContent: state.query
+        ? "Nothing matches that search."
+        : `No ${stage ? stage.label.toLowerCase() : "documents"} yet.` }),
+      el("div", { textContent: state.query
+        ? "Try a shorter search, or clear it."
+        : first
+          ? "Use the form above to add your first lead."
+          : "These appear once you move something forward from the stage before." }),
+    ]));
     return;
   }
 
-  state.rows.forEach(row => {
+  rows.forEach(row => {
     const sub = [row.name, row.customer, row.organization_name, row.lead_source]
       .filter(Boolean).join(" · ");
     const btn = el("button", { className: "row", type: "button" }, [
@@ -305,13 +394,13 @@ function renderRows() {
       el("span", { className: "chev", textContent: "›" }),
     ]);
     btn.setAttribute("aria-current", String(row.name === state.selected));
-    // The button's children are unlabelled divs, so screen readers and keyboard
-    // users get nothing without this.
-    btn.setAttribute("aria-label", row.title + ", " + row.name + ", " + row.status);
+    btn.setAttribute("aria-label", `${row.title}, ${row.name}, ${row.status}`);
     btn.onclick = () => guard(() => openDoc(state.stage, row.name));
     host.append(btn);
   });
 }
+
+/* ================= detail ================= */
 
 function table(rows, head) {
   const t = el("table");
@@ -323,84 +412,137 @@ function table(rows, head) {
   const body = el("tbody");
   rows.forEach(cells => {
     const tr = el("tr");
-    cells.forEach((c, i) => tr.append(el("td", { textContent: c === null || c === undefined ? "" : String(c), className: (!head && i === 0) ? "k" : "" })));
+    cells.forEach((c, i) => tr.append(el("td", {
+      textContent: c === null || c === undefined ? "" : String(c),
+      className: (!head && i === 0) ? "k" : "",
+    })));
     body.append(tr);
   });
   t.append(body);
   return t;
 }
 
+function moveTo(d, step) {
+  const go = () => guard(async () => {
+    const updated = await call("advance", { stage: d.stage, name: d.name, to_status: step.status });
+    toast(`${d.name} is now "${updated.status}".`, "ok");
+    state.detail = updated;
+    await refresh();
+    renderDetail();
+  });
+  if (step.warning) {
+    confirmThen(
+      `Move to "${step.status}"?`,
+      [step.meaning, step.warning],
+      `Yes, move to "${step.status}"`,
+      go,
+    );
+  } else {
+    go();
+  }
+}
+
 function renderDetail() {
   const host = document.getElementById("detail");
   host.replaceChildren();
   const d = state.detail;
+  const stage = d && stageSpec(d.stage);
+
   if (!d) {
-    host.append(el("p", { className: "empty", textContent: "Select a document on the left." }));
+    host.append(el("div", { className: "empty" }, [
+      el("div", { className: "big", textContent: "Nothing selected" }),
+      el("div", { textContent: "Pick something from the list on the left to see it and move it along." }),
+    ]));
     return;
   }
-  const stage = stageSpec(d.stage);
 
-  const meta = el("div", { className: "meta" }, [
-    el("span", { textContent: d.name }),
-    pill(d.status, stage),
-    docstatusTag(d.docstatus),
-  ]);
+  /* --- heading --- */
   host.append(el("div", { className: "detail-head" }, [
     el("div", { className: "name", textContent: d.title }),
-    meta,
+    el("div", { className: "id", textContent: d.name }),
+    el("div", { className: "status-line" }, [
+      pill(d.status, stage),
+      el("span", {
+        className: "lock" + (d.editable ? "" : " locked"),
+        textContent: d.editable ? "Editable" : "Locked — cannot be changed",
+      }),
+    ]),
+    el("div", { className: "meaning", textContent: d.meaning }),
   ]));
 
-  // Transitions available from the current status.
-  const moves = el("div", { className: "act" });
-  if (d.allowed_next.length) {
-    d.allowed_next.forEach(next => {
-      const b = el("button", { className: "btn", type: "button", textContent: "→ " + next });
-      b.onclick = () => guard(async () => {
-        const updated = await call("advance", { stage: d.stage, name: d.name, to_status: next });
-        toast(d.name + " is now " + updated.status, "ok");
-        state.detail = updated;
-        await refresh();
-        renderDetail();
-      });
-      moves.append(b);
-    });
-  } else {
-    moves.append(el("span", { className: "hint", textContent: "'" + d.status + "' is a terminal state. No further transitions." }));
-  }
-  host.append(moves);
+  /* --- what to do next --- */
+  const forward = d.allowed_next.find(s => s.kind === "forward");
+  const branches = d.allowed_next.filter(s => s.kind !== "forward");
 
-  // Actions that create the next document in the flow.
-  const acts = el("div", { className: "act" });
-  d.actions.forEach(a => {
-    const b = el("button", { className: "btn ghost", type: "button", textContent: a.label, disabled: !a.enabled });
-    if (a.reason) b.title = a.reason;
+  if (d.allowed_next.length) {
+    host.append(el("div", { className: "callout" }, [
+      el("b", { textContent: "What to do next" }),
+      el("span", { textContent: d.guidance }),
+    ]));
+  } else {
+    host.append(el("div", { className: "callout stop" }, [
+      el("b", { textContent: "Finished" }),
+      el("span", { textContent: d.guidance }),
+    ]));
+  }
+
+  const primary = el("div", { className: "act" });
+  if (forward) {
+    const b = el("button", { className: "btn", type: "button",
+                             textContent: `Move to "${forward.status}"` });
+    b.onclick = () => moveTo(d, forward);
+    primary.append(b);
+  }
+  d.actions.filter(a => a.enabled).forEach(a => {
+    const b = el("button", { className: "btn ghost", type: "button", textContent: a.label });
+    b.title = a.hint || "";
     b.onclick = () => guard(async () => {
       if (a.key === "convert_lead") {
         const r = await call("convert_lead", { name: d.name });
-        toast("Created customer " + r.customer + " and opportunity " + r.opportunity, "ok");
+        toast(`Created customer "${r.customer}" and opportunity ${r.opportunity}.`, "ok");
         await refresh();
         await select(a.goes_to, null);
         await openDoc(a.goes_to, r.opportunity);
       } else if (a.key === "create_quotation") {
         const q = await call("create_quotation", { opportunity: d.name });
-        toast("Created quotation " + q.name, "ok");
+        toast(`Created quotation ${q.name}.`, "ok");
         await refresh();
         await select(a.goes_to, null);
         await openDoc(a.goes_to, q.name);
       }
     });
-    acts.append(b);
+    primary.append(b);
   });
-  if (acts.childElementCount) host.append(acts);
+  if (primary.childElementCount) host.append(primary);
 
-  const blocked = d.actions.filter(a => !a.enabled && a.reason);
-  blocked.forEach(a => host.append(el("p", { className: "hint", textContent: a.reason })));
+  d.actions.filter(a => a.enabled && a.hint).forEach(a =>
+    host.append(el("p", { className: "hint", textContent: a.hint })));
+  d.actions.filter(a => !a.enabled && a.reason).forEach(a =>
+    host.append(el("p", { className: "hint", textContent: `${a.label} — not available: ${a.reason}` })));
 
-  host.append(el("section", { className: "block" }, [
-    el("h2", { textContent: "Details" }),
-    table(d.fields.map(f => [f.label, f.value])),
-  ]));
+  if (branches.length) {
+    const acts = el("div", { className: "act" });
+    branches.forEach(step => {
+      const b = el("button", { className: "btn quiet small", type: "button", textContent: step.status });
+      b.title = step.meaning;
+      b.onclick = () => moveTo(d, step);
+      acts.append(b);
+    });
+    host.append(el("details", { className: "more" }, [
+      el("summary", { textContent: forward ? "Other outcomes…" : "How does this end?" }),
+      acts,
+    ]));
+  }
 
+  /* --- details --- */
+  if (d.fields.length) {
+    host.append(el("section", { className: "block" }, [
+      el("h2", { textContent: "Details" }),
+      table(d.fields.map(f => [f.label, f.value])),
+    ]));
+  }
+
+  /* --- items --- */
   if (d.items) {
     host.append(el("section", { className: "block" }, [
       el("h2", { textContent: d.items.label }),
@@ -408,132 +550,131 @@ function renderDetail() {
         ? itemEditor(d)
         : d.items.rows.length
           ? table(d.items.rows.map(r => d.items.columns.map(c => r[c])), d.items.column_labels)
-          : el("p", { className: "empty", textContent: "No lines." }),
+          : el("p", { className: "hint", textContent: "No lines, and they can no longer be added." }),
     ]));
   }
 
+  /* --- history --- */
   host.append(el("section", { className: "block" }, [
-    el("h2", { textContent: "Status history" }),
+    el("h2", { textContent: "What has happened so far" }),
     d.history.length
       ? table(
           d.history.map(h => [
-            (h.from_status || "—") + " → " + h.to_status,
-            "docstatus " + h.from_docstatus + " → " + h.to_docstatus,
-            h.transitioned_at,
+            `${h.from_status || "created"} → ${h.to_status}`,
+            (h.transitioned_at || "").slice(0, 16).replace("T", " "),
             h.transitioned_by,
           ]),
-          ["Transition", "Docstatus", "When", "By"]
-        )
-      : el("p", { className: "empty", textContent: "No recorded transitions." }),
+          ["Change", "When", "Who"])
+      : el("p", { className: "hint", textContent: "Nothing yet — it has not been moved since it was created." }),
   ]));
 }
 
 function itemEditor(d) {
-  // A draft's lines are edited as a whole table and saved in one call, which is
-  // what set_items expects. Columns come from the server, so a new column on
-  // the child doctype appears here without a change to this file.
   const cols = d.items.columns;
   const draft = d.items.rows.map(r => Object.assign({}, r));
-
   const body = el("tbody");
-  const wrap = el("div");
+  const wrap = el("div", { className: "editor" });
 
   function paint() {
     body.replaceChildren();
     draft.forEach((row, i) => {
       const tr = el("tr");
       cols.forEach(c => {
-        const numeric = c === "qty" || c === "unit_rate" || c === "discount_percentage";
+        const numeric = c === "qty" || c === "unit_rate" || c === "discount_percentage" || c === "rate";
         const input = el("input", {
           value: row[c] === null || row[c] === undefined ? "" : row[c],
-          type: numeric ? "number" : "text",
-          step: "any",
-          style: "width:100%;border:1px solid var(--line);border-radius:4px;padding:3px 5px;font:inherit",
+          type: numeric ? "number" : "text", step: "any",
         });
         input.oninput = () => { row[c] = numeric ? (input.value === "" ? null : Number(input.value)) : input.value; };
         tr.append(el("td", null, [input]));
       });
-      const del = el("button", { className: "btn ghost", type: "button", textContent: "×", title: "Remove line" });
+      const del = el("button", { className: "btn quiet small", type: "button",
+                                 textContent: "Remove", title: "Remove this line" });
       del.onclick = () => { draft.splice(i, 1); paint(); };
       tr.append(el("td", null, [del]));
       body.append(tr);
     });
     if (!draft.length) {
-      body.append(el("tr", null, [el("td", { colSpan: cols.length + 1, className: "empty", textContent: "No lines yet." })]));
+      body.append(el("tr", null, [el("td", {
+        colSpan: cols.length + 1, className: "hint",
+        textContent: "No lines yet. Add one below.",
+      })]));
     }
   }
 
   const head = el("tr");
   cols.forEach((c, i) => head.append(el("th", { textContent: d.items.column_labels[i] })));
   head.append(el("th"));
-  const t = el("table", null, [el("thead", null, [head]), body]);
   paint();
 
-  const add = el("button", { className: "btn ghost", type: "button", textContent: "+ Add line" });
+  const add = el("button", { className: "btn ghost small", type: "button", textContent: "+ Add a line" });
   add.onclick = () => { draft.push(Object.fromEntries(cols.map(c => [c, null]))); paint(); };
 
-  const save = el("button", { className: "btn", type: "button", textContent: "Save lines" });
+  const save = el("button", { className: "btn small", type: "button", textContent: "Save lines" });
   save.onclick = () => guard(async () => {
     const updated = await call("set_items", { stage: d.stage, name: d.name, items: JSON.stringify(draft) });
-    toast("Saved " + draft.length + " line(s) on " + d.name, "ok");
+    toast(`Saved ${draft.length} line${draft.length === 1 ? "" : "s"}.`, "ok");
     state.detail = updated;
     renderDetail();
   });
 
-  wrap.append(t, el("div", { className: "act", style: "margin-top:8px" }, [add, save]));
+  wrap.append(
+    el("table", null, [el("thead", null, [head]), body]),
+    el("div", { className: "act", style: "margin-top:10px" }, [add, save]),
+    el("p", { className: "hint", textContent: "Changes are not kept until you press Save lines." }),
+  );
   return wrap;
 }
+
+/* ================= new lead ================= */
 
 function renderNewLead() {
   const host = document.getElementById("new-area");
   host.replaceChildren();
   if (state.stage !== "lead") return;
 
+  if (!state.companies.length) {
+    host.append(el("form", { className: "new" }, [
+      el("p", { className: "hint", textContent:
+        "No company is set up yet, so leads cannot be added. Create one in Admin first." }),
+    ]));
+    return;
+  }
+
   const company = el("select", { name: "company", required: true });
   state.companies.forEach(c => company.append(el("option", { value: c.name, textContent: c.name })));
 
-  const form = el("form", { className: "new" }, [
-    el("label", { textContent: "Prospect name" }),
-    el("input", { name: "lead_name", required: true, placeholder: "Who you spoke to" }),
-    el("div", { className: "pair" }, [
-      el("div", null, [
-        el("label", { textContent: "Organisation" }),
-        el("input", { name: "organization_name", placeholder: "Becomes the customer on conversion" }),
-      ]),
-      el("div", null, [
-        el("label", { textContent: "Company" }),
-        company,
-      ]),
+  const field = (label, name, opts) => el("div", null, [
+    el("label", null, [
+      el("span", { textContent: label }),
+      opts && opts.optional ? el("span", { className: "opt", textContent: " (optional)" }) : el("span"),
     ]),
-    el("div", { className: "pair" }, [
-      el("div", null, [
-        el("label", { textContent: "Email" }),
-        el("input", { name: "email", type: "email" }),
-      ]),
-      el("div", null, [
-        el("label", { textContent: "Phone" }),
-        el("input", { name: "phone" }),
-      ]),
-    ]),
-    el("label", { textContent: "Source" }),
-    el("input", { name: "lead_source", placeholder: "Referral, web, trade show…" }),
-    el("div", { style: "margin-top:10px" }, [
-      el("button", { className: "btn", type: "submit", textContent: "Create lead" }),
-    ]),
+    el("input", Object.assign({ name: name }, opts && opts.attrs || {})),
   ]);
 
-  if (!state.companies.length) {
-    form.replaceChildren(el("p", { className: "hint", textContent: "No KNIT 360 Company exists yet. Create one in the Desk before adding leads." }));
-    host.append(form);
-    return;
-  }
+  const form = el("form", { className: "new" }, [
+    el("div", { className: "lede", textContent: "Start here. A lead is someone who might buy from you." }),
+    field("Who did you speak to?", "lead_name", { attrs: { required: true, placeholder: "Rakesh Patel" } }),
+    el("div", { className: "pair" }, [
+      field("Their company", "organization_name", { optional: true, attrs: { placeholder: "Shakti Forgings Pvt Ltd" } }),
+      el("div", null, [el("label", null, [el("span", { textContent: "Your company" })]), company]),
+    ]),
+    el("div", { className: "pair" }, [
+      field("Email", "email", { optional: true, attrs: { type: "email", placeholder: "name@company.com" } }),
+      field("Phone", "phone", { optional: true, attrs: { placeholder: "+91 98250 11223" } }),
+    ]),
+    field("Where did they come from?", "lead_source", { optional: true, attrs: { placeholder: "Referral, website, trade show…" } }),
+    el("div", { style: "margin-top:14px" }, [
+      el("button", { className: "btn", type: "submit", textContent: "Add this lead" }),
+    ]),
+  ]);
 
   form.onsubmit = ev => {
     ev.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     guard(async () => {
       const created = await call("create_lead", data);
-      toast("Created " + created.name, "ok");
+      toast(`Added ${created.name}. It is now on the board.`, "ok");
       form.reset();
       await refresh();
       await openDoc("lead", created.name);
@@ -542,12 +683,12 @@ function renderNewLead() {
   host.append(form);
 }
 
-/* ---------- flow ---------- */
+/* ================= flow ================= */
 
 async function refresh() {
   state.stages = await call("stages");
   state.rows = await call("documents", { stage: state.stage, status: state.status });
-  renderStages();
+  renderSteps();
   renderFilters();
   renderRows();
 }
@@ -569,6 +710,14 @@ async function openDoc(stage, name) {
   renderRows();
   renderDetail();
 }
+
+document.getElementById("search").oninput = ev => {
+  state.query = ev.target.value;
+  renderRows();
+};
+document.addEventListener("keydown", ev => {
+  if (ev.key === "Escape") document.getElementById("scrim").classList.remove("open");
+});
 
 (async function start() {
   document.getElementById("who").textContent = document.documentElement.dataset.user || "";

@@ -48,13 +48,19 @@ class Lifecycle:
 	a draft state and leaves the other two empty.
 	"""
 
-	def __init__(self, name, initial, transitions, draft_states, submitted_states=(), cancelling_states=()):
+	def __init__(self, name, initial, transitions, draft_states, submitted_states=(),
+	             cancelling_states=(), happy_path=()):
 		self.name = name
 		self.initial = initial
 		self.transitions = transitions
 		self.draft_states = set(draft_states)
 		self.submitted_states = set(submitted_states)
 		self.cancelling_states = set(cancelling_states)
+		#: The intended progression, in order, as the DR- record states it.
+		#: Everything else is a branch -- lost, declined, cancelled. A user
+		#: interface needs the difference to know which step to recommend;
+		#: transitions alone is an unordered set and cannot say.
+		self.happy_path = tuple(happy_path)
 
 	@property
 	def states(self):
@@ -70,6 +76,20 @@ class Lifecycle:
 
 	def allowed_next(self, from_status):
 		return sorted(self.transitions.get(from_status, set()))
+
+	def forward_from(self, from_status):
+		"""The next step along the happy path, if there is one and it is legal."""
+		if from_status not in self.happy_path:
+			return None
+		index = self.happy_path.index(from_status)
+		if index + 1 >= len(self.happy_path):
+			return None
+		nxt = self.happy_path[index + 1]
+		return nxt if self.is_allowed(from_status, nxt) else None
+
+	def locks_on(self, to_status, current_docstatus=0):
+		"""True when reaching this status stops the document being editable."""
+		return self.required_docstatus(to_status, current_docstatus) == 1
 
 	def required_docstatus(self, to_status, current_docstatus):
 		"""Map a target business status onto the docstatus Frappe must hold.
@@ -125,6 +145,7 @@ LEAD = Lifecycle(
 		"Lost": set(),
 	},
 	draft_states={"New", "Contacted", "Qualified", "Converted", "Disqualified", "Lost"},
+	happy_path=("New", "Contacted", "Qualified", "Converted"),
 )
 
 # DR-C2C-002: "Open -> In Negotiation -> Proposal Sent -> Won (or Lost)".
@@ -139,6 +160,7 @@ OPPORTUNITY = Lifecycle(
 		"Lost": set(),
 	},
 	draft_states={"Open", "In Negotiation", "Proposal Sent", "Won", "Lost"},
+	happy_path=("Open", "In Negotiation", "Proposal Sent", "Won"),
 )
 
 # DR-C2C-003: "Received -> Under Review -> Feasibility Confirmed -> Quoted
@@ -154,6 +176,7 @@ ENQUIRY = Lifecycle(
 		"Declined / Regret": set(),
 	},
 	draft_states={"Received", "Under Review", "Feasibility Confirmed", "Quoted", "Declined / Regret"},
+	happy_path=("Received", "Under Review", "Feasibility Confirmed", "Quoted"),
 )
 
 # DR-C2C-004: "Draft -> Pending Approval -> Issued / Sent -> Accepted -> Ordered
@@ -175,6 +198,7 @@ QUOTATION = Lifecycle(
 	},
 	draft_states={"Draft", "Pending Approval"},
 	submitted_states={"Issued / Sent", "Accepted", "Ordered", "Expired", "Declined"},
+	happy_path=("Draft", "Pending Approval", "Issued / Sent", "Accepted", "Ordered"),
 )
 
 # DR-C2C-005: "Draft -> Confirmed / Booked -> In Fulfillment -> Delivered ->
@@ -444,6 +468,7 @@ JOURNAL_ENTRY = Lifecycle(
 	draft_states={"Draft", "Pending Approval"},
 	submitted_states={"Posted"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Approval", "Posted"),
 )
 
 # FR-FIN-003. Accounts Receivable. Posted / Unpaid is where the receivable comes
@@ -465,6 +490,7 @@ SALES_INVOICE = Lifecycle(
 	draft_states={"Draft", "Pending Approval"},
 	submitted_states={"Posted / Unpaid", "Partly Paid", "Paid", "Overdue"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Approval", "Posted / Unpaid", "Partly Paid", "Paid"),
 )
 
 REGISTRY = {

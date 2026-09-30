@@ -87,6 +87,7 @@ def stages():
 				"states": lifecycle.states,
 				"initial": lifecycle.initial,
 				"terminal": sorted(lifecycle.terminal_states),
+				"happy_path": list(lifecycle.happy_path),
 				"counts": {state: counts.get(state, 0) for state in lifecycle.states},
 				"total": sum(counts.values()),
 			}
@@ -129,12 +130,109 @@ def document(stage, name):
 		"status": status,
 		"docstatus": doc.docstatus,
 		"states": lifecycle.states,
-		"allowed_next": lifecycle.allowed_next(status),
+		"allowed_next": _steps(lifecycle, status, doc.docstatus),
+		"meaning": _meaning(lifecycle, status),
+		"guidance": _guidance(lifecycle, status, spec),
+		"editable": doc.docstatus == 0,
 		"fields": _display_fields(doc),
 		"items": _items(doc),
 		"actions": _actions(spec, doc, status),
 		"history": _history(spec["doctype"], doc.name),
 	}
+
+
+# --- Plain language -------------------------------------------------------
+#
+# UI copy, not requirements. What each phrase *asserts* is read from the
+# lifecycle -- whether a state is a draft, whether reaching it locks the
+# document, whether it is the end of the road -- so the wording cannot promise
+# something the state machine does not do.
+
+#: Per-status wording for the stages this seam exposes. A status with no entry
+#: falls back to the mechanical description, which is always true if bland.
+PHRASING = {
+	"New": "Nobody has contacted this prospect yet.",
+	"Contacted": "Someone has made contact. Qualify them once you know the requirement is real.",
+	"Qualified": "This is a real opportunity. Converting creates the customer and the deal.",
+	"Converted": "Converted to a customer and an opportunity. Work continues on the opportunity.",
+	"Disqualified": "Not a fit. Nothing further happens here.",
+	"Lost": "Lost. Nothing further happens here.",
+	"Open": "The deal is live but no negotiation has started.",
+	"In Negotiation": "Talking price and terms.",
+	"Proposal Sent": "The customer has the proposal and is deciding.",
+	"Won": "Won. The order should follow.",
+	"Draft": "Still being written. Edit it freely -- nothing has been sent or posted.",
+	"Pending Approval": "Waiting for someone to approve it. Still editable.",
+	"Issued / Sent": "Sent to the customer. It is now a record and cannot be edited.",
+	"Accepted": "The customer accepted it. Turn it into an order next.",
+	"Ordered": "An order was raised from this quotation. Finished.",
+	"Expired": "Validity ran out without an answer.",
+	"Declined": "The customer said no.",
+}
+
+#: What a stage-crossing action leads to, in the user's words.
+ACTION_HINT = {
+	"convert_lead": "Creates the customer record and an opportunity, then takes you there.",
+	"create_quotation": "Copies the item lines onto a new quotation you can price.",
+}
+
+
+def _meaning(lifecycle, status):
+	"""One sentence on what this status means, and whether it is still editable."""
+	phrase = PHRASING.get(status)
+	if phrase:
+		return phrase
+	if status in lifecycle.submitted_states:
+		return "Issued. It is a record now and cannot be edited."
+	if status in lifecycle.cancelling_states:
+		return "Cancelled. Any effects it posted have been reversed."
+	return "Still a draft. Nothing has been sent or posted."
+
+
+def _steps(lifecycle, status, docstatus):
+	"""The legal next statuses, told apart so a screen can rank them."""
+	forward = lifecycle.forward_from(status)
+	out = []
+	for to_status in lifecycle.allowed_next(status):
+		locks = lifecycle.locks_on(to_status, docstatus) and docstatus == 0
+		out.append(
+			{
+				"status": to_status,
+				"kind": "forward" if to_status == forward else "branch",
+				"locks": locks,
+				"terminal": to_status in lifecycle.terminal_states,
+				"meaning": _meaning(lifecycle, to_status),
+				"warning": _warning(to_status, locks, to_status in lifecycle.terminal_states),
+			}
+		)
+	# Recommended step first, then the rest.
+	out.sort(key=lambda step: (step["kind"] != "forward", step["status"]))
+	return out
+
+
+def _warning(to_status, locks, terminal):
+	"""What the user should know before pressing the button. None means nothing
+	irreversible happens."""
+	if locks and terminal:
+		return f"'{to_status}' is final and locks the document. It cannot be undone or edited afterwards."
+	if locks:
+		return f"Moving to '{to_status}' locks the document. You will not be able to edit it afterwards."
+	if terminal:
+		return f"'{to_status}' is the end of the road. There is no step after it."
+	return None
+
+
+def _guidance(lifecycle, status, spec):
+	"""The single thing a user should most likely do next."""
+	forward = lifecycle.forward_from(status)
+	if forward:
+		return f"Next step: move it to '{forward}'."
+	if status in lifecycle.terminal_states:
+		return "This document is finished. Nothing further happens to it."
+	options = lifecycle.allowed_next(status)
+	if options:
+		return "Choose how this ends: " + ", ".join(f"'{o}'" for o in options) + "."
+	return "Nothing further happens to this document."
 
 
 def _display_fields(doc):
@@ -197,6 +295,7 @@ def _actions(spec, doc, status):
 				"label": "Convert to Customer + Opportunity",
 				"enabled": status == conversion.REQUIRED_STATUS and not doc.converted_opportunity,
 				"reason": _convert_reason(doc, status),
+				"hint": ACTION_HINT["convert_lead"],
 				"goes_to": "opportunity",
 			}
 		)
@@ -207,6 +306,7 @@ def _actions(spec, doc, status):
 				"label": "Raise Quotation",
 				"enabled": bool(doc.customer),
 				"reason": None if doc.customer else "The opportunity has no customer.",
+				"hint": ACTION_HINT["create_quotation"],
 				"goes_to": "quotation",
 			}
 		)
