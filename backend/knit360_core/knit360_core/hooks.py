@@ -25,8 +25,15 @@ website_context = {
 	"brand_html": "KNIT 360",
 }
 
-after_install = "knit360_core.branding.after_install"
-after_migrate = "knit360_core.branding.after_migrate"
+after_install = [
+	"knit360_core.branding.after_install",
+	"knit360_core.desk.after_migrate",
+]
+after_migrate = [
+	"knit360_core.branding.after_migrate",
+	# Desk shows nothing for a module until a Workspace exists for it.
+	"knit360_core.desk.after_migrate",
+]
 
 # --- Lifecycle integrity -------------------------------------------------
 # CD-002 makes the business status the lifecycle. These refuse a submit or
