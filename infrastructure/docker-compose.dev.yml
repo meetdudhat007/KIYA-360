@@ -37,7 +37,18 @@ services:
   bench:
     image: frappe/bench:latest
     container_name: knit-bench
-    command: sleep infinity
+    # Serve the default site if a bench exists, and idle otherwise, so the very
+    # first `up` (before the bench is built) still gives you a shell to work in.
+    # `bench serve` is a foreground process, so without this it dies with the
+    # container and has to be restarted by hand every session.
+    command: >
+      bash -lc '
+      if [ -f /home/frappe/frappe-bench/sites/common_site_config.json ]; then
+        cd /home/frappe/frappe-bench && exec bench serve --port 8000;
+      else
+        echo "no bench yet -- idling; build one, then restart this container";
+        exec sleep infinity;
+      fi'
     working_dir: /home/frappe
     user: frappe
     environment:
