@@ -38,9 +38,10 @@
   },
   {
    "fieldname": "uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-SALES-003: BRD-DERIVED"
+   "description": "FR-SALES-003: BRD-DERIVED; now a master",
+   "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "rate",

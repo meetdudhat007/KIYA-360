@@ -17,7 +17,9 @@
   "email",
   "phone",
   "col2",
-  "address"
+  "address",
+  "customer_group",
+  "default_price_list"
  ],
  "fields": [
   {
@@ -56,9 +58,10 @@
   },
   {
    "fieldname": "territory",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Territory",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: assigned territory (DR-C2C-001 Inputs); territory master is BRD-DERIVED and TBD"
+   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: assigned territory (DR-C2C-001 Inputs); territory master is BRD-DERIVED and TBD; now a master",
+   "options": "KNIT 360 Territory"
   },
   {
    "fieldname": "sec1",
@@ -88,6 +91,20 @@
    "fieldtype": "Small Text",
    "label": "Address",
    "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)"
+  },
+  {
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "description": "FR-PADM-1.4.1: Customer Master -- segmentation",
+   "options": "KNIT 360 Customer Group"
+  },
+  {
+   "fieldname": "default_price_list",
+   "fieldtype": "Link",
+   "label": "Default Price List",
+   "description": "FR-SALES-004: Pricing & Discounts -- the list used for this customer",
+   "options": "KNIT 360 Price List"
   }
  ],
  "index_web_pages_for_search": 0,

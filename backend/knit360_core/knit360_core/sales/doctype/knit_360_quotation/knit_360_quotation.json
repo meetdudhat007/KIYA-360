@@ -67,9 +67,10 @@
   },
   {
    "fieldname": "price_list",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Price List",
-   "description": "FR-SALES-002 / FR-SALES-004: price list (DR-C2C-004 Inputs); price list master is BRD-DERIVED and TBD"
+   "description": "FR-SALES-002 / FR-SALES-004: price list (DR-C2C-004 Inputs); price list master is BRD-DERIVED and TBD; now a master (FR-SALES-004)",
+   "options": "KNIT 360 Price List"
   },
   {
    "fieldname": "valid_till",

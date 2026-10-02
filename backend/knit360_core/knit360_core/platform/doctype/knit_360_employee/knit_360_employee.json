@@ -1,0 +1,165 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PADM-1.4.4 -- Employee Master. Field Service assigns technicians from here; HR & Payroll (module 19) will extend it.",
+ "field_order": [
+  "employee_name",
+  "employee_number",
+  "company",
+  "col_e1",
+  "designation",
+  "department",
+  "branch",
+  "sec_e1",
+  "email",
+  "phone",
+  "col_e2",
+  "user",
+  "sec_e2",
+  "date_of_joining",
+  "col_e3",
+  "date_of_leaving",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "description": "FR-PADM-1.4.4: Employee Master -- full name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "employee_number",
+   "fieldtype": "Data",
+   "label": "Employee Number",
+   "description": "FR-PADM-1.4.4: Employee Master -- payroll or staff number",
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-PADM-1.1.1: the company that employs them",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_e1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "description": "FR-PADM-1.4.4: Employee Master -- job title",
+   "options": "KNIT 360 Designation"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "description": "FR-PADM-1.1.4: Department Master",
+   "options": "KNIT 360 Department"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "description": "FR-PADM-1.1.2: Branch Master",
+   "options": "KNIT 360 Branch"
+  },
+  {
+   "fieldname": "sec_e1",
+   "fieldtype": "Section Break",
+   "label": "Contact"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Work Email",
+   "description": "FR-PADM-1.4.4: Employee Master -- contact",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "description": "FR-PADM-1.4.4: Employee Master -- contact",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "col_e2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Linked User",
+   "description": "FR-PADM-1.2.1: User Management -- the login this person signs in with, when they have one",
+   "options": "User"
+  },
+  {
+   "fieldname": "sec_e2",
+   "fieldtype": "Section Break",
+   "label": "Employment"
+  },
+  {
+   "fieldname": "date_of_joining",
+   "fieldtype": "Date",
+   "label": "Date of Joining",
+   "description": "FR-PADM-1.4.4: Employee Master -- start date"
+  },
+  {
+   "fieldname": "col_e3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_of_leaving",
+   "fieldtype": "Date",
+   "label": "Date of Leaving",
+   "description": "FR-PADM-1.4.4: Employee Master -- end date, when they have left"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active",
+   "description": "FR-PADM-1.4.4: BRD-DERIVED: currently employed",
+   "default": "1",
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Platform",
+ "name": "KNIT 360 Employee",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:EMP-{####}",
+ "title_field": "employee_name"
+}

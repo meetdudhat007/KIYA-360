@@ -36,9 +36,10 @@
   },
   {
    "fieldname": "uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-SALES-001: BRD-DERIVED; becomes a Link once the UOM Master (FR-PADM-1.4.7) exists"
+   "description": "FR-SALES-001: BRD-DERIVED; becomes a Link once the UOM Master (FR-PADM-1.4.7) exists; now a master",
+   "options": "KNIT 360 UOM"
   }
  ],
  "index_web_pages_for_search": 0,

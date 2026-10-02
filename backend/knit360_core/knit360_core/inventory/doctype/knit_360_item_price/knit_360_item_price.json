@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-SALES-004 -- Pricing & Discounts: one item's price on one list.",
+ "field_order": [
+  "item_code",
+  "price_list",
+  "uom",
+  "col_ip",
+  "rate",
+  "currency",
+  "sec_ip",
+  "valid_from",
+  "col_ip2",
+  "valid_upto"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "description": "FR-SALES-004: Pricing & Discounts -- the item being priced",
+   "options": "KNIT 360 Item",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "description": "FR-SALES-004: Pricing & Discounts -- the list this price belongs to",
+   "options": "KNIT 360 Price List",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "description": "FR-PADM-1.4.7: UOM Master -- the unit the rate is per",
+   "options": "KNIT 360 UOM"
+  },
+  {
+   "fieldname": "col_ip",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "description": "FR-SALES-004: Pricing & Discounts -- price per unit",
+   "reqd": 1,
+   "options": "currency",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "description": "FR-PADM-1.4.6: Currency Master -- copied from the price list",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_ip",
+   "fieldtype": "Section Break",
+   "label": "Validity"
+  },
+  {
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From",
+   "description": "FR-SALES-004: Pricing & Discounts -- when this price takes effect"
+  },
+  {
+   "fieldname": "col_ip2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valid_upto",
+   "fieldtype": "Date",
+   "label": "Valid Upto",
+   "description": "FR-SALES-004: Pricing & Discounts -- when it lapses"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "KNIT 360 Item Price",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:PRC-{######}",
+ "title_field": "item_code"
+}

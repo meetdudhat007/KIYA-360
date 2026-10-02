@@ -9,26 +9,36 @@
 <!-- csrf_token -->
 <style>
 :root {
-  --brand: #1d4ed8;
-  --brand-dark: #1e40af;
-  --brand-soft: #eff4ff;
-  --brand-line: #c7d7fe;
-  --ink: #15181d;
-  --ink-soft: #4b5563;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --bg: #f6f7f9;
+  /* Structure is built from cool neutrals. Colour appears only where it
+     carries meaning -- status, action, error -- which is the convention for
+     data-dense enterprise screens; a saturated palette reads as a toy and
+     stops any one colour meaning anything. Status is never signalled by
+     colour alone: every coloured element also carries its word. */
+  --brand: #2d4a6b;
+  --brand-dark: #22384f;
+  --brand-soft: #eef2f6;
+  --brand-line: #c3d0dc;
+  --ink: #1a1d21;
+  --ink-soft: #454b53;
+  --muted: #6c737c;
+  --line: #dfe3e8;
+  --line-soft: #eceef1;
+  --bg: #f5f6f8;
   --panel: #fff;
-  --ok: #047857;
-  --ok-soft: #ecfdf5;
-  --ok-line: #a7f3d0;
-  --warn: #b45309;
-  --warn-soft: #fffbeb;
-  --warn-line: #fde68a;
-  --bad: #b91c1c;
-  --bad-soft: #fef2f2;
-  --bad-line: #fecaca;
-  --r: 10px;
+  --ok: #2f6b4f;
+  --ok-soft: #eef4f0;
+  --ok-line: #c2d8cb;
+  --warn: #8a6516;
+  --warn-soft: #f8f4ea;
+  --warn-line: #e2d3ac;
+  --bad: #9c2b2b;
+  --bad-soft: #f8efef;
+  --bad-line: #e0c2c2;
+  --r: 6px;
+  /* Apple HIG and WCAG 2.2 AAA both put a comfortable touch target at 44px.
+     WCAG 2.2 AA (2.5.8) sets the floor at 24px. Controls use 44 on coarse
+     pointers and may be tighter on a mouse. */
+  --tap: 44px;
 }
 * { box-sizing: border-box; }
 html, body { height: 100%; }
@@ -38,6 +48,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 button, input, select, textarea { font: inherit; }
+table td, .count, .pill, .lock, .editor input { font-variant-numeric: tabular-nums; }
 button { cursor: pointer; }
 h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 10px; font-weight: 700; }
 
@@ -119,7 +130,7 @@ header a:hover { color: var(--brand); }
 .detail-head .name { font-size: 20px; font-weight: 680; letter-spacing: -.01em; }
 .detail-head .id { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
 .status-line { display: flex; align-items: center; gap: 9px; margin-top: 10px; flex-wrap: wrap; }
-.lock { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: #f9fafb; }
+.lock { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: #f9fafb; }
 .lock.locked { color: var(--warn); border-color: var(--warn-line); background: var(--warn-soft); }
 .meaning { font-size: 13.5px; color: var(--ink-soft); margin-top: 9px; }
 
@@ -138,6 +149,17 @@ details.more summary { cursor: pointer; font-size: 13px; color: var(--muted); us
 details.more summary:hover { color: var(--brand); }
 details.more .act { margin-top: 9px; }
 .hint { font-size: 12.5px; color: var(--muted); margin: 6px 0 0; }
+
+/* Line symbols, drawn in the current text colour, never filled and never
+   coloured on their own. They repeat the label rather than replace it. */
+.ico { width: 16px; height: 16px; flex: 0 0 16px; stroke: currentColor; fill: none;
+       stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ico-lg { width: 18px; height: 18px; flex-basis: 18px; }
+.btn, .back { display: inline-flex; align-items: center; gap: 7px; }
+.back { display: none; background: none; border: 0; color: var(--muted);
+        padding: 4px 0 10px; font-size: 14px; }
+.back:hover { color: var(--brand); }
+.step .name, .row .title { display: flex; align-items: center; gap: 7px; }
 
 section.block { margin-top: 22px; }
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
@@ -172,10 +194,41 @@ form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 #toast.err { background: var(--bad-soft); color: var(--bad); border: 1px solid var(--bad-line); }
 #toast.ok  { background: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok-line); }
 
-@media (max-width: 950px) {
-  .wrap { grid-template-columns: 1fr; }
-  .wrap > * { min-height: 0; }
+/* ---------- mobile ---------- */
+@media (pointer: coarse) {
+  .btn, .chip, .row, .step { min-height: var(--tap); }
+  .toolbar input, form.new input, form.new select { min-height: var(--tap); }
+}
+
+@media (max-width: 860px) {
+  header { padding: 10px 14px; }
+  .journey { padding: 10px 14px 12px; }
+  .journey .lead-in { display: none; }
+  /* One row that scrolls sideways beats three stacked cards that push the
+     work below the fold. */
+  .steps { flex-wrap: nowrap; overflow-x: auto; gap: 8px; scroll-snap-type: x mandatory;
+           -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .steps::-webkit-scrollbar { height: 0; }
+  .step { flex: 0 0 76%; scroll-snap-align: start; }
   .arrow { display: none; }
+
+  .wrap { grid-template-columns: 1fr; }
+  .wrap > * { min-height: 0; padding: 14px; }
+  /* On a phone the two panes become two pages. data-view says which is open. */
+  body[data-view="detail"] .pane-list { display: none; }
+  body[data-view="list"] .pane-detail { display: none; }
+  .back { display: inline-flex; }
+
+  .detail-head .name { font-size: 18px; }
+  .act { gap: 10px; }
+  .act .btn { flex: 1 1 auto; justify-content: center; }
+  table { font-size: 14px; }
+  td.k { width: 44%; }
+  form.new .pair { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 861px) {
+  .back { display: none !important; }
 }
 </style>
 </head>
@@ -215,6 +268,43 @@ form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 {% raw %}
 <script>
 const API = "/api/method/knit360_core.api.c2c.";
+
+/* Line symbols. Each is a conventional pictogram for the thing it marks -- a
+   person for a prospect, a target for a deal being pursued, a document for a
+   quotation, a padlock for a record that can no longer be edited. Drawn in the
+   current text colour so they never become decoration. */
+const ICONS = {
+  lead:        "M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M17 7h4M19 5v4",
+  opportunity: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8M12 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3",
+  quotation:   "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4",
+  lock:        "M17 11H7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1M8.5 11V7.5a3.5 3.5 0 1 1 7 0V11",
+  unlock:      "M17 11H7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1M8.5 11V7.5a3.5 3.5 0 0 1 6.9-.9",
+  next:        "M5 12h13M13 6l6 6-6 6",
+  back:        "M19 12H6M11 18l-6-6 6-6",
+  add:         "M12 5v14M5 12h14",
+  search:      "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M21 21l-5-5",
+  done:        "M4 12.5 9 17.5 20 6.5",
+  stop:        "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M9 9l6 6M15 9l-6 6",
+  save:        "M5 5h11l3 3v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1M8 5v5h7V5M8 20v-5h8v5",
+  remove:      "M6 7h12M10 11v6M14 11v6M8 7V5h8v2M7 7l1 13h8l1-13",
+};
+
+function icon(name, large) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("class", "ico" + (large ? " ico-lg" : ""));
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", ICONS[name] || "");
+  svg.append(path);
+  return svg;
+}
+
+const STAGE_ICON = { lead: "lead", opportunity: "opportunity", quotation: "quotation" };
+
+/* On a phone the list and the detail are two pages, not two columns. */
+const isPhone = () => window.matchMedia("(max-width: 860px)").matches;
+function setView(view) { document.body.dataset.view = view; }
 
 const state = {
   stages: [], companies: [], stage: "lead", status: null,
@@ -317,7 +407,10 @@ function renderSteps() {
     const btn = el("button", { className: "step", type: "button" }, [
       el("div", null, [
         el("span", { className: "n", textContent: String(i + 1) }),
-        el("span", { className: "name", textContent: stage.label }),
+        el("span", { className: "name" }, [
+          icon(STAGE_ICON[stage.key] || "quotation"),
+          el("span", { textContent: stage.label }),
+        ]),
       ]),
       el("div", {
         className: "count",
@@ -448,6 +541,14 @@ function renderDetail() {
   const d = state.detail;
   const stage = d && stageSpec(d.stage);
 
+  if (d) {
+    const back = el("button", { className: "back", type: "button" }, [
+      icon("back"), el("span", { textContent: "Back to the list" }),
+    ]);
+    back.onclick = () => { state.detail = null; state.selected = null; setView("list"); renderRows(); renderDetail(); };
+    host.append(back);
+  }
+
   if (!d) {
     host.append(el("div", { className: "empty" }, [
       el("div", { className: "big", textContent: "Nothing selected" }),
@@ -462,10 +563,10 @@ function renderDetail() {
     el("div", { className: "id", textContent: d.name }),
     el("div", { className: "status-line" }, [
       pill(d.status, stage),
-      el("span", {
-        className: "lock" + (d.editable ? "" : " locked"),
-        textContent: d.editable ? "Editable" : "Locked — cannot be changed",
-      }),
+      el("span", { className: "lock" + (d.editable ? "" : " locked") }, [
+        icon(d.editable ? "unlock" : "lock"),
+        el("span", { textContent: d.editable ? "Editable" : "Locked — cannot be changed" }),
+      ]),
     ]),
     el("div", { className: "meaning", textContent: d.meaning }),
   ]));
@@ -488,8 +589,9 @@ function renderDetail() {
 
   const primary = el("div", { className: "act" });
   if (forward) {
-    const b = el("button", { className: "btn", type: "button",
-                             textContent: `Move to "${forward.status}"` });
+    const b = el("button", { className: "btn", type: "button" }, [
+      icon("next"), el("span", { textContent: `Move to "${forward.status}"` }),
+    ]);
     b.onclick = () => moveTo(d, forward);
     primary.append(b);
   }
@@ -589,7 +691,8 @@ function itemEditor(d) {
         tr.append(el("td", null, [input]));
       });
       const del = el("button", { className: "btn quiet small", type: "button",
-                                 textContent: "Remove", title: "Remove this line" });
+                                 title: "Remove this line", "aria-label": "Remove line " + (i + 1) },
+                     [icon("remove")]);
       del.onclick = () => { draft.splice(i, 1); paint(); };
       tr.append(el("td", null, [del]));
       body.append(tr);
@@ -607,10 +710,10 @@ function itemEditor(d) {
   head.append(el("th"));
   paint();
 
-  const add = el("button", { className: "btn ghost small", type: "button", textContent: "+ Add a line" });
+  const add = el("button", { className: "btn ghost small", type: "button" }, [icon("add"), el("span", { textContent: "Add a line" })]);
   add.onclick = () => { draft.push(Object.fromEntries(cols.map(c => [c, null]))); paint(); };
 
-  const save = el("button", { className: "btn small", type: "button", textContent: "Save lines" });
+  const save = el("button", { className: "btn small", type: "button" }, [icon("save"), el("span", { textContent: "Save lines" })]);
   save.onclick = () => guard(async () => {
     const updated = await call("set_items", { stage: d.stage, name: d.name, items: JSON.stringify(draft) });
     toast(`Saved ${draft.length} line${draft.length === 1 ? "" : "s"}.`, "ok");
@@ -694,6 +797,7 @@ async function refresh() {
 }
 
 async function select(stage, status) {
+  setView("list");
   state.stage = stage;
   state.status = status;
   state.selected = null;
@@ -707,6 +811,7 @@ async function openDoc(stage, name) {
   state.stage = stage;
   state.selected = name;
   state.detail = await call("document", { stage: stage, name: name });
+  if (isPhone()) setView("detail");
   renderRows();
   renderDetail();
 }
@@ -720,6 +825,7 @@ document.addEventListener("keydown", ev => {
 });
 
 (async function start() {
+  setView("list");
   document.getElementById("who").textContent = document.documentElement.dataset.user || "";
   await guard(async () => {
     state.companies = await call("companies");

@@ -27,7 +27,8 @@
   "col_3",
   "bank_ifsc",
   "bank_swift",
-  "bank_iban"
+  "bank_iban",
+  "supplier_group"
  ],
  "fields": [
   {
@@ -160,6 +161,13 @@
    "fieldtype": "Data",
    "label": "IBAN",
    "description": "FR-SUPM-001 / FR-SUPM-002: bank account details (IBAN)"
+  },
+  {
+   "fieldname": "supplier_group",
+   "fieldtype": "Link",
+   "label": "Supplier Group",
+   "description": "FR-SUPM-002: Supplier Classification -- grouping",
+   "options": "KNIT 360 Supplier Group"
   }
  ],
  "index_web_pages_for_search": 0,

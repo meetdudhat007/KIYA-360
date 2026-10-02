@@ -39,9 +39,10 @@
   },
   {
    "fieldname": "uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-PADM-1.4.7: UOM Master; the master itself is not yet built"
+   "description": "FR-PADM-1.4.7: UOM Master; the master itself is not yet built; now a master",
+   "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "rate",

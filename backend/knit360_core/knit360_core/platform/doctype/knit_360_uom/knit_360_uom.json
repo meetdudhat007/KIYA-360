@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-03 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "FR-PADM-1.4.7 -- UOM Master: a unit of measure.",
+ "field_order": [
+  "uom_name",
+  "symbol",
+  "category",
+  "must_be_whole_number",
+  "disabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "uom_name",
+   "fieldtype": "Data",
+   "label": "UOM Name",
+   "description": "FR-PADM-1.4.7: UOM Master -- the unit as written on documents",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "symbol",
+   "fieldtype": "Data",
+   "label": "Symbol",
+   "description": "FR-PADM-1.4.7: BRD-DERIVED: short form shown in grids"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "description": "FR-PADM-1.4.7: BRD-DERIVED: what the unit measures. Conversion is only meaningful within one category.",
+   "options": "\nQuantity\nWeight\nLength\nArea\nVolume\nTime\nTemperature",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "must_be_whole_number",
+   "fieldtype": "Check",
+   "label": "Must Be Whole Number",
+   "description": "FR-PADM-1.4.7: BRD-DERIVED: half a box is not a quantity. Quantities in this unit are rejected if fractional."
+  },
+  {
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled",
+   "description": "FR-PADM-1.4.7: BRD-DERIVED: withdrawn from selection without losing history"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Platform",
+ "name": "KNIT 360 UOM",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:uom_name",
+ "title_field": "uom_name"
+}

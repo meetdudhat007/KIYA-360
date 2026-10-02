@@ -18,7 +18,12 @@
   "sec_15",
   "safety_stock",
   "col_17",
-  "valuation_method"
+  "valuation_method",
+  "brand",
+  "item_description",
+  "is_sales_item",
+  "is_purchase_item",
+  "disabled"
  ],
  "fields": [
   {
@@ -38,9 +43,10 @@
   },
   {
    "fieldname": "item_group",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Category",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: category (FR-PADM-1.4 Item Master); category master is TBD"
+   "description": "FR-INV-001 / FR-PADM-1.4.3: category (FR-PADM-1.4 Item Master); category master is TBD; now a master, so two spellings cannot mean two groups",
+   "options": "KNIT 360 Item Group"
   },
   {
    "fieldname": "col_16",
@@ -48,9 +54,10 @@
   },
   {
    "fieldname": "stock_uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Stock UOM",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7"
+   "description": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; now a master; 'Nos' and 'nos' were previously different units",
+   "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "hsn_sac_code",
@@ -90,6 +97,39 @@
    "fieldtype": "Data",
    "label": "Valuation Method",
    "description": "FR-INV-001 / FR-PADM-1.4.3: Stock Valuation (FR-INV-006); BRD example FIFO, enumeration TBD"
+  },
+  {
+   "fieldname": "brand",
+   "fieldtype": "Link",
+   "label": "Brand",
+   "description": "FR-INV-001: Item Master -- BRD-DERIVED: brand the item is sold under",
+   "options": "KNIT 360 Brand"
+  },
+  {
+   "fieldname": "item_description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-INV-001: Item Master -- BRD-DERIVED: default description copied onto document lines"
+  },
+  {
+   "fieldname": "is_sales_item",
+   "fieldtype": "Check",
+   "label": "Is Sales Item",
+   "description": "FR-INV-001: BRD-DERIVED: may appear on a quotation or order",
+   "default": "1"
+  },
+  {
+   "fieldname": "is_purchase_item",
+   "fieldtype": "Check",
+   "label": "Is Purchase Item",
+   "description": "FR-INV-001: BRD-DERIVED: may appear on a purchase order",
+   "default": "1"
+  },
+  {
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled",
+   "description": "FR-INV-001: BRD-DERIVED: withdrawn from selection without losing history"
   }
  ],
  "index_web_pages_for_search": 0,

@@ -60,9 +60,10 @@
   },
   {
    "fieldname": "territory",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Assigned Territory",
-   "description": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs)"
+   "description": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs); now a master",
+   "options": "KNIT 360 Territory"
   },
   {
    "fieldname": "knit360_business_status",

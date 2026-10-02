@@ -38,9 +38,10 @@
   },
   {
    "fieldname": "uom",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)"
+   "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs); now a master",
+   "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "unit_rate",
