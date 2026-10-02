@@ -28,11 +28,14 @@ website_context = {
 after_install = [
 	"knit360_core.branding.after_install",
 	"knit360_core.desk.after_migrate",
+	"knit360_core.dashboards.after_migrate",
 ]
 after_migrate = [
 	"knit360_core.branding.after_migrate",
 	# Desk shows nothing for a module until a Workspace exists for it.
 	"knit360_core.desk.after_migrate",
+	# Charts and number cards go on top of those workspaces.
+	"knit360_core.dashboards.after_migrate",
 ]
 
 # --- Lifecycle integrity -------------------------------------------------
