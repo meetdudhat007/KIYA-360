@@ -156,6 +156,74 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 - India statutory tax engine changes and NIC portal updates (`RSK-04`). Mitigated by pluggable tax adapter and `PoC-02`.
 - Mobile offline synchronization and state collisions in intermittent connectivity (`RSK-05`). Mitigated by client-generated UUIDs, outbox sync, and `PoC-04`.
 
+
+## Implementation State — 5 October 2026
+
+Recorded so another agent can continue without re-deriving it. The product name
+is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
+`AGENTS.md`, which remain authoritative for requirements.
+
+### Built
+
+| | |
+| --- | --- |
+| Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
+| Record types | 65 parent, 21 child — 86 total, across 15 application modules |
+| BRD modules with record types | **14 of 28** |
+| Lifecycle definitions (`CD-002`) | 23 |
+| Desk workspaces | 16, with 8 charts and 6 number cards |
+| Automated checks | **89** — 47 structural, 42 runtime |
+| Last full run | 47/47 and 42/42, 5 October 2026, site `knit360.localhost` |
+
+BRD modules with **no** record types: Marketing (4), Customer Service (5),
+Logistics (15), Projects (16), HR & Payroll (19), E-Commerce (20), Document
+Management (21), Business Intelligence (22), EPM (23), Workflow (24), AI (25),
+Integration (26), Mobile (27), Audit (28). Four of those — Workflow, Integration,
+Mobile and Audit — are assigned to Frappe's native facilities under the hybrid
+platform decision rather than to be built.
+
+### Working end to end
+
+Customer-to-Cash: Lead → Opportunity → Quotation → Sales Order → Sales Invoice,
+onto a double-entry ledger (`knit360_core/finance/ledger.py`, the only writer of
+GL Entry) that balances, reverses rather than deletes, and refuses postings to
+group accounts, disabled accounts and closed fiscal years.
+
+### Not working
+
+- **Payment Entry does not post.** An invoice marked Paid has no cash receipt
+  behind it. Largest single gap.
+- **No stock ledger.** Delivery Note and Goods Receipt record quantities only.
+- **Tax posts to the round-off account** as a visible placeholder pending
+  `OQ-005` / FR-TAX-001.
+- **No print formats, no outbound email.**
+- **HR not started**, pending a reference from the owner.
+
+### How to verify
+
+```
+bench --site knit360.localhost run-tests --app knit360_core          # 47 structural
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 42 runtime
+bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
+```
+
+### Operational guides
+
+- `docs/03-guides/01-user-guide.md` — every screen and feature in plain language
+- `docs/03-guides/02-demonstration-script.md` — a 40-minute demonstration
+- `docs/03-guides/03-handover-what-is-left.md` — remaining work, divided by who
+  can do it; names the decisions that block implementation
+
+### Open items needing the owner
+
+`OQ-003` to `OQ-018`, `OQ-021` (frontend technology), `OQ-022` (parity target)
+and `OQ-023` (which of the 14 non-BRD capabilities enter scope) are all open.
+Six decisions block ready work and are listed as D1–D6 in the handover document.
+
+Separately: seven ERPNext reference documents (~4,200 lines) were swept into
+commit `2be7a50` by a `git add -A`. They were not authored here and concern a
+GPL-3 product. Flagged twice; no decision recorded.
+
 ## Do Not Change
 
 - Do not alter the BRD source document.
@@ -180,6 +248,8 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 
 ## Last Reviewed By
 
-Antigravity
+Antigravity (Phase 1 seal)
+
+Claude Opus 5 — 5 October 2026, implementation state and operational guides
 
 
