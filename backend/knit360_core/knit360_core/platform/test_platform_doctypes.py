@@ -68,6 +68,36 @@ class TestDoctypeDefinitions(unittest.TestCase):
 			if d.get("title_field"):
 				self.assertIn(d["title_field"], names, d["name"])
 
+	def test_every_doctype_declares_how_it_is_named(self):
+		"""A document with no naming rule is named with a random hash.
+
+		This test exists because four tree masters -- Item Group, Territory,
+		Customer Group and Supplier Group -- shipped without one. Nothing
+		complained, because the tables were empty; the first record inserted
+		was called 'b497tuqe2q'. A master named like that is unusable in a
+		Link field, unreadable in a report and impossible to refer to from
+		outside the system.
+
+		A naming rule may live in the JSON as `autoname`, or in the controller
+		as an autoname() method when the name is built from several fields
+		(KNIT 360 Account qualifies its name with the company abbreviation,
+		because two companies both need an account called Debtors).
+		"""
+		for path in self.files:
+			d = load(path)
+			if d.get("istable") or d.get("issingle"):
+				continue
+			controller = path.with_suffix(".py")
+			in_code = (
+				controller.exists()
+				and "def autoname" in controller.read_text(encoding="utf-8")
+			)
+			self.assertTrue(
+				d.get("autoname") or in_code,
+				f"{d['name']} declares no autoname and has no autoname() method, "
+				f"so its records will be named with a random hash",
+			)
+
 	def test_every_link_has_options(self):
 		for path in self.files:
 			d = load(path)

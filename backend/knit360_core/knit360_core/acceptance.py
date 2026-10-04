@@ -1010,3 +1010,118 @@ def run(verbose=True):
 		print(f"{passed}/{total} checks passed" + ("" if passed == total else f"  -- {total - passed} FAILED"))
 
 	return passed, total - passed
+
+
+def cleanup():
+	"""Delete everything the acceptance run created.
+
+	The run inserts real documents, and the charts on the Desk count documents
+	across every company. So an acceptance run left in place shows up in the
+	headline figures -- "Open Leads 37" when the demo has seven. That makes the
+	product look wrong to anyone being shown it.
+
+	Deletion order matters. A Sales Invoice cannot be deleted while GL entries
+	point at it, and an Account refuses deletion while it carries postings, so
+	the ledger is cleared before the documents that wrote it and the chart of
+	accounts comes last.
+	"""
+	removed = {}
+
+	def wipe(doctype, filters, force=False):
+		names = frappe.get_all(doctype, filters=filters, pluck="name")
+		for name in names:
+			frappe.delete_doc(doctype, name, force=force, ignore_permissions=True,
+			                  delete_permanently=True)
+		if names:
+			removed[doctype.replace("KNIT 360 ", "")] = len(names)
+
+	# The ledger first: it is what holds the posting documents down.
+	#
+	# GL Entry.on_trash refuses deletion outright -- "the ledger keeps what the
+	# books once said" -- and that guard is right, so it is not being weakened.
+	# A test teardown is the one case it should not apply to: these rows are
+	# postings into a throwaway company that exists only for this run, and the
+	# alternative is a demonstration site whose headline figures count test
+	# data. The delete is therefore raw SQL, and it is pinned to the acceptance
+	# company so it cannot reach a real set of books even if called by mistake.
+	if COMPANY == "KNIT Acceptance Co":
+		count = frappe.db.count("KNIT 360 GL Entry", {"company": COMPANY})
+		if count:
+			frappe.db.sql(
+				"DELETE FROM `tabKNIT 360 GL Entry` WHERE company = %s", (COMPANY,)
+			)
+			removed["GL Entry"] = count
+	else:
+		frappe.throw(
+			f"cleanup() refuses to run against {COMPANY!r}. It deletes ledger "
+			f"entries directly and is only ever meant for the acceptance company."
+		)
+
+	# Then the documents, children before parents.
+	#
+	# Frappe refuses to delete a submitted document and tells you to cancel it
+	# first. Cancelling here would call on_cancel, which would try to reverse
+	# ledger entries that have just been deleted. So the docstatus is cleared
+	# directly instead -- again only for the acceptance company, and only
+	# because these documents are about to stop existing.
+	for doctype in (
+		"KNIT 360 Sales Invoice", "KNIT 360 Sales Order", "KNIT 360 Journal Entry",
+		"KNIT 360 Quotation", "KNIT 360 Opportunity", "KNIT 360 Lead",
+	):
+		frappe.db.sql(
+			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
+		)
+		wipe(doctype, {"company": COMPANY}, force=True)
+
+	# Business Status Log is keyed by the document, not the company, so it is
+	# matched on the names that no longer resolve.
+	orphaned = [
+		row.name
+		for row in frappe.get_all(
+			"KNIT 360 Business Status Log", fields=["name", "reference_doctype", "reference_name"]
+		)
+		if not frappe.db.exists(row.reference_doctype, row.reference_name)
+	]
+	# The log refuses deletion as well -- it is the audit trail, so that is
+	# correct. These rows point at documents that no longer exist, so they are
+	# removed the same way and for the same reason as the ledger rows above.
+	for name in orphaned:
+		frappe.db.sql("DELETE FROM `tabKNIT 360 Business Status Log` WHERE name = %s", (name,))
+	if orphaned:
+		removed["Business Status Log"] = len(orphaned)
+
+	wipe("KNIT 360 Customer", {"company": COMPANY}, force=True)
+
+	# Accounts are a tree: a node cannot go before its children. In a nested
+	# set the width `rgt - lft` is 1 for a leaf and grows with depth of
+	# subtree, so ascending width is exactly leaves-first. Ordering by `rgt`
+	# descending is not the same thing and leaves parents stranded.
+	# Cost Center is a tree too, and chart_of_accounts.setup creates one
+	# alongside the accounts. Leaving it behind made the next run collide on a
+	# duplicate primary key -- which is how this line came to be written.
+	for doctype in ("KNIT 360 Cost Center", "KNIT 360 Account"):
+		rows = frappe.get_all(doctype, filters={"company": COMPANY},
+		                      fields=["name", "lft", "rgt"])
+		names = [row.name for row in sorted(rows, key=lambda r: (r.rgt or 0) - (r.lft or 0))]
+		for name in names:
+			frappe.delete_doc(doctype, name, force=True, ignore_permissions=True,
+			                  delete_permanently=True)
+		if names:
+			removed[doctype.replace("KNIT 360 ", "")] = len(names)
+
+	wipe("KNIT 360 Fiscal Year", {"year_name": ["like", "Acceptance %"]}, force=True)
+	wipe("KNIT 360 Company", {"company_name": COMPANY}, force=True)
+
+	frappe.db.commit()
+	print(f"removed: {removed or 'nothing -- the site was already clean'}")
+	return removed
+
+
+def run_and_clean():
+	"""Run every check, then remove the data it created. Returns (passed, failed).
+
+	This is the form to use on a site that anyone is going to look at.
+	"""
+	passed, failed = run()
+	cleanup()
+	return passed, failed

@@ -104,5 +104,6 @@
  "track_changes": 1,
  "title_field": "item_group_name",
  "is_tree": 1,
- "nsm_parent_field": "parent_item_group"
+ "nsm_parent_field": "parent_item_group",
+ "autoname": "field:item_group_name"
 }

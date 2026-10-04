@@ -92,5 +92,6 @@
  "track_changes": 1,
  "title_field": "supplier_group_name",
  "is_tree": 1,
- "nsm_parent_field": "parent_supplier_group"
+ "nsm_parent_field": "parent_supplier_group",
+ "autoname": "field:supplier_group_name"
 }

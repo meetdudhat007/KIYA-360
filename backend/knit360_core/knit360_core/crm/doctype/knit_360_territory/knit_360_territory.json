@@ -92,5 +92,6 @@
  "track_changes": 1,
  "title_field": "territory_name",
  "is_tree": 1,
- "nsm_parent_field": "parent_territory"
+ "nsm_parent_field": "parent_territory",
+ "autoname": "field:territory_name"
 }

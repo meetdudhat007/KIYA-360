@@ -105,5 +105,6 @@
  "track_changes": 1,
  "title_field": "customer_group_name",
  "is_tree": 1,
- "nsm_parent_field": "parent_customer_group"
+ "nsm_parent_field": "parent_customer_group",
+ "autoname": "field:customer_group_name"
 }
