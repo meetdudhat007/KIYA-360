@@ -100,9 +100,13 @@ def documents(stage, status=None, limit=100):
 	"""Rows for one stage, newest first."""
 	spec = _stage(stage)
 	filters = {STATUS: status} if status else None
+	# Only the declared fields and the status. `docstatus` and `modified` used
+	# to come back too: `modified` is what the sort is on, so it never needed to
+	# leave the server, and `docstatus` is exactly the framework detail this
+	# seam exists to hide -- the front end reads `editable` on document() instead.
 	rows = frappe.get_all(
 		spec["doctype"],
-		fields=spec["fields"] + [STATUS, "docstatus", "modified"],
+		fields=spec["fields"] + [STATUS],
 		filters=filters,
 		order_by="modified desc",
 		limit_page_length=int(limit),
@@ -128,7 +132,9 @@ def document(stage, name):
 		"name": doc.name,
 		"title": doc.get(spec["title_field"]) or doc.name,
 		"status": status,
-		"docstatus": doc.docstatus,
+		# docstatus is deliberately absent. It is the framework's word, not the
+		# business's, and `editable` below says the only thing the front end
+		# needs from it: whether this document can still be changed.
 		"states": lifecycle.states,
 		"allowed_next": _steps(lifecycle, status, doc.docstatus),
 		"meaning": _meaning(lifecycle, status),
@@ -256,21 +262,31 @@ def _line_table(doc):
 
 	Read from the meta rather than listed here, so a column added to KNIT 360
 	Quotation Item appears in the front end without a front-end change.
+
+	Returns the table field, every column (for display) and the writable subset.
+	The two differ because computed money columns -- `amount` -- are read-only:
+	they are derived by knit360_core.pricing.totals from qty and rate, so
+	offering them for entry would invite a total that disagrees with its lines.
 	"""
 	table = doc.meta.get_table_fields()
 	if not table:
-		return None, [], []
+		return None, [], [], []
 	field = table[0]
 	cells = [
 		f
 		for f in frappe.get_meta(field.options).fields
 		if f.fieldtype not in {"Section Break", "Column Break"}
 	]
-	return field, [f.fieldname for f in cells], [f.label or f.fieldname for f in cells]
+	return (
+		field,
+		[f.fieldname for f in cells],
+		[f.label or f.fieldname for f in cells],
+		[f.fieldname for f in cells if not f.read_only],
+	)
 
 
 def _items(doc):
-	field, columns, labels = _line_table(doc)
+	field, columns, labels, writable = _line_table(doc)
 	if not field:
 		return None
 	rows = doc.get(field.fieldname) or []
@@ -278,6 +294,7 @@ def _items(doc):
 		"label": field.label,
 		"columns": columns,
 		"column_labels": labels,
+		"writable_columns": writable,
 		"rows": [{c: row.get(c) for c in columns} for row in rows],
 		# Frappe refuses field changes after submission (UpdateAfterSubmitError),
 		# so the front end is told rather than left to discover it by failing.
@@ -363,7 +380,7 @@ def set_items(stage, name, items):
 	doc = frappe.get_doc(spec["doctype"], name)
 	doc.check_permission("write")
 
-	field, columns, _labels = _line_table(doc)
+	field, columns, _labels, writable = _line_table(doc)
 	if not field:
 		frappe.throw(f"{spec['doctype']} has no line items.")
 	if doc.docstatus != 0:
@@ -372,9 +389,29 @@ def set_items(stage, name, items):
 			f"Its lines can no longer be changed."
 		)
 
+	rows = frappe.parse_json(items)
+
+	# Refuse a column this table does not have, rather than dropping it.
+	# Previously an unknown key was filtered out silently, so sending `rate` to
+	# a table whose column is `unit_rate` stored a line with no price and
+	# reported success. A caller that names a field wrongly needs to be told.
+	for index, row in enumerate(rows, start=1):
+		unknown = [key for key in row if key not in columns]
+		if unknown:
+			frappe.throw(
+				f"Line {index}: {field.options} has no column "
+				f"{', '.join(sorted(unknown))}. It accepts: {', '.join(writable)}."
+			)
+		computed = [key for key in row if key in columns and key not in writable]
+		if computed:
+			frappe.throw(
+				f"Line {index}: {', '.join(sorted(computed))} is calculated, not entered. "
+				f"Send qty and rate and the total follows."
+			)
+
 	doc.set(field.fieldname, [])
-	for row in frappe.parse_json(items):
-		doc.append(field.fieldname, {c: row.get(c) for c in columns if c in row})
+	for row in rows:
+		doc.append(field.fieldname, {c: row.get(c) for c in writable if c in row})
 	doc.save()
 	return document(spec["key"], name)
 

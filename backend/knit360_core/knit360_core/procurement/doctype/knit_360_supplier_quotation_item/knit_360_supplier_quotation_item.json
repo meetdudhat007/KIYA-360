@@ -10,6 +10,7 @@
   "item_code",
   "qty",
   "rate",
+  "amount",
   "lead_time_days"
  ],
  "fields": [
@@ -33,6 +34,13 @@
    "label": "Rate",
    "description": "FR-PROC-003: item rates",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "description": "FR-PROC-003 qty x rate. Computed by knit360_core.pricing.totals."
   },
   {
    "fieldname": "lead_time_days",

@@ -13,6 +13,7 @@
   "col1",
   "customer_po_number",
   "customer_po_date",
+  "currency",
   "knit360_business_status",
   "sec1",
   "items",
@@ -21,7 +22,11 @@
   "shipping_address",
   "col2",
   "tax_gstin_context",
-  "payment_terms"
+  "payment_terms",
+  "tax_template",
+  "net_total",
+  "total_taxes",
+  "grand_total"
  ],
  "fields": [
   {
@@ -63,6 +68,13 @@
    "fieldtype": "Date",
    "label": "Customer PO Date",
    "description": "FR-SALES-003: Customer PO date (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "description": "FR-SALES-003 The currency the order is priced in. Matches the quotation it came from."
   },
   {
    "fieldname": "knit360_business_status",
@@ -119,6 +131,34 @@
    "fieldtype": "Small Text",
    "label": "Payment Terms",
    "description": "FR-SALES-003: payment terms (DR-C2C-005 Inputs)"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "options": "KNIT 360 Tax Template",
+   "description": "FR-SALES-003 Rates applied to the net total (FR-SALES-004)."
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "read_only": 1,
+   "description": "FR-SALES-003 Sum of the line amounts, before tax."
+  },
+  {
+   "fieldname": "total_taxes",
+   "fieldtype": "Currency",
+   "label": "Total Taxes",
+   "read_only": 1,
+   "description": "FR-SALES-003 The tax template's rates applied to the net total."
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1,
+   "description": "FR-SALES-003 Net total plus tax. The value of the order."
   }
  ],
  "index_web_pages_for_search": 0,

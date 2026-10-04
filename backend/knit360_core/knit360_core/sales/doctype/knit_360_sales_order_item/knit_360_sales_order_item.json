@@ -12,6 +12,7 @@
   "qty",
   "uom",
   "rate",
+  "amount",
   "delivery_date"
  ],
  "fields": [
@@ -49,6 +50,13 @@
    "label": "Agreed Rate",
    "description": "FR-SALES-003: agreed rates (DR-C2C-005 Inputs)",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "description": "FR-SALES-003 qty x rate. Computed by knit360_core.pricing.totals."
   },
   {
    "fieldname": "delivery_date",

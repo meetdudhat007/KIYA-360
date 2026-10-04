@@ -24,8 +24,11 @@ from frappe.model.document import Document
 from frappe.utils import flt
 
 from knit360_core.finance import ledger
+from knit360_core.pricing import totals
 
 COMPANY = "KNIT 360 Company"
+
+SHAPE = totals.Shape(table="items", rate="rate")
 
 
 class KNIT360SalesInvoice(Document):
@@ -34,29 +37,15 @@ class KNIT360SalesInvoice(Document):
 		self._resolve_defaults()
 
 	def _compute_totals(self):
-		for row in self.items:
-			row.amount = flt(row.qty) * flt(row.rate)
-		self.net_total = flt(sum(flt(row.amount) for row in self.items))
-		self.total_taxes = self._tax_total()
-		self.grand_total = flt(self.net_total + self.total_taxes)
-
-		if not self.grand_total:
+		# Shared with Quotation and Sales Order, so an invoice raised from an
+		# order cannot total differently from the order it bills.
+		if not totals.apply(self, SHAPE):
 			frappe.throw("An invoice for nothing cannot be posted.")
 
 		# Only reset the outstanding while the invoice is still a draft. Once
 		# posted it is driven by what has been settled against it.
 		if self.docstatus == 0:
 			self.outstanding_amount = self.grand_total
-
-	def _tax_total(self):
-		if not self.tax_template:
-			return 0.0
-		rows = frappe.get_all(
-			"KNIT 360 Tax Template Row",
-			filters={"parent": self.tax_template},
-			fields=["rate"],
-		)
-		return flt(sum(flt(self.net_total) * flt(row.rate) / 100.0 for row in rows))
 
 	def _resolve_defaults(self):
 		defaults = frappe.db.get_value(

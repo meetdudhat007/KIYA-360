@@ -12,7 +12,8 @@
   "qty",
   "uom",
   "unit_rate",
-  "discount_percentage"
+  "discount_percentage",
+  "amount"
  ],
  "fields": [
   {
@@ -55,6 +56,13 @@
    "fieldtype": "Percent",
    "label": "Discount %",
    "description": "FR-SALES-002 / FR-SALES-004: line items: discount percentage (DR-C2C-004 Inputs); FR-SALES-004"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "description": "FR-SALES-004 qty x unit rate less the line discount. Computed by knit360_core.pricing.totals, never typed."
   }
  ],
  "index_web_pages_for_search": 0,

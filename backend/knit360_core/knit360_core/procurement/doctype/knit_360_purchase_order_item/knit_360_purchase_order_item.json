@@ -13,6 +13,7 @@
   "uom",
   "rate",
   "discount_percentage",
+  "amount",
   "schedule_date"
  ],
  "fields": [
@@ -55,6 +56,13 @@
    "fieldtype": "Percent",
    "label": "Discount %",
    "description": "FR-PROC-004: line items (discounts)"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "description": "FR-PROC-004 qty x rate less the line discount. Computed by knit360_core.pricing.totals."
   },
   {
    "fieldname": "schedule_date",

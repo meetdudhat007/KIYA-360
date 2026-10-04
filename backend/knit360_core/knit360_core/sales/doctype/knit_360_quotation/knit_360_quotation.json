@@ -20,6 +20,9 @@
   "items",
   "sec2",
   "tax_template",
+  "net_total",
+  "total_taxes",
+  "grand_total",
   "payment_terms"
  ],
  "fields": [
@@ -108,9 +111,31 @@
   },
   {
    "fieldname": "tax_template",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Tax Template",
-   "description": "FR-SALES-002 / FR-SALES-004: tax template (DR-C2C-004 Inputs); becomes a Link once MOD-18 Tax masters exist"
+   "description": "FR-SALES-004 Rates applied to the net total (FR-SALES-004). A Link, so a template that does not exist is refused.",
+   "options": "KNIT 360 Tax Template"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "read_only": 1,
+   "description": "FR-SALES-004 Sum of the line amounts, before tax."
+  },
+  {
+   "fieldname": "total_taxes",
+   "fieldtype": "Currency",
+   "label": "Total Taxes",
+   "read_only": 1,
+   "description": "FR-SALES-004 The tax template's rates applied to the net total (FR-SALES-004)."
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1,
+   "description": "FR-SALES-004 Net total plus tax. What the customer is quoted."
   },
   {
    "fieldname": "payment_terms",

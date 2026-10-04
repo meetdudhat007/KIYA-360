@@ -19,6 +19,8 @@
   "items",
   "sec_10",
   "taxes",
+  "net_total",
+  "grand_total",
   "col_11",
   "payment_terms"
  ],
@@ -103,6 +105,20 @@
    "fieldtype": "Small Text",
    "label": "Taxes",
    "description": "FR-PROC-003: taxes"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "read_only": 1,
+   "description": "FR-PROC-003 Sum of the line amounts, before tax."
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1,
+   "description": "FR-PROC-003 Net total. Comparable across suppliers for the same RFQ."
   },
   {
    "fieldname": "col_11",
