@@ -187,6 +187,10 @@ technical sense — words that mean something to the business: *Qualified*,
 
 Twenty-three of these status tracks are defined, one per document type.
 
+The moves open to a record appear as buttons at the top right of its screen.
+They are generated from what is legal at that moment, so the set changes as the
+record moves.
+
 Three rules hold everywhere:
 
 **1. You cannot type a status.** The field is read-only on every single

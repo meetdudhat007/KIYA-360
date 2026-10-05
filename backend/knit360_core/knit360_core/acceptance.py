@@ -564,6 +564,40 @@ def e_chart():
 	return f"{total} accounts, 5 roots, {len(chart_of_accounts.DEFAULTS)} defaults wired"
 
 
+@check("E. Ledger", "A company created the ordinary way gets its own books")
+def e_company_self_setup():
+	"""Creating a Company must be enough on its own.
+
+	Until KNIT360Company.after_insert existed, the chart of accounts was built
+	only by the demo and acceptance scripts. A company created through the
+	normal screen had no accounts, and without a receivable account it cannot
+	raise an invoice -- so setting the product up for a real client needed a
+	command line. This check is what stops that regressing.
+	"""
+	name = "KNIT Acceptance Self Setup Co"
+	if frappe.db.exists("KNIT 360 Company", name):
+		frappe.delete_doc("KNIT 360 Company", name, force=True, ignore_permissions=True)
+
+	doc = frappe.get_doc(
+		{"doctype": "KNIT 360 Company", "company_name": name, "default_currency": CURRENCY}
+	).insert(ignore_permissions=True)
+
+	accounts = frappe.db.count("KNIT 360 Account", {"company": doc.name})
+	expect(accounts >= 30, f"only {accounts} accounts were created on insert")
+
+	for field in chart_of_accounts.DEFAULTS:
+		expect(
+			frappe.db.get_value("KNIT 360 Company", doc.name, field),
+			f"{field} was left unset, so documents relying on it will refuse",
+		)
+	expect(
+		frappe.db.get_value("KNIT 360 Company", doc.name, "default_cost_center"),
+		"no default cost centre, so invoice lines post without one",
+	)
+	frappe.db.commit()
+	return f"{accounts} accounts and all defaults, with no command run"
+
+
 @check("E. Ledger", "A balanced journal entry posts and the ledger agrees")
 def e_journal_posts():
 	company()
@@ -937,6 +971,105 @@ def h_document_guidance():
 	return f"status {detail['status']!r}, {len(detail['actions'])} actions offered"
 
 
+@check("H. Web seam", "next_steps tells the Desk what each move will do")
+def h_next_steps():
+	from knit360_core.business_status import engine as eng
+
+	lead = a_lead(lead_name="Stepping Contact")
+	frappe.db.commit()
+	steps = eng.next_steps("KNIT 360 Lead", lead.name)
+	expect(steps, "a fresh lead was offered no steps at all")
+
+	bare = eng.allowed_next("KNIT 360 Lead", lead.name)
+	expect(
+		[s["status"] for s in steps] == list(bare),
+		"next_steps and allowed_next disagree about what is legal",
+	)
+	for step in steps:
+		for key in ("status", "locks", "terminal", "is_forward"):
+			expect(key in step, f"a step is missing {key!r}: {step}")
+	expect(
+		sum(1 for s in steps if s["is_forward"]) <= 1,
+		"more than one step was marked as the ordinary next one",
+	)
+	expect(
+		eng.next_steps("KNIT 360 Item", "nonexistent") == [],
+		"next_steps raised on a doctype with no lifecycle instead of returning nothing",
+	)
+	return f"{len(steps)} steps, forward={[s['status'] for s in steps if s['is_forward']]}"
+
+
+@check("H. Web seam", "The Desk is offered the same stage actions as the web page")
+def h_actions_for():
+	from knit360_core.api import c2c
+
+	lead = a_lead(lead_name="Acting Contact")
+	frappe.db.commit()
+
+	early = c2c.actions_for("KNIT 360 Lead", lead.name)
+	convert = next((a for a in early if a["key"] == "convert_lead"), None)
+	expect(convert, "no convert action was described at all")
+	expect(not convert["enabled"], "a brand new lead was offered conversion")
+	expect(convert["reason"], "the action is disabled but gives no reason why")
+
+	status = model.for_doctype("KNIT 360 Lead").initial
+	for _ in range(6):
+		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
+		if not nxt:
+			break
+		engine.transition("KNIT 360 Lead", lead.name, nxt)
+		status = nxt
+		if status == "Qualified":
+			break
+	frappe.db.commit()
+
+	ready = next(a for a in c2c.actions_for("KNIT 360 Lead", lead.name) if a["key"] == "convert_lead")
+	expect(ready["enabled"], f"a Qualified lead was refused conversion: {ready['reason']}")
+	expect(
+		c2c.actions_for("KNIT 360 Item", "nothing") == [],
+		"actions_for raised on a doctype outside the three stages",
+	)
+	return f"disabled when New ({convert['reason'][:60]}...), enabled when Qualified"
+
+
+@check("H. Web seam", "An action declares the status it reaches on its own")
+def h_action_claims_status():
+	"""Stops the Desk offering two buttons that look alike and are not.
+
+	A Qualified lead can legally move straight to Converted, and it can also be
+	converted properly -- which creates the customer and the opportunity and
+	then moves it to Converted. Both were drawn as buttons. Pressing the plain
+	one marks the lead converted and creates nothing. The action now names the
+	status it produces so the duplicate can be left out.
+	"""
+	from knit360_core.api import c2c
+	from knit360_core.crm import conversion
+
+	lead = a_lead(lead_name="Claiming Contact")
+	status = model.for_doctype("KNIT 360 Lead").initial
+	for _ in range(6):
+		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
+		if not nxt:
+			break
+		engine.transition("KNIT 360 Lead", lead.name, nxt)
+		status = nxt
+		if status == "Qualified":
+			break
+	frappe.db.commit()
+
+	action = next(a for a in c2c.actions_for("KNIT 360 Lead", lead.name) if a["key"] == "convert_lead")
+	expect(action.get("produces_status"), "the convert action does not say what status it reaches")
+	expect(
+		action["produces_status"] == conversion.CONVERTED,
+		f"it claims {action['produces_status']!r}, but conversion sets {conversion.CONVERTED!r}",
+	)
+	expect(
+		action["produces_status"] in engine.allowed_next("KNIT 360 Lead", lead.name),
+		"the claimed status is not even a legal move, so nothing would be hidden",
+	)
+	return f"convert_lead claims {action['produces_status']!r}"
+
+
 @check("H. Web seam", "The seam refuses a stage it does not expose")
 def h_unknown_stage():
 	from knit360_core.api import c2c
@@ -1111,6 +1244,19 @@ def cleanup():
 
 	wipe("KNIT 360 Fiscal Year", {"year_name": ["like", "Acceptance %"]}, force=True)
 	wipe("KNIT 360 Company", {"company_name": COMPANY}, force=True)
+
+	# The self-setup check creates a second company with its own chart.
+	other = "KNIT Acceptance Self Setup Co"
+	if frappe.db.exists("KNIT 360 Company", other):
+		for doctype in ("KNIT 360 Cost Center", "KNIT 360 Account"):
+			rows = frappe.get_all(doctype, filters={"company": other},
+			                      fields=["name", "lft", "rgt"])
+			for row in sorted(rows, key=lambda r: (r.rgt or 0) - (r.lft or 0)):
+				frappe.delete_doc(doctype, row.name, force=True, ignore_permissions=True,
+				                  delete_permanently=True)
+		frappe.delete_doc("KNIT 360 Company", other, force=True, ignore_permissions=True,
+		                  delete_permanently=True)
+		removed["Company"] = removed.get("Company", 0) + 1
 
 	frappe.db.commit()
 	print(f"removed: {removed or 'nothing -- the site was already clean'}")

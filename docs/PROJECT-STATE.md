@@ -172,8 +172,8 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | BRD modules with record types | **14 of 28** |
 | Lifecycle definitions (`CD-002`) | 23 |
 | Desk workspaces | 16, with 8 charts and 6 number cards |
-| Automated checks | **89** — 47 structural, 42 runtime |
-| Last full run | 47/47 and 42/42, 5 October 2026, site `knit360.localhost` |
+| Automated checks | **93** — 47 structural, 46 runtime |
+| Last full run | 47/47 and 46/46, 5 October 2026, site `knit360.localhost` |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
 Logistics (15), Projects (16), HR & Payroll (19), E-Commerce (20), Document
@@ -203,7 +203,7 @@ group accounts, disabled accounts and closed fiscal years.
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 47 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 42 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 46 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

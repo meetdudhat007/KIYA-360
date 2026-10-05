@@ -196,7 +196,7 @@ written at all."*
 **Then land the point:**
 
 > *"Every one of those refusals is a line in a test that runs on every change.
-> Eighty-nine checks: forty-seven on the definitions, forty-two that drive the
+> Ninety-three checks: forty-seven on the definitions, forty-six that drive the
 > running system. If someone removes a guard, a test goes red the same day."*
 
 ---
@@ -235,7 +235,7 @@ Go to a terminal and run the acceptance suite in front of them:
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
 
-It takes about a minute and prints a line per check. It ends with `42/42 checks
+It takes about a minute and prints a line per check. It ends with `46/46 checks
 passed` and then removes its own data.
 
 Say: *"That is not a screenshot. It just inserted documents, moved them through
@@ -307,7 +307,7 @@ a gap is how a demonstration loses a room.
 > twenty-eight modules. What makes it different is that every important document has a
 > defined life, and the system offers only the moves that life allows — you
 > cannot convert an unqualified lead, edit a posted invoice, or post an
-> unbalanced entry, because those options are never on the screen. Eighty-nine
+> unbalanced entry, because those options are never on the screen. Ninety-three
 > automated checks hold those rules in place. Customer-to-Cash runs end to end
 > on a double-entry ledger that balances and reverses rather than deletes.
 > Taking payments, moving stock and HR are the next three pieces of work.

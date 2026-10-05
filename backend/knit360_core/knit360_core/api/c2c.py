@@ -47,6 +47,8 @@ STAGES = (
 )
 
 BY_KEY = {stage["key"]: stage for stage in STAGES}
+#: The same stages, found by doctype. The Desk knows a doctype, not a stage key.
+BY_DOCTYPE = {stage["doctype"]: stage for stage in STAGES}
 STATUS = model.FIELD
 
 
@@ -314,6 +316,10 @@ def _actions(spec, doc, status):
 				"reason": _convert_reason(doc, status),
 				"hint": ACTION_HINT["convert_lead"],
 				"goes_to": "opportunity",
+				# The status this action reaches by itself. A front end that
+				# also draws plain status buttons can hide the matching one,
+				# so nobody marks a lead Converted without converting it.
+				"produces_status": conversion.CONVERTED,
 			}
 		)
 	if spec["key"] == "opportunity":
@@ -456,6 +462,27 @@ def convert_lead(name, customer=None):
 def create_quotation(opportunity):
 	quotation = quotation_from.from_opportunity(opportunity)
 	return document("quotation", quotation)
+
+
+@frappe.whitelist()
+def actions_for(doctype, name):
+	"""The stage-crossing actions open to a document, found by doctype.
+
+	The Desk needs the same answer the web page gets -- can this lead be
+	converted, can this opportunity be quoted -- but it knows the doctype
+	rather than the stage key. This shares _actions rather than restating its
+	rules, so the two front ends cannot come to different conclusions about
+	what is allowed.
+
+	Returns [] for any doctype outside the three stages, rather than raising,
+	because the Desk asks this on every form that opens.
+	"""
+	spec = BY_DOCTYPE.get(doctype)
+	if not spec:
+		return []
+	doc = frappe.get_doc(doctype, name)
+	doc.check_permission("read")
+	return _actions(spec, doc, engine.current_status(doc))
 
 
 @frappe.whitelist()

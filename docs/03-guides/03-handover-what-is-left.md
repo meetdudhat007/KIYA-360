@@ -20,8 +20,8 @@ What exists and is proven:
 | Record types built | 65 parent, 21 child — 86 in total |
 | BRD modules with record types built | **14 of 28** |
 | Lifecycle definitions | 23 |
-| Automated checks | **89** — 47 structural, 42 runtime |
-| Last full run | 47/47 and 42/42, 5 October 2026 |
+| Automated checks | **93** — 47 structural, 46 runtime |
+| Last full run | 47/47 and 46/46, 5 October 2026 |
 | BRD modules with nothing built yet | **14 of 28** (listed below) |
 | Flows running end to end | 1 of 3 (Customer-to-Cash) |
 
@@ -90,7 +90,7 @@ Not decisions — actions outside what I can reach.
 | **Y2** | **Hosting, domain, TLS, backups.** | Everything so far runs in Docker on one machine. There is no production environment, no backup schedule and no restore test. |
 | **Y3** | **The administrator password.** | It is not recorded anywhere in the repository. I did not guess it and I did not change it. You will need it to sign in during the demonstration. |
 | **Y4** | **The 238 BRD requirements are every one marked "TBD — the BRD does not specify this detail."** | Until a stakeholder fills those in, "match the BRD" means building to the ERP-standard baseline agreed in CD-001. That is what has been done. It is a reasonable reading, not the specification. |
-| **Y5** | **User acceptance testing by someone who does the job.** | My 89 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
+| **Y5** | **User acceptance testing by someone who does the job.** | My 93 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
 | **Y6** | **Decide what happens to the seven ERPNext reference documents** in `docs/` (`erpnext_accounting_module.md` and six others, roughly 4,200 lines). | I did not write them; they were swept into commit `2be7a50` by a `git add -A`. They are reference material about a GPL-3 product sitting in this repository. I flagged this previously and have had no answer. **This is the one item on this list I would act on soonest.** |
 | **Y7** | **Delete or keep the "Kelvinotherm Induction LLP" company** on the demo site. | It predates this work and holds one lead from 23 September. Harmless, but it appears in the company dropdown during a demonstration. |
 
@@ -112,6 +112,7 @@ Ordered by value. Each is a self-contained piece of work.
 | **W8** | Credit and debit notes | Medium | Returns cannot be settled without them. | **D13** |
 | **W9** | Customer credit limit and credit hold | Small | A finance controller asks for this in the first demonstration. | **D13** |
 | **W10** | Email on status change | Small | Nothing is sent by the system today. | D8 for content |
+| **W11** | **Roles other than System Manager** | Medium | All 65 record types grant access to `System Manager` and nothing else, verified against the permissions table. So a salesperson cannot be given leads without also being given the power to delete the company's accounts. Acceptable for a pilot, not for a live client. | — |
 
 **If you want one thing done next, make it W1.** It needs D4 answered first, and
 D4 is four short questions about how your business handles money coming in.
@@ -131,6 +132,11 @@ Writing 42 that drive the running system found five real defects in a day.
 | `set_items` silently discarded any column it did not recognise, so sending `rate` to a table whose column is `unit_rate` stored a priceless line **and reported success** | **High** | **Fixed.** It now refuses and names the columns that exist. |
 | The web seam returned `docstatus` and `modified` — the exact framework details it exists to hide | Low | **Fixed.** The page never read them. |
 | The acceptance runner counted a check that returned no evidence as a pass. One check lost its assertions to an edit and still showed green | **High** (in the harness) | **Fixed.** A check must now return evidence or it fails. |
+| **Creating a company through the normal screen produced no chart of accounts.** Only the demo and test scripts built one, so setting up a real client needed a command line — and without a receivable account you cannot raise an invoice | **Blocking** | **Fixed.** A new company builds its own books on save. A check enforces it. |
+| **No business status could be changed from the Desk at all.** The status field is read-only and nothing rendered a button, so Sales Order, Delivery Note, Sales Invoice, Journal Entry and the entire purchasing side had no reachable lifecycle. Only the three stages on `/knit360` could be moved | **Blocking** | **Fixed.** Every form now renders one button per legal move, asked from the engine. |
+| Converting a lead existed only on `/knit360`, so a Desk user could qualify a lead and had nowhere to take it | **High** | **Fixed.** Convert and Raise Quotation are Desk buttons, sharing the web page's own rules rather than restating them. |
+| A Qualified lead showed both **Converted** and **Convert to Customer + Opportunity**. The first marks it converted and creates nothing | **High** | **Fixed.** An action now declares the status it reaches, and the duplicate button is left out. |
+| The form script was served from a fixed path with no content hash, so any change to it would need a hard refresh on every machine | Medium | **Fixed.** Renamed to a `.bundle.js` so Frappe's bundler hashes it. |
 
 Two things were deliberately **not** changed:
 
@@ -154,7 +160,7 @@ docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site kn
 ```bash
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
-42 runtime checks. Drives the live system, then removes its own data.
+46 runtime checks. Drives the live system, then removes its own data.
 
 ```bash
 docker exec knit-bench bash -lc 'cat /home/frappe/frappe-bench/sites/apps.txt'

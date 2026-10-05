@@ -117,3 +117,34 @@ def transition(reference_doctype, reference_name, to_status, reason=None):
 def allowed_next(reference_doctype, reference_name):
 	doc = frappe.get_doc(reference_doctype, reference_name)
 	return model.for_doctype(reference_doctype).allowed_next(current_status(doc))
+
+
+@frappe.whitelist()
+def next_steps(reference_doctype, reference_name):
+	"""The moves open to a document, with enough context to warn before one.
+
+	allowed_next returns bare status names, which is all the tests need. The
+	Desk needs more than that: whether a move locks the document, whether it is
+	the end of the road, and which one is the ordinary next step -- so a button
+	can be made primary and a one-way move can ask before it happens.
+
+	Returns [] for a doctype with no registered lifecycle, rather than raising,
+	because this is called on every form that opens.
+	"""
+	if reference_doctype not in model.REGISTRY:
+		return []
+
+	doc = frappe.get_doc(reference_doctype, reference_name)
+	lifecycle = model.for_doctype(reference_doctype)
+	status = current_status(doc)
+	forward = lifecycle.forward_from(status)
+
+	return [
+		{
+			"status": target,
+			"locks": lifecycle.locks_on(target, doc.docstatus),
+			"terminal": not lifecycle.allowed_next(target),
+			"is_forward": target == forward,
+		}
+		for target in lifecycle.allowed_next(status)
+	]

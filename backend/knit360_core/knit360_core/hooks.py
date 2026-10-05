@@ -25,6 +25,16 @@ website_context = {
 	"brand_html": "KNIT 360",
 }
 
+# --- Desk UI ------------------------------------------------------------
+# The business status field is read-only everywhere, so the Desk had no way to
+# move a document along its lifecycle -- only the three stages on /knit360
+# could be moved at all. This renders a button per legal move on every form,
+# asking the engine what is legal rather than deciding for itself.
+# Named *.bundle.js so Frappe's bundler emits it with a content hash. Served
+# from a fixed path it was cached by the browser forever, and every change to
+# it needed a hard refresh on every machine.
+app_include_js = "business_status.bundle.js"
+
 after_install = [
 	"knit360_core.branding.after_install",
 	"knit360_core.desk.after_migrate",
