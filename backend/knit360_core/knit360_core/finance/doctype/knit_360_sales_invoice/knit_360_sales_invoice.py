@@ -12,11 +12,17 @@ company. An invoice that cannot name the account it debits is not posted with a
 guess -- it is refused, because a wrong account is harder to find later than a
 blocked invoice is now.
 
-Taxes are read from the KNIT 360 Tax Template as a percentage of net. The
-template carries no account of its own yet, so the tax total is credited to the
-company's round-off account and flagged in the remarks. That is a placeholder,
-and FR-TAX-001 will replace it once the tax masters exist; it is recorded rather
-than hidden because a placeholder you can see is safer than one you cannot.
+Taxes are read from the KNIT 360 Tax Template as a percentage of net, and
+credited **one line per component** -- DEC-021. Tax charged to a customer is not
+income: it is money held on behalf of the tax authority until it is paid over,
+so it is credited to a liability. Each component posts to the account its
+template row names, or to the company's Default Output Tax Account. An invoice
+that carries tax and can resolve neither is refused rather than posted
+somewhere plausible, for the same reason the receivable is.
+
+Until DEC-021 this credited the round-off account as a visible placeholder. It
+no longer does, and an acceptance check asserts that the round-off account takes
+no tax.
 """
 
 import frappe
@@ -105,19 +111,36 @@ class KNIT360SalesInvoice(Document):
 			for row in self.items
 			if flt(row.amount)
 		]
-		if flt(self.total_taxes):
-			tax_account = frappe.db.get_value(COMPANY, self.company, "round_off_account")
-			if not tax_account:
+		lines += self._tax_lines()
+		return lines
+
+	def _tax_lines(self):
+		"""One credit per tax component, to the account that component names.
+
+		The components are recomputed from the same template and net total that
+		produced the stored tax figure, so the sum of these lines is that
+		figure and the entry balances by construction.
+		"""
+		if not flt(self.total_taxes):
+			return []
+
+		fallback = frappe.db.get_value(COMPANY, self.company, "default_output_tax_account")
+		lines = []
+		for tax in totals.tax_lines(self.net_total, self.tax_template):
+			if not flt(tax.amount):
+				continue
+			account = tax.account or fallback
+			if not account:
 				frappe.throw(
-					f"This invoice carries {self.total_taxes:.2f} in tax, but {self.company} "
-					f"has no account to post it to. FR-TAX-001 tax masters are not built yet; "
-					f"set a Round Off Account, or clear the tax template."
+					f"{tax.component} of {tax.amount:.2f} has no account to post to. "
+					f"Name one on the tax template row, or set a Default Output Tax "
+					f"Account on {self.company}."
 				)
 			lines.append(
 				ledger.Line(
-					account=tax_account,
-					credit=self.total_taxes,
-					remarks="Tax placeholder pending FR-TAX-001 tax accounts",
+					account=account,
+					credit=tax.amount,
+					remarks=f"{tax.component} at {tax.rate}%",
 				)
 			)
 		return lines

@@ -28,6 +28,8 @@
   "default_cash_account",
   "default_bank_account",
   "round_off_account",
+  "default_output_tax_account",
+  "default_input_tax_account",
   "default_cost_center"
  ],
  "fields": [
@@ -156,6 +158,20 @@
    "fieldtype": "Link",
    "label": "Round Off Account",
    "description": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_output_tax_account",
+   "fieldtype": "Link",
+   "label": "Default Output Tax Account",
+   "description": "FR-TAX-001: where tax charged to a customer is held until it is paid over. A liability, not income.",
+   "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_input_tax_account",
+   "fieldtype": "Link",
+   "label": "Default Input Tax Account",
+   "description": "FR-TAX-001: where tax paid to a supplier is held until it is recovered.",
    "options": "KNIT 360 Account"
   },
   {

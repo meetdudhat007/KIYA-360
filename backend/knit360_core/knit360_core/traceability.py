@@ -64,6 +64,8 @@ PROVEN_BY = {
 	"FR-FIN-003": "A sales invoice posts a receivable and reports it outstanding",
 	"FR-FIN-007": "The trial balance balances",
 	"FR-HR-003": "An approved application consumes the balance",
+	"FR-FIN-002": "A supplier's bill totals goods, freight and tax",
+	"FR-TAX-001": "Tax posts to a tax account, never to round-off",
 }
 
 

@@ -51,6 +51,9 @@ after_migrate = [
 	"knit360_core.desk.after_migrate",
 	# Charts and number cards go on top of those workspaces.
 	"knit360_core.dashboards.after_migrate",
+	# A default account field added after a company was created would otherwise
+	# stay empty for ever; setup() will not re-enter an existing chart. DEC-021.
+	"knit360_core.finance.chart_of_accounts.backfill_defaults",
 ]
 
 # --- Lifecycle integrity -------------------------------------------------

@@ -45,7 +45,7 @@ Three things, each demonstrable live and none of them a claim:
 | | What you prove | How |
 | --- | --- | --- |
 | **1** | **Traceability.** Every field in the system names the requirement it came from, and you can show the link in both directions. | The coverage report, §3 |
-| **2** | **Behaviour.** Nine requirements are not merely modelled — an automated check drives them on a live site and asserts on the result. | The acceptance run, §4 |
+| **2** | **Behaviour.** Twelve requirements are not merely modelled — an automated check drives them on a live site and asserts on the result. | The acceptance run, §4 |
 | **3** | **Honesty.** You can show them the 171 gaps before they find one. | The same report, "Only the gaps" |
 
 A supplier who opens with their own gap list is in a different conversation
@@ -67,16 +67,16 @@ list described below.
 Four cards across the top, then a donut, then 238 rows:
 
 ```
-Proven by a live check             10
-Modelled, not yet proven           59
+Proven by a live check             12
+Modelled, not yet proven           57
 Not started                       169
 BRD modules with anything built  15 / 28
 ```
 
 and the headline:
 
-> **69 of 238 BRD requirements are covered (29.0%)** — 10 proven by an automated
-> check that drives a live site, 59 modelled but not yet proven, 169 not
+> **69 of 238 BRD requirements are covered (29.0%)** — 12 proven by an automated
+> check that drives a live site, 57 modelled but not yet proven, 169 not
 > started. 15 of 28 BRD modules have anything built.
 
 ### The columns, and what each one is worth
@@ -102,7 +102,7 @@ and the headline:
 > `FR-SALES-005`, and it moves no stock. Modelled is not done.
 >
 > **Proven** — an automated check inserts a document, drives it through its
-> lifecycle on a live site, and asserts on the result. Ten of these.
+> lifecycle on a live site, and asserts on the result. Twelve of these.
 
 Say "modelled is not done" out loud yourself. If the client has to work it out,
 you have lost the room.
@@ -149,7 +149,7 @@ A report is still a report. This is the part that is not.
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
 
-About a minute, one line per check, ending `61/61 checks passed`, then it
+About a minute, one line per check, ending `67/67 checks passed`, then it
 removes its own data.
 
 > **"That was not a recording. It just created a company and its chart of
@@ -158,13 +158,13 @@ removes its own data.
 > tried to post an unbalanced entry, tried to submit around the lifecycle — and
 > confirmed every refusal held."**
 
-The nine `Proven` requirements are these checks. Show one connection explicitly:
+The twelve `Proven` requirements are these checks. Show one connection explicitly:
 
 - Report row `FR-FIN-003 Accounts Receivable` → **Proven by:** *"A sales invoice
   posts a receivable and reports it outstanding"*
 - That exact line appears in the run output.
 
-**110 checks in total**: 49 structural, 61 runtime. Structural ones read the
+**116 checks in total**: 49 structural, 67 runtime. Structural ones read the
 definitions; runtime ones drive the system.
 
 ---
@@ -201,8 +201,9 @@ value. The top three are Payment Entry posting, the stock ledger, and HR.
 > *"29% of a 238-requirement BRD where every requirement says the detail is TBD.
 > What exists is the spine — the sales cycle end to end onto a double-entry
 > ledger that balances. The 171 are mostly whole modules nobody has specified
-> yet. Give me a decision on what 'paid' means operationally and Payment Entry
-> follows in days, not months."*
+> yet. Six decisions that were blocking the next three large pieces of work
+> were closed on 6 October, so Payment Entry, the stock ledger and payroll are
+> all buildable now."*
 
 **"How do we know 'Proven' means anything?"**
 > Run it in front of them. Then: *"And a structural test refuses to let a
@@ -217,13 +218,13 @@ value. The top three are Payment Entry posting, the stock ledger, and HR.
 **"Who decided what counts as covered?"**
 > *"Nobody decided per requirement. A requirement counts as covered when a field
 > in the system cites it, which is enforced by a test rather than by judgement.
-> The only hand-written part is which nine are marked Proven, and each of those
+> The only hand-written part is which twelve are marked Proven, and each of those
 > names the check that backs it."*
 
 **"What about the requirements where you built something but it is wrong?"**
 > A fair question and the honest answer is that `Modelled` does not rule it out.
 > That is precisely why the status is not called "done", and why the gap between
-> 58 modelled and 9 proven is the real backlog.
+> 57 modelled and 12 proven is the real backlog.
 
 ---
 

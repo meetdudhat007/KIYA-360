@@ -9,7 +9,8 @@
  "field_order": [
   "item_code",
   "qty",
-  "rate"
+  "rate",
+  "amount"
  ],
  "fields": [
   {
@@ -32,6 +33,13 @@
    "label": "Unit Rate",
    "description": "FR-PROC-006 / FR-FIN-002: unit rates",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "description": "FR-PROC-006 / FR-FIN-002: billed qty times unit rate, computed",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 0,

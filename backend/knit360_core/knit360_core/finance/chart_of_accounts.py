@@ -89,6 +89,11 @@ DEFAULTS = {
 	"default_cash_account": "Cash",
 	"default_bank_account": "Bank Account",
 	"round_off_account": "Round Off",
+	# DEC-021. Tax charged to a customer is money held for the tax authority,
+	# so it belongs in a liability; tax paid to a supplier is recoverable, so
+	# it belongs in an asset. Neither is income or expense.
+	"default_output_tax_account": "Output Tax Payable",
+	"default_input_tax_account": "Input Tax Credit",
 }
 
 
@@ -124,6 +129,38 @@ def _walk(company, nodes, root_type, parent):
 		created[account_name] = name
 		created.update(_walk(company, children, root_type, name))
 	return created
+
+
+@frappe.whitelist()
+def backfill_defaults(company=None):
+	"""Fill a default account field that is empty, from the existing chart.
+
+	setup() refuses to touch a company that already has accounts, which is the
+	right rule -- but it means a company created before a default was added
+	never gets it. This fills only what is empty, by looking the leaf up in the
+	chart the company already has, and never overwrites a chosen account.
+	"""
+	companies = [company] if company else frappe.get_all(COMPANY, pluck="name")
+	filled = {}
+	for name in companies:
+		current = frappe.db.get_value(COMPANY, name, list(DEFAULTS), as_dict=True)
+		if not current:
+			continue
+		values = {}
+		for field, leaf in DEFAULTS.items():
+			if current.get(field):
+				continue
+			account = frappe.db.get_value(
+				ACCOUNT, {"company": name, "account_name": leaf, "is_group": 0}, "name"
+			)
+			if account:
+				values[field] = account
+		if values:
+			frappe.db.set_value(COMPANY, name, values, update_modified=False)
+			filled[name] = values
+	if filled:
+		frappe.db.commit()
+	return filled
 
 
 @frappe.whitelist()

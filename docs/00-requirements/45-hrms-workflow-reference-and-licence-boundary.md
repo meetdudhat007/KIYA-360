@@ -85,7 +85,7 @@ So the position is:
 | Do not read HRMS source files | Followed |
 | Do not copy or translate any code | Followed |
 | Do not install HRMS alongside KNIT 360 | Followed — installed apps remain `frappe`, `knit360_core` |
-| Do not reuse HRMS doctype names verbatim as KNIT 360 doctype names | **Recommended, not yet decided — `OQ-024`** |
+| Do not reuse HRMS doctype names verbatim as KNIT 360 doctype names | **Decided 6 October 2026 — `DEC-026`.** Ordinary HR terms are used; the arrangement is not. |
 | Record every observation's source | Followed |
 
 On the last rule: names such as "Leave Application" are ordinary HR vocabulary and predate the software. But adopting 157 of them in the same arrangement starts to look like copying an arrangement rather than using common terms. This deserves a decision rather than a default.
@@ -242,11 +242,14 @@ No decision is taken here.
 
 ## 8. `OQ-024` — open questions
 
-1. **Does KNIT 360 reuse HR vocabulary verbatim?** "Leave Application" is an ordinary term; 157 of them in the same arrangement is a different proposition. §2.5.
-2. **What is the Leave Application lifecycle?** Not observed, not invented. Needs a stakeholder decision, like every other lifecycle under `CD-002`.
-3. **Which of §6's out-of-BRD areas enter scope?** Expense claims are the likeliest early ask.
-4. **Is statutory payroll in scope at all, or is export-to-payroll-provider acceptable for version one?** Materially changes the size of `FR-HR-004` and `FR-HR-005`.
-5. **Does the legal opinion in `Y1` cover reimplementation-from-observation, or only non-installation?** The FSF FAQ does not answer it. §2.4.
+**Three of the five were closed on 6 October 2026** by owner delegation, and are
+recorded as decisions. See `docs/03-guides/06-the-money-decisions-in-plain-language.md`.
+
+1. ~~**Does KNIT 360 reuse HR vocabulary verbatim?**~~ **Closed — `DEC-026`.** Ordinary HR terms are used; the arrangement is not. Seven record types serve the BRD's leave requirement, against roughly 157 in that product.
+2. ~~**What is the Leave Application lifecycle?**~~ **Closed — `DEC-026`.** Draft, Pending Approval, Approved, with Rejected returning to Draft as a draft state, classified BRD-DERIVED on the `CD-001` baseline and labelled as a reading rather than a specification.
+3. **Which of §6's out-of-BRD areas enter scope?** Still open. Expense claims are the likeliest early ask. Classified **TBD** per `DEC-009` — not in version one, and not OUT-OF-SCOPE.
+4. ~~**Is statutory payroll in scope at all?**~~ **Closed — `DEC-024`.** It is not, for version one. Pay components, salary structure, payslip, the payroll journal entry and an export for the client's payroll provider are in; income tax slabs, provident fund, employee state insurance, professional tax and gratuity are out. Professional tax is an Article 276 **state** levy whose bands differ by state and which some states do not levy at all; income tax slabs move with each Finance Act. The risk is the client's legal exposure, not a feature gap.
+5. **Does the legal opinion in `Y1` cover reimplementation-from-observation, or only non-installation?** Still open, and **not mine to close.** The FSF FAQ does not answer it and I am not a lawyer. §2.4.
 
 ---
 

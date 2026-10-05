@@ -494,9 +494,6 @@ def d_all_totals():
 		"KNIT 360 Tax Template": "its `rate` column is a percentage, not an amount",
 		"KNIT 360 Payment Entry": "its `allocated_amount` settles invoices rather than "
 		                          "pricing lines; allocation is its own unbuilt feature",
-		"KNIT 360 Supplier Invoice": "OPEN QUESTION: whether `freight_and_ancillary` and "
-		                             "`statutory_tax_amount` belong inside the grand total "
-		                             "is a business decision, not a coding one",
 	}
 	MONEY = {"rate", "unit_rate", "amount", "price"}
 
@@ -1544,6 +1541,259 @@ def i_single_writer():
 	return "hr/leave_ledger.py is the sole writer"
 
 
+# --- J. tax accounts and the supplier's bill ----------------------------
+#
+# These two groups exist because of two recorded decisions, DEC-020 and
+# DEC-021, and each check asserts the decision rather than describing it.
+
+
+def a_supplier():
+	name = "Acceptance Supplier Pvt Ltd"
+	if not frappe.db.exists("KNIT 360 Supplier", name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Supplier", "supplier_name": name, "company": company()}
+		).insert(ignore_permissions=True)
+	return name
+
+
+def a_tax_template(name, components):
+	"""A tax template of (component, rate, account) rows, created once."""
+	company()
+	if frappe.db.exists("KNIT 360 Tax Template", name):
+		frappe.delete_doc("KNIT 360 Tax Template", name, force=True, ignore_permissions=True,
+		                  delete_permanently=True)
+	return frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Tax Template",
+			"template_name": name,
+			"company": COMPANY,
+			"taxes": [
+				{"tax_component": component, "rate": rate, "tax_account": account}
+				for component, rate, account in components
+			],
+		}
+	).insert(ignore_permissions=True)
+
+
+def _tax_invoice(template, rate=1000, qty=1):
+	"""A posted sales invoice carrying tax from `template`."""
+	customer_name = "Acceptance Taxed Customer"
+	if not frappe.db.exists("KNIT 360 Customer", customer_name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": customer_name, "company": COMPANY}
+		).insert(ignore_permissions=True)
+
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Invoice",
+			"company": COMPANY,
+			"customer": customer_name,
+			"posting_date": nowdate(),
+			"due_date": add_days(nowdate(), 30),
+			"tax_template": template,
+			"items": [{"item_name": "Acceptance taxed widget", "qty": qty, "rate": rate}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Sales Invoice", invoice.name, "Posted / Unpaid")
+	invoice.reload()
+	return invoice
+
+
+@check("J. Tax and the supplier's bill", "A company's tax accounts are a liability and an asset")
+def j_tax_accounts_exist():
+	"""DEC-021. Tax charged is owed to the authority; tax paid is recoverable.
+
+	Neither is income or expense, and a chart that puts them there would
+	overstate profit by the whole tax collected. So the root type is asserted,
+	not just the presence of the account.
+	"""
+	company()
+	chart_of_accounts.backfill_defaults(COMPANY)
+	values = frappe.db.get_value(
+		"KNIT 360 Company",
+		COMPANY,
+		["default_output_tax_account", "default_input_tax_account"],
+		as_dict=True,
+	)
+	expect(values.default_output_tax_account, "the company has no default output tax account")
+	expect(values.default_input_tax_account, "the company has no default input tax account")
+
+	output_root = frappe.db.get_value(
+		"KNIT 360 Account", values.default_output_tax_account, "root_type"
+	)
+	input_root = frappe.db.get_value(
+		"KNIT 360 Account", values.default_input_tax_account, "root_type"
+	)
+	expect(output_root == "Liability", f"output tax sits under {output_root}, expected Liability")
+	expect(input_root == "Asset", f"input tax sits under {input_root}, expected Asset")
+	return (
+		f"output {values.default_output_tax_account} ({output_root}), "
+		f"input {values.default_input_tax_account} ({input_root})"
+	)
+
+
+@check("J. Tax and the supplier's bill", "Tax posts to a tax account, never to round-off")
+def j_tax_not_round_off():
+	"""DEC-021, and the correction of a placeholder.
+
+	Until DEC-021 the whole tax figure was credited to the round-off account.
+	This asserts the new behaviour and the absence of the old one in the same
+	check, so a regression to the placeholder fails rather than passing quietly.
+	"""
+	company()
+	chart_of_accounts.backfill_defaults(COMPANY)
+	template = a_tax_template("Acceptance Two Component Tax", [
+		("Acceptance Tax Part A", 9, None),
+		("Acceptance Tax Part B", 9, None),
+	])
+	invoice = _tax_invoice(template.name, rate=1000, qty=1)
+
+	expect(flt(invoice.total_taxes) == 180, f"tax is {invoice.total_taxes}, expected 180")
+	expect(flt(invoice.grand_total) == 1180, f"grand total is {invoice.grand_total}, expected 1180")
+
+	entries = ledger.voucher_entries("KNIT 360 Sales Invoice", invoice.name)
+	output_account = frappe.db.get_value(
+		"KNIT 360 Company", COMPANY, "default_output_tax_account"
+	)
+	round_off = frappe.db.get_value("KNIT 360 Company", COMPANY, "round_off_account")
+
+	to_tax = [row for row in entries if row.account == output_account]
+	to_round_off = [row for row in entries if row.account == round_off]
+
+	expect(len(to_tax) == 2, f"{len(to_tax)} lines reached the tax account, expected 2")
+	expect(not to_round_off, f"{len(to_round_off)} tax lines still reach the round-off account")
+	credited = flt(sum(flt(row.credit) for row in to_tax))
+	expect(credited == 180, f"the tax account was credited {credited}, expected 180")
+
+	debits = flt(sum(flt(row.debit) for row in entries))
+	credits = flt(sum(flt(row.credit) for row in entries))
+	expect(abs(debits - credits) < 0.005, f"the entry does not balance: {debits} vs {credits}")
+	frappe.db.commit()
+	return f"{invoice.name}: 180 tax in 2 lines to {output_account}, nothing to round-off"
+
+
+@check("J. Tax and the supplier's bill", "A tax component may name the account it posts to")
+def j_component_account():
+	"""DEC-021. The per-component account is what makes more than one tax rate
+	usable: two components of the same invoice can be owed to two authorities.
+	"""
+	company()
+	chart_of_accounts.backfill_defaults(COMPANY)
+	named = account("Input Tax Credit")  # any other real account will do
+	template = a_tax_template("Acceptance Split Tax", [
+		("Acceptance Tax Named", 5, named),
+		("Acceptance Tax Default", 5, None),
+	])
+	invoice = _tax_invoice(template.name, rate=2000, qty=1)
+
+	entries = ledger.voucher_entries("KNIT 360 Sales Invoice", invoice.name)
+	default_account = frappe.db.get_value(
+		"KNIT 360 Company", COMPANY, "default_output_tax_account"
+	)
+	to_named = [row for row in entries if row.account == named]
+	to_default = [row for row in entries if row.account == default_account]
+
+	expect(len(to_named) == 1, f"{len(to_named)} lines reached the named account, expected 1")
+	expect(flt(to_named[0].credit) == 100, f"named account got {to_named[0].credit}, expected 100")
+	expect(len(to_default) == 1, f"{len(to_default)} lines reached the default, expected 1")
+	expect(
+		flt(to_default[0].credit) == 100,
+		f"default account got {to_default[0].credit}, expected 100",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: 100 to {named}, 100 to {default_account}"
+
+
+@check("J. Tax and the supplier's bill", "Tax with nowhere to post is refused, not guessed")
+def j_tax_without_account_refused():
+	"""DEC-021. The rule the receivable already follows, applied to tax: a wrong
+	account is harder to find later than a blocked invoice is now.
+	"""
+	company()
+	template = a_tax_template("Acceptance Unrouted Tax", [("Acceptance Tax Unrouted", 12, None)])
+	original = frappe.db.get_value("KNIT 360 Company", COMPANY, "default_output_tax_account")
+	frappe.db.set_value(
+		"KNIT 360 Company", COMPANY, "default_output_tax_account", None, update_modified=False
+	)
+	try:
+		message = refuses(_tax_invoice, template.name, rate=500, qty=1)
+	finally:
+		frappe.db.set_value(
+			"KNIT 360 Company", COMPANY, "default_output_tax_account", original,
+			update_modified=False,
+		)
+		frappe.db.commit()
+	return f"refused: {message}"
+
+
+@check("J. Tax and the supplier's bill", "A supplier's bill totals goods, freight and tax")
+def j_supplier_bill_total():
+	"""DEC-020. The amount payable is everything printed on the supplier's bill,
+	because that is the amount that leaves the bank.
+	"""
+	supplier = a_supplier()
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Supplier Invoice",
+			"company": COMPANY,
+			"supplier": supplier,
+			"bill_no": "ACC-BILL-001",
+			"bill_date": nowdate(),
+			"freight_and_ancillary": 750,
+			"statutory_tax_amount": 1800,
+			"items": [
+				{"item_code": "Acceptance raw coil", "qty": 4, "rate": 2000},
+				{"item_code": "Acceptance fitting", "qty": 2, "rate": 1000},
+			],
+		}
+	).insert(ignore_permissions=True)
+
+	expect(flt(invoice.items[0].amount) == 8000, f"line 1 is {invoice.items[0].amount}, want 8000")
+	expect(flt(invoice.net_total) == 10000, f"net total is {invoice.net_total}, expected 10000")
+	expect(
+		flt(invoice.grand_total) == 12550,
+		f"grand total is {invoice.grand_total}, expected 12550 "
+		f"(10000 goods + 750 freight + 1800 tax)",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: 10000 + 750 freight + 1800 tax = {invoice.grand_total}"
+
+
+@check("J. Tax and the supplier's bill", "A supplier's tax figure is recorded, not recalculated")
+def j_supplier_tax_is_entered():
+	"""DEC-020. The authoritative tax figure on a purchase is the one the
+	supplier billed. A template on this document records the treatment; it does
+	not overwrite their number, so an odd figure stays visible instead of being
+	silently replaced by ours.
+	"""
+	supplier = a_supplier()
+	template = a_tax_template("Acceptance Purchase Tax", [("Acceptance Tax Purchase", 18, None)])
+	odd = 1733.41  # deliberately not 18% of the net
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Supplier Invoice",
+			"company": COMPANY,
+			"supplier": supplier,
+			"bill_no": "ACC-BILL-002",
+			"bill_date": nowdate(),
+			"tax_template": template.name,
+			"statutory_tax_amount": odd,
+			"items": [{"item_code": "Acceptance raw coil", "qty": 5, "rate": 2000}],
+		}
+	).insert(ignore_permissions=True)
+
+	expect(
+		flt(invoice.statutory_tax_amount) == odd,
+		f"the supplier's tax figure became {invoice.statutory_tax_amount}, expected {odd}",
+	)
+	expect(
+		flt(invoice.grand_total) == flt(10000 + odd),
+		f"grand total is {invoice.grand_total}, expected {10000 + odd}",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: kept the billed {odd}, total {invoice.grand_total}"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -1693,6 +1943,15 @@ def cleanup():
 		removed["Business Status Log"] = len(orphaned)
 
 	wipe("KNIT 360 Customer", {"company": COMPANY}, force=True)
+
+	# The buying side, and the tax masters the posting checks create. Tax
+	# Template is company-scoped; its rows go with it as children.
+	frappe.db.sql(
+		"UPDATE `tabKNIT 360 Supplier Invoice` SET docstatus = 0 WHERE company = %s", (COMPANY,)
+	)
+	wipe("KNIT 360 Supplier Invoice", {"company": COMPANY}, force=True)
+	wipe("KNIT 360 Supplier", {"company": COMPANY}, force=True)
+	wipe("KNIT 360 Tax Template", {"company": COMPANY}, force=True)
 
 	# Accounts are a tree: a node cannot go before its children. In a nested
 	# set the width `rgt - lft` is 1 for a leaf and grows with depth of

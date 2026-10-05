@@ -13,7 +13,11 @@ The arithmetic is the same in all of them:
     line amount   = qty * rate, less any line discount
     net total     = sum of line amounts
     tax           = net total * the template's rates
-    grand total   = net total + tax
+    grand total   = net total + tax + any document-level additions
+
+The additions exist for one case, recorded as DEC-020: a supplier's bill
+carries freight and statutory tax outside the line items, and the amount
+payable is everything printed on that bill.
 
 Copying that into thirteen controllers would mean thirteen places to get
 rounding wrong. So it lives here once, and each controller declares the field
@@ -21,17 +25,33 @@ names it happens to use. The field names genuinely differ between documents
 (Quotation Item calls its rate `unit_rate`, Sales Order Item calls it `rate`),
 and a declaration is cheaper and safer than renaming columns that already exist.
 
-Tax is read from KNIT 360 Tax Template the same way Sales Invoice reads it. The
-template still carries no account of its own; that is FR-TAX-001 and is not
-solved here. This module computes the tax *figure* only. Where that figure is
-posted stays the posting document's business, which is why nothing here touches
-the ledger.
+Tax is read from KNIT 360 Tax Template, component by component. Since DEC-021
+a component can name the account it posts to, so tax_lines() returns the
+components rather than only their sum -- a posting document needs one GL line
+per account, not one lump. This module still never touches the ledger: it
+computes figures and names accounts, and where they are posted stays the
+posting document's business.
 """
 
 import frappe
 from frappe.utils import flt
 
 TAX_TEMPLATE_ROW = "KNIT 360 Tax Template Row"
+
+
+class TaxLine:
+	"""One tax component of one document.
+
+	`account` is whatever the template row named, which may be nothing. The
+	fallback is deliberately not resolved here: it depends on whether the
+	document charges tax or pays it, and only the document knows that.
+	"""
+
+	def __init__(self, component, rate, amount, account=None):
+		self.component = component
+		self.rate = flt(rate)
+		self.amount = flt(amount)
+		self.account = account
 
 
 class Shape:
@@ -43,7 +63,8 @@ class Shape:
 
 	def __init__(self, table="items", rate="rate", qty="qty", amount="amount",
 	             discount=None, net_total="net_total", tax_total="total_taxes",
-	             grand_total="grand_total", tax_template="tax_template"):
+	             grand_total="grand_total", tax_template="tax_template",
+	             additions=()):
 		self.table = table
 		self.rate = rate
 		self.qty = qty
@@ -53,6 +74,8 @@ class Shape:
 		self.tax_total = tax_total
 		self.grand_total = grand_total
 		self.tax_template = tax_template
+		#: Document-level fields whose values add to the grand total.
+		self.additions = tuple(additions)
 
 
 def line_amount(row, shape):
@@ -76,12 +99,38 @@ def line_amount(row, shape):
 	return flt(gross * (1 - percent / 100.0))
 
 
-def tax_amount(net, template):
-	"""The template's rates applied to the net total. No template means no tax."""
+def tax_lines(net, template):
+	"""The template's components, each applied to the net total.
+
+	Returns an empty list for no template and for a nil net, so a document
+	without tax simply has no tax lines rather than a zero one.
+	"""
 	if not template or not net:
-		return 0.0
-	rates = frappe.get_all(TAX_TEMPLATE_ROW, filters={"parent": template}, pluck="rate")
-	return flt(sum(flt(net) * flt(rate) / 100.0 for rate in rates))
+		return []
+	rows = frappe.get_all(
+		TAX_TEMPLATE_ROW,
+		filters={"parent": template},
+		fields=["tax_component", "rate", "tax_account"],
+		order_by="idx asc",
+	)
+	return [
+		TaxLine(
+			component=row.tax_component,
+			rate=row.rate,
+			amount=flt(net) * flt(row.rate) / 100.0,
+			account=row.tax_account,
+		)
+		for row in rows
+	]
+
+
+def tax_amount(net, template):
+	"""The tax total: the sum of the components, and nothing else.
+
+	Derived from tax_lines rather than computed separately, so the figure a
+	document stores can never disagree with the lines it posts.
+	"""
+	return flt(sum(line.amount for line in tax_lines(net, template)))
 
 
 def apply(doc, shape):
@@ -105,10 +154,13 @@ def apply(doc, shape):
 	net = flt(net)
 	tax = tax_amount(net, doc.get(shape.tax_template)) if shape.tax_template else 0.0
 
+	# Document-level charges outside the lines -- DEC-020.
+	additions = flt(sum(flt(doc.get(field)) for field in shape.additions))
+
 	_set(doc, shape.net_total, net)
 	_set(doc, shape.tax_total, tax)
-	_set(doc, shape.grand_total, flt(net + tax))
-	return flt(net + tax)
+	_set(doc, shape.grand_total, flt(net + tax + additions))
+	return flt(net + tax + additions)
 
 
 def _set(doc, fieldname, value):

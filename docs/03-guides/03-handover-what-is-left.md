@@ -20,8 +20,8 @@ What exists and is proven:
 | Record types built | 71 parent, 22 child — 93 in total |
 | BRD modules with record types built | **15 of 28** |
 | Lifecycle definitions | 25 |
-| Automated checks | **110** — 49 structural, 61 runtime |
-| Last full run | 49/49 and 61/61, 6 October 2026 |
+| Automated checks | **116** — 49 structural, 67 runtime |
+| Last full run | 49/49 and 67/67, 6 October 2026 |
 | BRD modules with nothing built yet | **13 of 28** (listed below) |
 | Flows running end to end | 1 of 3 (Customer-to-Cash) |
 
@@ -50,16 +50,30 @@ I am instructed not to invent requirements, and `AGENTS.md` forbids it. Each of
 these is a business decision. I can build any of them within about a day of a
 decision; I cannot make the decision.
 
-### 2.1 Blocking — these stop work that is otherwise ready
+### 2.1 Blocking — all six are now closed
 
-| # | Decision needed | Why it blocks | What I do the moment you answer |
+**On 6 October 2026 the owner delegated these six decisions** — *"im not finance
+person so i want you to either explain in simple layman language all this or make
+decision your self."* They are decided and recorded as `DEC-020` to `DEC-026`,
+and each is explained in non-accounting language, with worked examples, in
+`06-the-money-decisions-in-plain-language.md`.
+
+Two of them are not merely decided but **built and proven** by automated checks.
+
+| # | Was | Now | Decision |
 | --- | --- | --- | --- |
-| **D1** | **Your real master data.** The units you measure in, your item groups, your territories, your customer groups, your price lists. | The system currently holds a *sample* set under "KNIT 360 Demo Co". Real data cannot be entered against invented masters. | Replace the sample set and re-point the demo. |
-| **D2** | **Does `freight_and_ancillary` belong inside a Supplier Invoice grand total? Does `statutory_tax_amount`?** Both fields exist; both could be inside or outside. | Supplier Invoice is the only money document left without a grand total, purely because of this. | Wire it to the shared pricing engine. One line. |
-| **D3** | **Which tax accounts does tax post to?** (`OQ-005`, named CRITICAL and BLOCKING in the requirements.) | Tax currently calculates correctly and posts to the **round-off account** as a deliberate, visible placeholder. | Add the account fields to Tax Template and post properly. |
-| **D4** | **What does "Paid" mean operationally?** Part payments, allocation across several invoices, advances, over-payment, write-off of a small residue. | Payment Entry is the single largest hole. It cannot be built from the BRD, which names it without defining it. | Build posting and allocation — the biggest single win available. |
-| **D5** | **Your stock valuation method and whether stock is per-warehouse or per-bin.** (`OQ-007`, CRITICAL.) | Nothing can move stock until this is settled. | Build the stock ledger. |
-| **D6** | **The HR reference you mentioned.** | HR is deliberately not started. | Build it against your reference. |
+| **D1** | Your real master data | **Closed.** Sample masters belong to the demo site only; a client site is loaded by import. No longer a decision — it is build task `W6`. | `DEC-025` |
+| **D2** | Does freight and statutory tax belong in a Supplier Invoice total? | **Closed and built.** Both are inside: the total is the whole amount payable. The supplier's own tax figure is recorded, not recomputed. | `DEC-020` |
+| **D3** | Which tax accounts does tax post to? (`OQ-005`, CRITICAL) | **Closed and built.** Output tax to a liability, input tax to an asset, one line per component, a per-component account override, and a refusal where neither resolves. The round-off placeholder is gone. | `DEC-021` |
+| **D4** | What does "Paid" mean? | **Closed.** Part payment with its own status, allocation across invoices, over-payment held as an advance, derived outstanding, and a manual write-off inside a company tolerance. Unblocks `W1`. | `DEC-022` |
+| **D5** | Stock valuation (`OQ-007`, CRITICAL) | **Closed.** FIFO default, weighted average per item, LIFO not offered — Ind AS 2 ¶25 permits only the first two. Balance derived per item per warehouse; Bin stays an address. Unblocks `W2`. | `DEC-023` |
+| **D6** | The HR reference | **Closed.** Leave is built. Statutory payroll is out of version one; pay, posting and an export for the client's payroll provider are in. Sizes `W3`. | `DEC-024` |
+
+**Two new open questions came out of deciding these, and neither blocks
+anything:** `OQ-025`, whether a supplier's freight is expensed or added to the
+cost of the goods — needed only when `W7` posts the buying side; and `OQ-026`,
+when stock is written down to net realisable value, which Ind AS 2 requires and
+nothing yet does.
 
 ### 2.2 Important but not blocking
 
@@ -93,7 +107,7 @@ Not decisions — actions outside what I can reach.
 | **Y2** | **Hosting, domain, TLS, backups.** | Everything so far runs in Docker on one machine. There is no production environment, no backup schedule and no restore test. |
 | **Y3** | **The administrator password.** | It is not recorded anywhere in the repository. I did not guess it and I did not change it. You will need it to sign in during the demonstration. |
 | **Y4** | **The 238 BRD requirements are every one marked "TBD — the BRD does not specify this detail."** | Until a stakeholder fills those in, "match the BRD" means building to the ERP-standard baseline agreed in CD-001. That is what has been done. It is a reasonable reading, not the specification. |
-| **Y5** | **User acceptance testing by someone who does the job.** | My 110 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
+| **Y5** | **User acceptance testing by someone who does the job.** | My 116 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
 | **Y6** | **Decide what happens to the seven ERPNext reference documents** in `docs/` (`erpnext_accounting_module.md` and six others, roughly 4,200 lines). | I did not write them; they were swept into commit `2be7a50` by a `git add -A`. They are reference material about a GPL-3 product sitting in this repository. I flagged this previously and have had no answer. **This is the one item on this list I would act on soonest.** |
 | **Y7** | **Delete or keep the "Kelvinotherm Induction LLP" company** on the demo site. | It predates this work and holds one lead from 23 September. Harmless, but it appears in the company dropdown during a demonstration. |
 
@@ -105,13 +119,13 @@ Ordered by value. Each is a self-contained piece of work.
 
 | # | Work | Size | Why it matters | Blocked by |
 | --- | --- | --- | --- | --- |
-| **W1** | Payment Entry posting and allocation | Large | Closes receivables. Today an invoice marked Paid has no cash receipt behind it. The single biggest gap. | **D4** |
-| **W2** | Stock ledger — Delivery Note and Goods Receipt actually move stock; Bin holds a live figure | Large | Inventory, Warehouse and MRP are forms without it. | **D5** |
-| **W3** | HR: attendance, then payroll, then appraisal | Large | Leave is built and proven (`FR-HR-003`). Attendance feeds payroll; payroll ends in a Journal Entry that already works. Statutory payroll is the risk, not the HR — see `OQ-024`. | **D6** for payroll scope |
+| **W1** | Payment Entry posting and allocation | Large | Closes receivables. Today an invoice marked Paid has no cash receipt behind it. The single biggest gap. Note: its party, payment mode, bank account and allocation references are plain text fields today and must become links as part of this. | — (`DEC-022`) |
+| **W2** | Stock ledger — Delivery Note and Goods Receipt actually move stock | Large | Inventory, Warehouse and MRP are forms without it. Balance is derived per item per warehouse; Bin stays a storage address and holds no figure. | — (`DEC-023`) |
+| **W3** | HR: attendance, then payroll, then appraisal | Medium | Leave is built and proven (`FR-HR-003`). Attendance feeds payroll; payroll ends in a Journal Entry that already works. **Sized down by `DEC-024`:** statutory computation is out of version one, so payroll is pay, posting and an export. | — |
 | **W4** | Designed print formats and a letterhead | Medium | Printing and PDF already work; the output is Frappe's standard field dump. What is missing is a laid-out quotation, order and invoice carrying the client's letterhead. Nothing blocks this. | — |
 | **W5** | Pricing reads from Item Price instead of being typed | Small | The masters exist and are populated; the documents ignore them. | — |
 | **W6** | Data import — opening balances, customers, items | Medium | Blocks the first customer, not the tenth. | — |
-| **W7** | Procure-to-Pay posting — Purchase Order and Supplier Invoice reach the ledger | Medium | The buying side totals correctly now but never reaches the books. | D2 for the total |
+| **W7** | Procure-to-Pay posting — Purchase Order and Supplier Invoice reach the ledger | Medium | The buying side totals correctly now but never reaches the books. | `OQ-025` for where freight lands |
 | **W8** | Credit and debit notes | Medium | Returns cannot be settled without them. | **D13** |
 | **W9** | Customer credit limit and credit hold | Small | A finance controller asks for this in the first demonstration. | **D13** |
 | **W10** | Email on status change | Small | Nothing is sent by the system today. | D8 for content |
@@ -163,7 +177,7 @@ docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site kn
 ```bash
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
-61 runtime checks. Drives the live system, then removes its own data.
+67 runtime checks. Drives the live system, then removes its own data.
 
 ```bash
 docker exec knit-bench bash -lc 'cat /home/frappe/frappe-bench/sites/apps.txt'
