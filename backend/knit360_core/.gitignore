@@ -1,0 +1,7 @@
+# Build output. `bench build` regenerates these from public/js/*.bundle.js with
+# a content hash in the filename, so committing them adds a new file on every
+# build and never removes the old one.
+knit360_core/public/dist/
+node_modules/
+*.pyc
+__pycache__/
