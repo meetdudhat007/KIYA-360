@@ -68,6 +68,53 @@ class TestDoctypeDefinitions(unittest.TestCase):
 			if d.get("title_field"):
 				self.assertIn(d["title_field"], names, d["name"])
 
+	def test_brd_requirement_inventory_is_intact(self):
+		"""The copied BRD inventory still has the shape it is supposed to.
+
+		brd_requirements.py is generated from
+		docs/00-requirements/02-module-inventory.md by
+		scripts/generate_brd_requirements.py. The app cannot see the docs tree
+		at runtime, so this cannot catch a *stale* copy -- but it does catch a
+		truncated or corrupted one, which is the failure that would quietly
+		understate coverage in front of a client.
+		"""
+		import re
+
+		from knit360_core import brd_requirements
+
+		self.assertEqual(len(brd_requirements.REQUIREMENTS), 238)
+		self.assertEqual(len(brd_requirements.MODULES), 28)
+
+		ids = [row[0] for row in brd_requirements.REQUIREMENTS]
+		self.assertEqual(len(ids), len(set(ids)), "duplicate requirement ids")
+
+		pattern = re.compile(r"^FR-[A-Z]+-[0-9]+(\.[0-9]+)*$")
+		for req_id, name, module_no, classification in brd_requirements.REQUIREMENTS:
+			self.assertRegex(req_id, pattern, f"{req_id} is not a requirement id")
+			self.assertTrue(name.strip(), f"{req_id} has no name")
+			self.assertIn(module_no, brd_requirements.MODULES, f"{req_id} cites module {module_no}")
+			self.assertTrue(classification.strip(), f"{req_id} has no classification")
+
+	def test_every_proven_requirement_exists(self):
+		"""traceability.PROVEN_BY is hand-maintained, so it is checked.
+
+		A line claiming a requirement is proven by a check that does not exist,
+		or naming a requirement that is not in the BRD, would put a false green
+		in front of a client. Both are refused here.
+		"""
+		from knit360_core import acceptance, brd_requirements, traceability
+
+		known = {row[0] for row in brd_requirements.REQUIREMENTS}
+		check_names = {name for _group, name, _fn in acceptance.CHECKS}
+
+		for req_id, check in traceability.PROVEN_BY.items():
+			self.assertIn(req_id, known, f"{req_id} is claimed proven but is not in the BRD")
+			self.assertIn(
+				check,
+				check_names,
+				f"{req_id} claims to be proven by '{check}', which is not an acceptance check",
+			)
+
 	def test_every_doctype_declares_how_it_is_named(self):
 		"""A document with no naming rule is named with a random hash.
 

@@ -954,6 +954,57 @@ def g_no_vendor_ads():
 	        f"About dialog and website footer all replaced")
 
 
+@check("G. Desk", "The requirement coverage report runs and adds up")
+def g_coverage_report():
+	"""The report a client is shown must agree with itself.
+
+	It is the one artefact in the system whose whole purpose is to be believed,
+	so the figures in its headline are checked against the rows beneath them.
+	"""
+	from knit360_core import brd_requirements, traceability
+	from knit360_core.platform.report.knit_360_requirement_coverage import (
+		knit_360_requirement_coverage as report,
+	)
+
+	columns, data, message, chart, cards = report.execute({})
+	expect(columns and data, "the report returned no columns or no rows")
+	expect(
+		len(data) == len(brd_requirements.REQUIREMENTS) == 238,
+		f"{len(data)} rows for {len(brd_requirements.REQUIREMENTS)} requirements",
+	)
+
+	summary = traceability.summary()
+	counted = {"Proven": 0, "Modelled": 0, "Not started": 0}
+	for row in data:
+		counted[row["status"]] += 1
+	expect(
+		counted["Proven"] == summary["proven"]
+		and counted["Modelled"] == summary["modelled"]
+		and counted["Not started"] == summary["not_started"],
+		f"the headline and the rows disagree: {summary} vs {counted}",
+	)
+	expect(
+		summary["covered"] + summary["not_started"] == 238,
+		"covered and not-started do not account for all 238 requirements",
+	)
+	expect(
+		str(summary["covered"]) in message and "238" in message,
+		"the headline message does not state the coverage it computed",
+	)
+
+	# A "Proven" row must name the check that proves it, or the word is empty.
+	for row in data:
+		if row["status"] == "Proven":
+			expect(row["proven_by"], f"{row['requirement']} is Proven but names no check")
+
+	# Chart and cards are returned in the positions Frappe reads them from;
+	# swapping the two makes the table fail to render at all.
+	expect(isinstance(chart, dict) and "data" in chart, "the chart is not a chart")
+	expect(isinstance(cards, list), "report_summary must be a list of cards")
+	return (f"238 rows, {summary['proven']} proven / {summary['modelled']} modelled / "
+	        f"{summary['not_started']} not started, headline agrees")
+
+
 @check("G. Desk", "Count charts are not formatted as currency")
 def g_no_rupee_counts():
 	from knit360_core import dashboards
