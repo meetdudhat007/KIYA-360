@@ -50,10 +50,38 @@ def apply():
 		frappe.db.set_single_value("System Settings", "app_name", APP_NAME)
 
 	frappe.db.set_single_value("Navbar Settings", "app_logo", LOGO)
+	hidden = hide_vendor_navbar_items()
 
 	frappe.db.commit()
 	frappe.clear_cache()
-	return {"app_name": APP_NAME, "logo": LOGO}
+	return {"app_name": APP_NAME, "logo": LOGO, "navbar_items_hidden": hidden}
+
+
+#: Navbar entries that sell another vendor's services. Hiding one is a
+#: presentation choice, not a licence question: Frappe is MIT, which asks that
+#: the copyright and permission notice travel with the software, and that notice
+#: lives in the source and in LICENSE, not in a support-sales link.
+#:
+#: "About" is deliberately NOT in this list. It carries Frappe's attribution and
+#: version, and removing attribution is a different decision from removing an
+#: advert -- it belongs to the owner, not to this file.
+VENDOR_NAVBAR_ITEMS = ("Frappe Support",)
+
+
+def hide_vendor_navbar_items():
+	"""Hide another vendor's marketing links from the Help menu.
+
+	Navbar Item carries its own `hidden` flag, so this sets a supported field
+	rather than deleting a row Frappe reinstalls on migrate.
+	"""
+	hidden = []
+	for label in VENDOR_NAVBAR_ITEMS:
+		for name in frappe.get_all(
+			"Navbar Item", filters={"item_label": label, "hidden": 0}, pluck="name"
+		):
+			frappe.db.set_value("Navbar Item", name, "hidden", 1, update_modified=False)
+			hidden.append(label)
+	return hidden
 
 
 def after_install():

@@ -33,7 +33,12 @@ website_context = {
 # Named *.bundle.js so Frappe's bundler emits it with a content hash. Served
 # from a fixed path it was cached by the browser forever, and every change to
 # it needed a hard refresh on every machine.
-app_include_js = "business_status.bundle.js"
+app_include_js = [
+	"business_status.bundle.js",
+	# Suppresses Frappe's own product adverts in the list sidebar. Our CRM
+	# module triggers one for a competing CRM product; see the file.
+	"branding.bundle.js",
+]
 
 after_install = [
 	"knit360_core.branding.after_install",

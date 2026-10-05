@@ -20,6 +20,7 @@ A failing check prints the exception that caused it. Nothing is swallowed.
 """
 
 import json
+import pathlib
 import traceback
 
 import frappe
@@ -892,6 +893,48 @@ def g_charts():
 				    FROM `tab{doc.document_type}` GROUP BY `{doc.based_on}`"""
 			)
 	return f"{len(dashboards.CHARTS)} charts query cleanly, {len(dashboards.CARDS)} cards exist"
+
+
+@check("G. Desk", "No other vendor's advertising reaches the user")
+def g_no_vendor_ads():
+	"""Frappe's list sidebar advertises Frappe's own commercial products.
+
+	add_crm_banner() fires on any list whose doctype's module is called "CRM",
+	which ours is, because that is BRD module 02's name. The result was
+	"Switch to Frappe CRM for smarter sales" in the sidebar of our Lead,
+	Opportunity and Customer lists -- an advert for a competing product, in
+	front of whoever is being shown the system.
+
+	Two halves, and this checks both: the Help menu link is hidden through
+	Navbar Item's own `hidden` flag, and the sidebar banners are suppressed by
+	overriding the one helper all three go through.
+	"""
+	from knit360_core import branding
+
+	for label in branding.VENDOR_NAVBAR_ITEMS:
+		rows = frappe.get_all("Navbar Item", filters={"item_label": label}, fields=["hidden"])
+		for row in rows:
+			expect(row.hidden, f"the navbar item {label!r} is still visible")
+
+	expect(
+		"About" not in branding.VENDOR_NAVBAR_ITEMS,
+		"About carries Frappe's attribution; hiding it is the owner's decision, not ours",
+	)
+
+	bundle = pathlib.Path(frappe.get_app_path("knit360_core")) / "public" / "js" / "branding.bundle.js"
+	expect(bundle.exists(), f"{bundle.name} is missing, so the sidebar banners return")
+	source = bundle.read_text(encoding="utf-8")
+	expect(
+		"add_banner" in source and "ListSidebar" in source,
+		"the branding bundle no longer overrides ListSidebar.add_banner",
+	)
+
+	hooks = (pathlib.Path(frappe.get_app_path("knit360_core")) / "hooks.py").read_text(encoding="utf-8")
+	expect(
+		"branding.bundle.js" in hooks,
+		"the branding bundle is not in app_include_js, so it never loads",
+	)
+	return f"{len(branding.VENDOR_NAVBAR_ITEMS)} navbar item(s) hidden; sidebar banners overridden"
 
 
 @check("G. Desk", "Count charts are not formatted as currency")
