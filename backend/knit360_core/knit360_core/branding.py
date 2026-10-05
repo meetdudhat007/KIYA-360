@@ -25,6 +25,10 @@ APP_NAME = "KNIT 360"
 LOGO = "/assets/knit360_core/images/knit360-logo.svg"
 
 
+#: Replaces the framework's default "Built on <vendor>" website footer.
+FOOTER = APP_NAME
+
+
 def apply():
 	"""Set every branding value Frappe consults. Idempotent.
 
@@ -50,6 +54,14 @@ def apply():
 		frappe.db.set_single_value("System Settings", "app_name", APP_NAME)
 
 	frappe.db.set_single_value("Navbar Settings", "app_logo", LOGO)
+
+	# Website Settings.footer_powered is empty by default, and the footer
+	# template then falls through to templates/includes/footer/footer_powered.html,
+	# which renders "Built on Frappe" linking to frappeframework.com. Any
+	# non-empty value replaces it, so setting one is the supported way to
+	# change it -- the template is not edited.
+	frappe.db.set_single_value("Website Settings", "footer_powered", FOOTER)
+
 	hidden = hide_vendor_navbar_items()
 
 	frappe.db.commit()

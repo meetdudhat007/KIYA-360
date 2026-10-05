@@ -30,6 +30,54 @@
 frappe.provide("knit360.branding");
 
 knit360.branding = {
+	//: Shown in place of the framework's own About dialog, which lists the
+	//: vendor's website, GitHub, blog, forum and five social accounts, then
+	//: every installed app by name, then the vendor's copyright line.
+	//:
+	//: MIT asks that the copyright and permission notice travel with the
+	//: software. They do: every source file keeps its header and Frappe's
+	//: LICENSE is untouched. MIT does not require a host application to
+	//: display them in its interface, which is what makes this replacement --
+	//: rather than the removal of a notice -- the thing being done here.
+	replace_about_dialog() {
+		if (!frappe.ui || !frappe.ui.misc) {
+			console.warn("KNIT 360: frappe.ui.misc not found; the About dialog was left alone.");
+			return;
+		}
+
+		frappe.ui.misc.about = function () {
+			if (knit360.branding.about_dialog) {
+				knit360.branding.about_dialog.show();
+				return;
+			}
+
+			const dialog = new frappe.ui.Dialog({ title: __("KNIT 360") });
+			$(dialog.body).html(
+				`<div>
+					<p>${__("KNIT 360 — unified CRM and ERP platform.")}</p>
+					<p class="text-muted" id="knit360-version">${__("Loading version...")}</p>
+				</div>`
+			);
+			knit360.branding.about_dialog = dialog;
+
+			// Only this product's version. get_versions returns every installed
+			// app, and naming the others here would put back what the dialog
+			// was replaced to leave out.
+			frappe.call({
+				method: "frappe.utils.change_log.get_versions",
+				callback: (r) => {
+					const app = (r.message || {}).knit360_core;
+					const text = app
+						? __("Version {0}", [app.branch_version || app.version])
+						: __("Version unavailable");
+					$(dialog.body).find("#knit360-version").text(text);
+				},
+			});
+
+			dialog.show();
+		};
+	},
+
 	suppress_vendor_banners() {
 		// Loaded after list.bundle.js, so the class exists by now. If Frappe
 		// ever restructures this, say so in the console rather than failing
@@ -58,3 +106,4 @@ knit360.branding = {
 };
 
 knit360.branding.suppress_vendor_banners();
+knit360.branding.replace_about_dialog();

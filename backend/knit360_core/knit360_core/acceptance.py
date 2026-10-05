@@ -916,9 +916,13 @@ def g_no_vendor_ads():
 		for row in rows:
 			expect(row.hidden, f"the navbar item {label!r} is still visible")
 
+	# The About menu entry stays. What it opens is ours: the framework's own
+	# dialog lists the vendor's site, GitHub, blog, forum, five social accounts
+	# and every installed app by name. Replacing its contents is a different
+	# act from deleting the menu item, and leaves the product with an About box.
 	expect(
 		"About" not in branding.VENDOR_NAVBAR_ITEMS,
-		"About carries Frappe's attribution; hiding it is the owner's decision, not ours",
+		"About should be replaced, not hidden -- the product needs an About box",
 	)
 
 	bundle = pathlib.Path(frappe.get_app_path("knit360_core")) / "public" / "js" / "branding.bundle.js"
@@ -928,13 +932,26 @@ def g_no_vendor_ads():
 		"add_banner" in source and "ListSidebar" in source,
 		"the branding bundle no longer overrides ListSidebar.add_banner",
 	)
+	expect(
+		"frappe.ui.misc.about" in source,
+		"the branding bundle no longer replaces the About dialog",
+	)
+
+	# Website Settings.footer_powered is empty by default, and the footer then
+	# falls through to a template rendering "Built on <vendor>" with a link.
+	# Any non-empty value replaces it.
+	expect(
+		frappe.db.get_single_value("Website Settings", "footer_powered"),
+		"footer_powered is empty, so the website footer advertises the framework",
+	)
 
 	hooks = (pathlib.Path(frappe.get_app_path("knit360_core")) / "hooks.py").read_text(encoding="utf-8")
 	expect(
 		"branding.bundle.js" in hooks,
 		"the branding bundle is not in app_include_js, so it never loads",
 	)
-	return f"{len(branding.VENDOR_NAVBAR_ITEMS)} navbar item(s) hidden; sidebar banners overridden"
+	return (f"{len(branding.VENDOR_NAVBAR_ITEMS)} navbar item(s) hidden; banners, "
+	        f"About dialog and website footer all replaced")
 
 
 @check("G. Desk", "Count charts are not formatted as currency")
