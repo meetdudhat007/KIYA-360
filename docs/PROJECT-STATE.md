@@ -196,7 +196,9 @@ group accounts, disabled accounts and closed fiscal years.
 - **No stock ledger.** Delivery Note and Goods Receipt record quantities only.
 - **Tax posts to the round-off account** as a visible placeholder pending
   `OQ-005` / FR-TAX-001.
-- **No print formats, no outbound email.**
+- **No designed print formats and no letterhead.** Printing and PDF work via
+  Frappe's standard format; the output is a field-by-field dump. No outgoing
+  mail account is configured, so nothing can be emailed.
 - **HR not started**, pending a reference from the owner.
 
 ### How to verify

@@ -293,7 +293,7 @@ a gap is how a demonstration loses a room.
 | --- | --- | --- |
 | Marking an invoice **Paid** | Payment Entry does not post to the ledger or reduce the outstanding figure. The status would move and the money would not. | *"Taking payment is the next piece of work. I would rather show you an outstanding invoice that is true than a paid one that is not."* |
 | Stock levels, Bin quantities | Delivery Note and Goods Receipt record quantities but do not move stock. Bin holds no live figure. | *"Stock movement is scheduled, not built."* |
-| Printing or emailing a quotation | There are no print formats and nothing is sent. | *"Document templates are a known gap."* |
+| Printing a quotation **to a customer** | It prints and makes a PDF, but with no letterhead and no layout — it looks like a system printout. Emailing is unconfigured. | *"It prints today; what it does not have yet is your letterhead and layout. Designing that is a known, unblocked piece of work."* |
 | The tax figure on an invoice | It calculates correctly but posts to the round-off account as a deliberate placeholder. | *"The calculation is right; where it posts is waiting on the tax masters."* |
 | Anything in HR | Not started. | *"Deferred on purpose — we are doing it next, against a reference you are providing."* |
 | Users, Website, Tools, Build | Framework screens, not ours. | Just do not open them. |

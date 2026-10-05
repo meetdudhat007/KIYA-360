@@ -311,8 +311,8 @@ Stated plainly, because finding out during a demonstration is worse.
 | **Tax accounts** | A tax template calculates a figure correctly, but on an invoice that figure is posted to the round-off account as a visible placeholder. Real tax accounts are a separate piece of work. |
 | **Purchasing and the ledger** | Purchase Order and Supplier Quotation now total correctly, but nothing on the buying side posts to the books. |
 | **HR and payroll** | Not started. Deliberately deferred. |
-| **Printing** | There are no print formats, so a quotation cannot yet be sent as a PDF. |
-| **Email** | Nothing is sent automatically. |
+| **Printing** | Printing and PDF both work, but there is no designed print format and no letterhead, so output is a plain field-by-field printout rather than a laid-out document. |
+| **Email** | The system can email documents, but no outgoing mail account is configured, so nothing can be sent yet. |
 
 Section 3 of the handover document lists what has to happen to close each of
 these and who has to do it.

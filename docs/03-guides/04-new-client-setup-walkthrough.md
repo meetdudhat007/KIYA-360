@@ -42,7 +42,7 @@ Be straight about this before setup, not after.
 | They do this on paper today | After setup |
 | --- | --- |
 | Write down enquiries and follow-ups | **In the system.** Works properly. |
-| Make quotations | **In the system.** It calculates totals and discounts. But see §9 — you cannot print it yet. |
+| Make quotations | **In the system.** It works out the totals and the discounts for them. It prints and saves a PDF too — but as a plain system printout with no letterhead or layout. See §9.4. |
 | Track orders | **In the system.** Works properly. |
 | Raise invoices | **In the system.** It posts to the ledger correctly. |
 | Know who owes them money | **In the system.** Works properly. |
@@ -1071,14 +1071,26 @@ Tax calculates correctly and posts to **Round Off**, not to Output Tax Payable.
 **What the client does instead:** their accountant works GST from the invoices,
 not from the trial balance. Tell the accountant this explicitly.
 
-### 9.4 Printing and emailing
+### 9.4 Printing comes out as a system printout, not a document
 
-**There are no print formats.** You cannot produce a PDF quotation or invoice
-from the system, and it sends no email.
+**What works.** Every document can be printed and saved as a PDF today.
+Verified on this site: a quotation renders 611 words of real content and
+produces a valid 19 KB PDF. `wkhtmltopdf` is installed and working.
 
-**What the client does instead:** read the figures off the screen and type them
-into their existing letterhead. This is the gap they will feel first and
-complain about soonest — raise it before they discover it.
+**What is missing.** There is no *designed* print format and no letterhead —
+zero of each on this site. So Frappe falls back to its standard format, which
+lists every field down the page in order. All the information is there and the
+arithmetic is right, but it does not look like a quotation a business would
+send: no logo, no address block, no terms at the foot, no signature line.
+
+**What the client does instead:** print it as-is for an internal copy or a
+file. For something going to a customer, copy the figures onto their existing
+letterhead until a print format is designed. That design work is listed as W4
+in the handover and is not blocked on anything.
+
+**Email.** Frappe can email a document, but **no outgoing mail account is
+configured on this site**, so nothing can be sent until someone enters SMTP
+details. That is a setup task, not missing software.
 
 ### 9.5 Purchases do not reach the books
 

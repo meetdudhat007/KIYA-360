@@ -105,7 +105,7 @@ Ordered by value. Each is a self-contained piece of work.
 | **W1** | Payment Entry posting and allocation | Large | Closes receivables. Today an invoice marked Paid has no cash receipt behind it. The single biggest gap. | **D4** |
 | **W2** | Stock ledger — Delivery Note and Goods Receipt actually move stock; Bin holds a live figure | Large | Inventory, Warehouse and MRP are forms without it. | **D5** |
 | **W3** | HR & Payroll (BRD module 19) | Large | 7 requirements, every one marked TBD. Explicitly deferred. | **D6** |
-| **W4** | Print formats — quotation, order, invoice as PDF | Medium | A quotation that cannot be sent to a customer is not finished. Nothing blocks this. | — |
+| **W4** | Designed print formats and a letterhead | Medium | Printing and PDF already work; the output is Frappe's standard field dump. What is missing is a laid-out quotation, order and invoice carrying the client's letterhead. Nothing blocks this. | — |
 | **W5** | Pricing reads from Item Price instead of being typed | Small | The masters exist and are populated; the documents ignore them. | — |
 | **W6** | Data import — opening balances, customers, items | Medium | Blocks the first customer, not the tenth. | — |
 | **W7** | Procure-to-Pay posting — Purchase Order and Supplier Invoice reach the ledger | Medium | The buying side totals correctly now but never reaches the books. | D2 for the total |
