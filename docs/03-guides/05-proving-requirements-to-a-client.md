@@ -17,7 +17,7 @@ is better to know why before you are in the room than after.
 
 **Two reasons, neither of them about how much work has been done.**
 
-**First: 67 of 238 requirements are covered. 171 are not started.** That is the
+**First: 69 of 238 requirements are covered. 169 are not started.** That is the
 system's own count, produced by reading itself, and it is in §3 below. Fourteen
 of the BRD's twenty-eight modules have nothing built — including HR & Payroll,
 Marketing, Customer Service, Projects and E-Commerce. A claim of full coverage
@@ -67,17 +67,17 @@ list described below.
 Four cards across the top, then a donut, then 238 rows:
 
 ```
-Proven by a live check              9
-Modelled, not yet proven           58
-Not started                       171
-BRD modules with anything built  14 / 28
+Proven by a live check             10
+Modelled, not yet proven           59
+Not started                       169
+BRD modules with anything built  15 / 28
 ```
 
 and the headline:
 
-> **67 of 238 BRD requirements are covered (28.2%)** — 9 proven by an automated
-> check that drives a live site, 58 modelled but not yet proven, 171 not
-> started. 14 of 28 BRD modules have anything built.
+> **69 of 238 BRD requirements are covered (29.0%)** — 10 proven by an automated
+> check that drives a live site, 59 modelled but not yet proven, 169 not
+> started. 15 of 28 BRD modules have anything built.
 
 ### The columns, and what each one is worth
 
@@ -95,14 +95,14 @@ and the headline:
 
 ### The three statuses, stated the way you should state them
 
-> **Not started** — nothing in the system cites this requirement. 171 of them.
+> **Not started** — nothing in the system cites this requirement. 169 of them.
 >
 > **Modelled** — the data is designed for it and the fields exist, **but no
 > automated check proves any behaviour.** A Delivery Note exists and cites
 > `FR-SALES-005`, and it moves no stock. Modelled is not done.
 >
 > **Proven** — an automated check inserts a document, drives it through its
-> lifecycle on a live site, and asserts on the result. Nine of these.
+> lifecycle on a live site, and asserts on the result. Ten of these.
 
 Say "modelled is not done" out loud yourself. If the client has to work it out,
 you have lost the room.
@@ -125,13 +125,14 @@ show:
 
 ### Showing the gaps deliberately
 
-Tick **Only the gaps**. 171 rows. Scroll it.
+Tick **Only the gaps**. 169 rows. Scroll it.
 
-Then filter **BRD Module → HR & Payroll**: seven rows, all `Not started`.
+Then filter **BRD Module → HR & Payroll**: seven rows, one of them `Proven`
+(`FR-HR-003 Attendance & Leave`) and six `Not started`.
 
-> **"Nothing in HR is built. It was deferred on purpose and you are getting the
-> reference material to us. I would rather show you this now than have you find
-> it in month three."**
+> **"Leave management is built and proven. Attendance, payroll, appraisal and
+> recruitment are not. I would rather show you this now than have you find it
+> in month three."**
 
 ### Exporting it
 
@@ -148,7 +149,7 @@ A report is still a report. This is the part that is not.
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
 
-About a minute, one line per check, ending `48/48 checks passed`, then it
+About a minute, one line per check, ending `61/61 checks passed`, then it
 removes its own data.
 
 > **"That was not a recording. It just created a company and its chart of
@@ -163,7 +164,7 @@ The nine `Proven` requirements are these checks. Show one connection explicitly:
   posts a receivable and reports it outstanding"*
 - That exact line appears in the run output.
 
-**97 checks in total**: 49 structural, 48 runtime. Structural ones read the
+**110 checks in total**: 49 structural, 61 runtime. Structural ones read the
 definitions; runtime ones drive the system.
 
 ---
@@ -196,8 +197,8 @@ value. The top three are Payment Entry posting, the stock ledger, and HR.
 
 ## 6. The questions that will come, and honest answers
 
-**"28% after all this time?"**
-> *"28% of a 238-requirement BRD where every requirement says the detail is TBD.
+**"29% after all this time?"**
+> *"29% of a 238-requirement BRD where every requirement says the detail is TBD.
 > What exists is the spine — the sales cycle end to end onto a double-entry
 > ledger that balances. The 171 are mostly whole modules nobody has specified
 > yet. Give me a decision on what 'paid' means operationally and Payment Entry
@@ -230,7 +231,7 @@ value. The top three are Payment Entry posting, the stock ledger, and HR.
 
 | Do not say | Say instead |
 | --- | --- |
-| "We've met all your requirements" | "67 of 238 are covered; here is the breakdown" |
+| "We've met all your requirements" | "69 of 238 are covered; here is the breakdown" |
 | "That module is done" | "That module is modelled. Nothing proves the behaviour yet." |
 | "It's basically finished" | "The sales spine is proven. Here is what is left, in order." |
 | "We can add that easily" | "That is a decision I need from you first — here is the question." |

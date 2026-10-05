@@ -1208,6 +1208,342 @@ def h_page_renders():
 	return f"{len(response)} bytes, token present"
 
 
+
+# --- I. HR: leave -------------------------------------------------------
+
+
+def an_employee(name="Acceptance Employee"):
+	existing = frappe.db.get_value("KNIT 360 Employee", {"employee_name": name, "company": COMPANY})
+	if existing:
+		return existing
+	return frappe.get_doc(
+		{"doctype": "KNIT 360 Employee", "employee_name": name, "company": company(),
+		 "is_active": 1, "date_of_joining": "2026-01-01"}
+	).insert(ignore_permissions=True).name
+
+
+def a_leave_type(name="Acceptance Casual Leave", **overrides):
+	if frappe.db.exists("KNIT 360 Leave Type", name):
+		return name
+	fields = {"doctype": "KNIT 360 Leave Type", "leave_type_name": name, "is_paid_leave": 1}
+	fields.update(overrides)
+	return frappe.get_doc(fields).insert(ignore_permissions=True).name
+
+
+def a_leave_period():
+	name = "Acceptance Leave Period"
+	if frappe.db.exists("KNIT 360 Leave Period", name):
+		return name
+	year = getdate(nowdate()).year
+	return frappe.get_doc(
+		{"doctype": "KNIT 360 Leave Period", "period_name": name, "company": company(),
+		 "from_date": f"{year}-01-01", "to_date": f"{year}-12-31", "is_active": 1}
+	).insert(ignore_permissions=True).name
+
+
+def allocate(employee, leave_type, days):
+	"""A submitted allocation, moved there through the lifecycle."""
+	year = getdate(nowdate()).year
+	doc = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Leave Allocation",
+			"employee": employee, "leave_type": leave_type, "company": COMPANY,
+			"leave_period": a_leave_period(),
+			"from_date": f"{year}-01-01", "to_date": f"{year}-12-31",
+			"new_leaves_allocated": days,
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Leave Allocation", doc.name, "Allocated")
+	return doc.name
+
+
+def an_application(employee, leave_type, from_date, to_date, **overrides):
+	fields = {
+		"doctype": "KNIT 360 Leave Application",
+		"employee": employee, "leave_type": leave_type, "company": COMPANY,
+		"from_date": from_date, "to_date": to_date,
+	}
+	fields.update(overrides)
+	return frappe.get_doc(fields).insert(ignore_permissions=True)
+
+
+def approve(application):
+	engine.transition("KNIT 360 Leave Application", application, "Pending Approval")
+	engine.transition("KNIT 360 Leave Application", application, "Approved")
+
+
+@check("I. HR leave", "An allocation grants a balance through the ledger")
+def i_allocation_posts():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Allocating Employee")
+	leave_type = a_leave_type("Acceptance Allocation Leave")
+	opening = leave_ledger.balance(employee, leave_type, company=COMPANY)
+
+	name = allocate(employee, leave_type, 12)
+	entries = leave_ledger.entries("KNIT 360 Leave Allocation", name)
+	expect(len(entries) == 1, f"{len(entries)} ledger entries, expected 1")
+	expect(flt(entries[0]["leaves"]) == 12, f"posted {entries[0]['leaves']}, expected 12")
+
+	moved = leave_ledger.balance(employee, leave_type, company=COMPANY) - opening
+	expect(abs(moved - 12) < 0.001, f"balance moved by {moved}, expected 12")
+	frappe.db.commit()
+	return f"{name}: +12 days"
+
+
+@check("I. HR leave", "An approved application consumes the balance")
+def i_application_consumes():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Applying Employee")
+	leave_type = a_leave_type("Acceptance Application Leave")
+	allocate(employee, leave_type, 10)
+	before = leave_ledger.balance(employee, leave_type, company=COMPANY)
+
+	year = getdate(nowdate()).year
+	app = an_application(employee, leave_type, f"{year}-06-01", f"{year}-06-03",
+	                     reason="Acceptance run")
+	expect(flt(app.total_leave_days) == 3, f"counted {app.total_leave_days} days, expected 3")
+
+	approve(app.name)
+	after = leave_ledger.balance(employee, leave_type, company=COMPANY)
+	expect(abs((before - after) - 3) < 0.001, f"balance fell by {before - after}, expected 3")
+	frappe.db.commit()
+	return f"{app.name}: 3 days, balance {before:g} -> {after:g}"
+
+
+@check("I. HR leave", "A balance is derived from the ledger, never stored")
+def i_balance_is_derived():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Derived Employee")
+	leave_type = a_leave_type("Acceptance Derived Leave")
+	allocate(employee, leave_type, 7)
+
+	rows = frappe.get_all(
+		"KNIT 360 Leave Ledger Entry",
+		filters={"employee": employee, "leave_type": leave_type, "is_cancelled": 0},
+		pluck="leaves",
+	)
+	expect(
+		abs(sum(flt(r) for r in rows) - leave_ledger.balance(employee, leave_type)) < 0.001,
+		"balance() does not equal the sum of the live entries",
+	)
+
+	for doctype in ("KNIT 360 Employee", "KNIT 360 Leave Type"):
+		stored = [
+			f.fieldname for f in frappe.get_meta(doctype).fields
+			if "leave_balance" in (f.fieldname or "")
+		]
+		expect(not stored, f"{doctype} stores a leave balance in {stored}")
+	frappe.db.commit()
+	return f"balance == sum of {len(rows)} entries; no doctype stores one"
+
+
+@check("I. HR leave", "Applying for more than the balance is refused")
+def i_over_application_refused():
+	employee = an_employee("Greedy Employee")
+	leave_type = a_leave_type("Acceptance Scarce Leave")
+	allocate(employee, leave_type, 2)
+	year = getdate(nowdate()).year
+
+	message = refuses(an_application, employee, leave_type, f"{year}-07-01", f"{year}-07-10")
+	frappe.db.rollback()
+	return message
+
+
+@check("I. HR leave", "A leave type may permit a negative balance")
+def i_negative_allowed():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Overdrawn Employee")
+	leave_type = a_leave_type("Acceptance Overdraft Leave", allow_negative_balance=1)
+	year = getdate(nowdate()).year
+
+	app = an_application(employee, leave_type, f"{year}-08-03", f"{year}-08-04")
+	approve(app.name)
+
+	balance = leave_ledger.balance(employee, leave_type, company=COMPANY)
+	expect(balance < 0, f"balance is {balance}, expected it to go negative")
+	frappe.db.commit()
+	return f"no allocation, 2 days taken, balance {balance:g}"
+
+
+@check("I. HR leave", "Holidays are not counted as leave")
+def i_holidays_skipped():
+	year = getdate(nowdate()).year
+	name = "Acceptance Holiday List"
+	if not frappe.db.exists("KNIT 360 Holiday List", name):
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Holiday List", "holiday_list_name": name,
+				"company": company(), "from_date": f"{year}-01-01", "to_date": f"{year}-12-31",
+				"holidays": [
+					{"holiday_date": f"{year}-09-02", "description": "Acceptance holiday"},
+					{"holiday_date": f"{year}-09-03", "description": "Acceptance holiday"},
+				],
+			}
+		).insert(ignore_permissions=True)
+
+	employee = an_employee("Holidaying Employee")
+	leave_type = a_leave_type("Acceptance Holiday Leave")
+	allocate(employee, leave_type, 10)
+
+	app = an_application(employee, leave_type, f"{year}-09-01", f"{year}-09-04",
+	                     holiday_list=name)
+	expect(
+		flt(app.total_leave_days) == 2,
+		f"counted {app.total_leave_days} days over a 4-day span with 2 holidays, expected 2",
+	)
+	frappe.db.commit()
+	return "4 calendar days, 2 holidays, 2 days of leave"
+
+
+@check("I. HR leave", "A half day counts as half a day")
+def i_half_day():
+	year = getdate(nowdate()).year
+	employee = an_employee("Halving Employee")
+	leave_type = a_leave_type("Acceptance Half Leave")
+	allocate(employee, leave_type, 5)
+
+	app = an_application(employee, leave_type, f"{year}-10-12", f"{year}-10-12", half_day=1)
+	expect(flt(app.total_leave_days) == 0.5, f"counted {app.total_leave_days}, expected 0.5")
+
+	message = refuses(an_application, employee, leave_type,
+	                  f"{year}-10-14", f"{year}-10-16", half_day=1)
+	frappe.db.commit()
+	return f"0.5 days; a multi-day half day is refused"
+
+
+@check("I. HR leave", "Cancelling an allocation reverses it to nil")
+def i_allocation_reversal():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Reversing Employee")
+	leave_type = a_leave_type("Acceptance Reversal Leave")
+	opening = leave_ledger.balance(employee, leave_type, company=COMPANY)
+
+	name = allocate(employee, leave_type, 9)
+	engine.transition("KNIT 360 Leave Allocation", name, "Cancelled")
+
+	net = leave_ledger.balance(employee, leave_type, company=COMPANY) - opening
+	expect(abs(net) < 0.001, f"balance is {net} off after a full reversal, expected 0")
+
+	rows = leave_ledger.entries("KNIT 360 Leave Allocation", name, include_cancelled=1)
+	expect(len(rows) == 2, f"{len(rows)} rows after reversal, expected 2 (original + contra)")
+	expect(all(r["is_cancelled"] for r in rows), "the pair was not flagged cancelled")
+	frappe.db.commit()
+	return f"{name} cancelled, net 0, both rows kept"
+
+
+@check("I. HR leave", "A ledger entry cannot be edited or deleted")
+def i_ledger_immutable():
+	from knit360_core.hr import leave_ledger
+
+	employee = an_employee("Immutable Employee")
+	leave_type = a_leave_type("Acceptance Immutable Leave")
+	name = allocate(employee, leave_type, 4)
+	entry = leave_ledger.entries("KNIT 360 Leave Allocation", name)[0]["name"]
+	# Commit before testing refusals. An earlier version rolled back between
+	# the two, which removed the entry -- and frappe.delete_doc ignores a
+	# missing document, so the delete "succeeded" and the check reported a
+	# product failure that was really a fixture failure.
+	frappe.db.commit()
+
+	expect(
+		frappe.db.exists("KNIT 360 Leave Ledger Entry", entry),
+		"the fixture entry does not exist, so neither refusal would mean anything",
+	)
+
+	delete = refuses(
+		frappe.delete_doc, "KNIT 360 Leave Ledger Entry", entry, ignore_permissions=True
+	)
+	expect(
+		frappe.db.exists("KNIT 360 Leave Ledger Entry", entry),
+		"the entry was deleted anyway",
+	)
+
+	doc = frappe.get_doc("KNIT 360 Leave Ledger Entry", entry)
+	doc.leaves = 999
+	edit = refuses(doc.save)
+	frappe.db.rollback()
+
+	expect(
+		flt(frappe.db.get_value("KNIT 360 Leave Ledger Entry", entry, "leaves")) == 4,
+		"the entry's days changed despite the refusal",
+	)
+	return f"delete refused ({delete[:48]}...), edit refused ({edit[:48]}...)"
+
+
+@check("I. HR leave", "Two allocations for the same period are refused")
+def i_double_allocation_refused():
+	employee = an_employee("Doubling Employee")
+	leave_type = a_leave_type("Acceptance Double Leave")
+	allocate(employee, leave_type, 6)
+	frappe.db.commit()
+	message = refuses(allocate, employee, leave_type, 6)
+	frappe.db.rollback()
+	return message
+
+
+@check("I. HR leave", "Overlapping approved leave is refused")
+def i_overlap_refused():
+	year = getdate(nowdate()).year
+	employee = an_employee("Overlapping Employee")
+	leave_type = a_leave_type("Acceptance Overlap Leave")
+	allocate(employee, leave_type, 20)
+
+	first = an_application(employee, leave_type, f"{year}-11-02", f"{year}-11-06")
+	approve(first.name)
+	frappe.db.commit()
+
+	message = refuses(an_application, employee, leave_type, f"{year}-11-04", f"{year}-11-05")
+	frappe.db.rollback()
+	return message
+
+
+@check("I. HR leave", "A rejected application never reaches the ledger")
+def i_rejected_posts_nothing():
+	from knit360_core.hr import leave_ledger
+
+	year = getdate(nowdate()).year
+	employee = an_employee("Rejected Employee")
+	leave_type = a_leave_type("Acceptance Rejected Leave")
+	allocate(employee, leave_type, 8)
+	before = leave_ledger.balance(employee, leave_type, company=COMPANY)
+
+	app = an_application(employee, leave_type, f"{year}-12-07", f"{year}-12-09")
+	engine.transition("KNIT 360 Leave Application", app.name, "Pending Approval")
+	engine.transition("KNIT 360 Leave Application", app.name, "Rejected")
+
+	app.reload()
+	expect(app.docstatus == 0, f"a rejected application reached docstatus {app.docstatus}")
+	expect(
+		not leave_ledger.entries("KNIT 360 Leave Application", app.name),
+		"a rejected application wrote to the leave ledger",
+	)
+	after = leave_ledger.balance(employee, leave_type, company=COMPANY)
+	expect(abs(before - after) < 0.001, f"the balance moved by {before - after} on a rejection")
+	frappe.db.commit()
+	return "rejected, docstatus 0, nothing posted, balance unchanged"
+
+
+@check("I. HR leave", "The leave ledger is the only module that writes entries")
+def i_single_writer():
+	import pathlib as _pathlib
+
+	root = _pathlib.Path(frappe.get_app_path("knit360_core"))
+	offenders = []
+	for path in root.rglob("*.py"):
+		if path.name in ("leave_ledger.py", "acceptance.py") or path.name.startswith("test_"):
+			continue
+		text = path.read_text(encoding="utf-8")
+		if "KNIT 360 Leave Ledger Entry" in text and ("insert(" in text or "new_doc(" in text):
+			offenders.append(str(path.relative_to(root)))
+	expect(not offenders, f"the leave ledger is written outside hr/leave_ledger.py by: {offenders}")
+	return "hr/leave_ledger.py is the sole writer"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -1300,6 +1636,28 @@ def cleanup():
 			f"cleanup() refuses to run against {COMPANY!r}. It deletes ledger "
 			f"entries directly and is only ever meant for the acceptance company."
 		)
+
+	# HR leave, before the finance documents, for the same reason: the leave
+	# ledger refuses deletion exactly as the general ledger does, so its rows
+	# go first and by the same scoped raw delete.
+	leave_rows = frappe.db.count("KNIT 360 Leave Ledger Entry", {"company": COMPANY})
+	if leave_rows:
+		frappe.db.sql(
+			"DELETE FROM `tabKNIT 360 Leave Ledger Entry` WHERE company = %s", (COMPANY,)
+		)
+		removed["Leave Ledger Entry"] = leave_rows
+
+	for doctype in ("KNIT 360 Leave Application", "KNIT 360 Leave Allocation"):
+		frappe.db.sql(
+			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
+		)
+		wipe(doctype, {"company": COMPANY}, force=True)
+
+	wipe("KNIT 360 Employee", {"company": COMPANY}, force=True)
+	wipe("KNIT 360 Holiday List", {"company": COMPANY}, force=True)
+	wipe("KNIT 360 Leave Period", {"company": COMPANY}, force=True)
+	# Leave Type is not company-scoped, so the acceptance ones are named.
+	wipe("KNIT 360 Leave Type", {"leave_type_name": ["like", "Acceptance %"]}, force=True)
 
 	# Then the documents, children before parents.
 	#

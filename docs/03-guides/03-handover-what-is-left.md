@@ -17,19 +17,22 @@ What exists and is proven:
 
 | | |
 | --- | --- |
-| Record types built | 65 parent, 21 child — 86 in total |
-| BRD modules with record types built | **14 of 28** |
-| Lifecycle definitions | 23 |
-| Automated checks | **97** — 49 structural, 48 runtime |
-| Last full run | 49/49 and 48/48, 5 October 2026 |
-| BRD modules with nothing built yet | **14 of 28** (listed below) |
+| Record types built | 71 parent, 22 child — 93 in total |
+| BRD modules with record types built | **15 of 28** |
+| Lifecycle definitions | 25 |
+| Automated checks | **110** — 49 structural, 61 runtime |
+| Last full run | 49/49 and 61/61, 6 October 2026 |
+| BRD modules with nothing built yet | **13 of 28** (listed below) |
 | Flows running end to end | 1 of 3 (Customer-to-Cash) |
 
-The fourteen BRD modules that have **no record types at all** are: Marketing (4),
-Customer Service (5), Logistics & Transportation (15), Projects (16), HR &
-Payroll (19), E-Commerce (20), Document Management (21), Business Intelligence
-(22), EPM / Budget / Forecast (23), Workflow & Approvals (24), AI & Automation
-(25), Integration & API (26), Mobile Application (27) and Audit (28).
+The thirteen BRD modules that have **no record types at all** are: Marketing (4),
+Customer Service (5), Logistics & Transportation (15), Projects (16),
+E-Commerce (20), Document Management (21), Business Intelligence (22), EPM /
+Budget / Forecast (23), Workflow & Approvals (24), AI & Automation (25),
+Integration & API (26), Mobile Application (27) and Audit (28).
+
+HR & Payroll (19) is partially built: leave management is complete and proven;
+attendance, payroll, appraisal and recruitment are not started.
 
 Some of those are intended to be served by Frappe's own facilities rather than
 built — Workflow, Integration, Mobile and Audit were assigned that way in the
@@ -90,7 +93,7 @@ Not decisions — actions outside what I can reach.
 | **Y2** | **Hosting, domain, TLS, backups.** | Everything so far runs in Docker on one machine. There is no production environment, no backup schedule and no restore test. |
 | **Y3** | **The administrator password.** | It is not recorded anywhere in the repository. I did not guess it and I did not change it. You will need it to sign in during the demonstration. |
 | **Y4** | **The 238 BRD requirements are every one marked "TBD — the BRD does not specify this detail."** | Until a stakeholder fills those in, "match the BRD" means building to the ERP-standard baseline agreed in CD-001. That is what has been done. It is a reasonable reading, not the specification. |
-| **Y5** | **User acceptance testing by someone who does the job.** | My 97 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
+| **Y5** | **User acceptance testing by someone who does the job.** | My 110 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
 | **Y6** | **Decide what happens to the seven ERPNext reference documents** in `docs/` (`erpnext_accounting_module.md` and six others, roughly 4,200 lines). | I did not write them; they were swept into commit `2be7a50` by a `git add -A`. They are reference material about a GPL-3 product sitting in this repository. I flagged this previously and have had no answer. **This is the one item on this list I would act on soonest.** |
 | **Y7** | **Delete or keep the "Kelvinotherm Induction LLP" company** on the demo site. | It predates this work and holds one lead from 23 September. Harmless, but it appears in the company dropdown during a demonstration. |
 
@@ -104,7 +107,7 @@ Ordered by value. Each is a self-contained piece of work.
 | --- | --- | --- | --- | --- |
 | **W1** | Payment Entry posting and allocation | Large | Closes receivables. Today an invoice marked Paid has no cash receipt behind it. The single biggest gap. | **D4** |
 | **W2** | Stock ledger — Delivery Note and Goods Receipt actually move stock; Bin holds a live figure | Large | Inventory, Warehouse and MRP are forms without it. | **D5** |
-| **W3** | HR & Payroll (BRD module 19) | Large | 7 requirements, every one marked TBD. Explicitly deferred. | **D6** |
+| **W3** | HR: attendance, then payroll, then appraisal | Large | Leave is built and proven (`FR-HR-003`). Attendance feeds payroll; payroll ends in a Journal Entry that already works. Statutory payroll is the risk, not the HR — see `OQ-024`. | **D6** for payroll scope |
 | **W4** | Designed print formats and a letterhead | Medium | Printing and PDF already work; the output is Frappe's standard field dump. What is missing is a laid-out quotation, order and invoice carrying the client's letterhead. Nothing blocks this. | — |
 | **W5** | Pricing reads from Item Price instead of being typed | Small | The masters exist and are populated; the documents ignore them. | — |
 | **W6** | Data import — opening balances, customers, items | Medium | Blocks the first customer, not the tenth. | — |
@@ -160,7 +163,7 @@ docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site kn
 ```bash
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
-48 runtime checks. Drives the live system, then removes its own data.
+61 runtime checks. Drives the live system, then removes its own data.
 
 ```bash
 docker exec knit-bench bash -lc 'cat /home/frappe/frappe-bench/sites/apps.txt'

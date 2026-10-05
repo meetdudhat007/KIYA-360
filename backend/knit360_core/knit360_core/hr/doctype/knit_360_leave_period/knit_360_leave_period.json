@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- the window an allocation and its balance belong to.",
+ "engine": "InnoDB",
+ "field_order": [
+  "period_name",
+  "company",
+  "col_lp_1",
+  "from_date",
+  "to_date",
+  "is_active",
+  "sec_lp_1",
+  "holiday_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "period_name",
+   "fieldtype": "Data",
+   "label": "Leave Period",
+   "description": "FR-HR-003: names the period, usually a year.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-HR-003: the company the period applies to.",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_lp_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "description": "FR-HR-003: first day of the period.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "description": "FR-HR-003: last day of the period.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "description": "FR-HR-003: an inactive period takes no new allocations.",
+   "default": "1"
+  },
+  {
+   "fieldname": "sec_lp_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Default Holiday List",
+   "description": "FR-HR-003: the calendar leave in this period is counted against. Assigning different calendars to individual employees is not built; an application may name its own list instead.",
+   "options": "KNIT 360 Holiday List"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Leave Period",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:period_name",
+ "title_field": "period_name"
+}

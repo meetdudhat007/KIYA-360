@@ -1,0 +1,164 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- one movement of one leave balance. Written only by knit360_core.hr.leave_ledger.",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "leave_type",
+  "company",
+  "col_lle_1",
+  "posting_date",
+  "leaves",
+  "leave_period",
+  "sec_lle_1",
+  "from_date",
+  "to_date",
+  "col_lle_2",
+  "voucher_type",
+  "voucher_no",
+  "is_cancelled",
+  "sec_lle_2",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "description": "FR-HR-001: whose balance this entry moves.",
+   "options": "KNIT 360 Employee",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "label": "Leave Type",
+   "description": "FR-HR-003: which balance it moves.",
+   "options": "KNIT 360 Leave Type",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-HR-003: the company the balance belongs to.",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_lle_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "description": "FR-HR-003: the date the entry takes effect.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "leaves",
+   "fieldtype": "Float",
+   "label": "Leaves",
+   "description": "FR-HR-003: days, signed. Positive grants balance, negative consumes it. The balance is the sum of these and is never stored anywhere.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "leave_period",
+   "fieldtype": "Link",
+   "label": "Leave Period",
+   "description": "FR-HR-003: the period the entry falls in.",
+   "options": "KNIT 360 Leave Period"
+  },
+  {
+   "fieldname": "sec_lle_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "description": "FR-HR-003: first day covered, for an application."
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "description": "FR-HR-003: last day covered, for an application."
+  },
+  {
+   "fieldname": "col_lle_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Data",
+   "label": "Voucher Type",
+   "description": "FR-HR-003: the doctype that caused this entry.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Data",
+   "label": "Voucher No",
+   "description": "FR-HR-003: the document that caused this entry.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Cancelled",
+   "description": "FR-HR-003: set on both the original and its reversal when a voucher is cancelled. Nothing is ever deleted."
+  },
+  {
+   "fieldname": "sec_lle_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "description": "FR-HR-003: why the entry exists."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Leave Ledger Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:LLE-{YYYY}-{######}",
+ "title_field": "employee"
+}

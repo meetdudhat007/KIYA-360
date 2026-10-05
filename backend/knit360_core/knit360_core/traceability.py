@@ -63,6 +63,7 @@ PROVEN_BY = {
 	"FR-FIN-001": "A balanced journal entry posts and the ledger agrees",
 	"FR-FIN-003": "A sales invoice posts a receivable and reports it outstanding",
 	"FR-FIN-007": "The trial balance balances",
+	"FR-HR-003": "An approved application consumes the balance",
 }
 
 

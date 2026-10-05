@@ -168,17 +168,17 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 65 parent, 21 child — 86 total, across 15 application modules |
-| BRD modules with record types | **14 of 28** |
-| Lifecycle definitions (`CD-002`) | 23 |
-| Desk workspaces | 16, with 8 charts and 6 number cards |
-| Automated checks | **97** — 49 structural, 48 runtime |
-| Last full run | 49/49 and 48/48, 5 October 2026, site `knit360.localhost` |
+| Record types | 71 parent, 22 child — 93 total, across 16 application modules |
+| BRD modules with record types | **15 of 28** |
+| Lifecycle definitions (`CD-002`) | 25 |
+| Desk workspaces | 17, with 8 charts and 6 number cards |
+| Automated checks | **110** — 49 structural, 61 runtime |
+| Last full run | 49/49 and 61/61, 6 October 2026, site `knit360.localhost` |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
-Logistics (15), Projects (16), HR & Payroll (19), E-Commerce (20), Document
-Management (21), Business Intelligence (22), EPM (23), Workflow (24), AI (25),
-Integration (26), Mobile (27), Audit (28). Four of those — Workflow, Integration,
+Logistics (15), Projects (16), E-Commerce (20), Document Management (21),
+Business Intelligence (22), EPM (23), Workflow (24), AI (25), Integration (26),
+Mobile (27), Audit (28). HR & Payroll (19) is now partially built — see below. Four of those — Workflow, Integration,
 Mobile and Audit — are assigned to Frappe's native facilities under the hybrid
 platform decision rather than to be built.
 
@@ -199,13 +199,15 @@ group accounts, disabled accounts and closed fiscal years.
 - **No designed print formats and no letterhead.** Printing and PDF work via
   Frappe's standard format; the output is a field-by-field dump. No outgoing
   mail account is configured, so nothing can be emailed.
-- **HR not started**, pending a reference from the owner.
+- **HR: leave is built and proven; nothing else in HR is.** Attendance,
+  payroll, appraisal and recruitment are not started. See doc 45 for the
+  observed reference surface and `OQ-024` for the open questions.
 
 ### How to verify
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 48 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 61 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

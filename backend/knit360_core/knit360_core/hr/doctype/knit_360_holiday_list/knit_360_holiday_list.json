@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- the non-working days a leave calculation skips.",
+ "engine": "InnoDB",
+ "field_order": [
+  "holiday_list_name",
+  "company",
+  "col_hl_1",
+  "from_date",
+  "to_date",
+  "total_holidays",
+  "sec_hl_1",
+  "holidays"
+ ],
+ "fields": [
+  {
+   "fieldname": "holiday_list_name",
+   "fieldtype": "Data",
+   "label": "Holiday List Name",
+   "description": "FR-HR-003: names the calendar, e.g. the year and the location it applies to.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-HR-003: the company this calendar belongs to.",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_hl_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "description": "FR-HR-003: first day the calendar covers.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "description": "FR-HR-003: last day the calendar covers.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_holidays",
+   "fieldtype": "Int",
+   "label": "Total Holidays",
+   "description": "FR-HR-003: count of rows below. Computed, never typed.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_hl_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "holidays",
+   "fieldtype": "Table",
+   "label": "Holidays",
+   "description": "FR-HR-003: the days themselves.",
+   "options": "KNIT 360 Holiday"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Holiday List",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:holiday_list_name",
+ "title_field": "holiday_list_name"
+}

@@ -1,0 +1,175 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- an employee's request to consume a leave balance.",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "leave_type",
+  "company",
+  "col_lap_1",
+  "from_date",
+  "to_date",
+  "half_day",
+  "knit360_business_status",
+  "sec_lap_1",
+  "holiday_list",
+  "total_leave_days",
+  "col_lap_2",
+  "leave_balance",
+  "posting_date",
+  "sec_lap_2",
+  "leave_approver",
+  "reason"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "description": "FR-HR-001: who is applying.",
+   "options": "KNIT 360 Employee",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "label": "Leave Type",
+   "description": "FR-HR-003: which balance is being drawn on.",
+   "options": "KNIT 360 Leave Type",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-HR-003: the employing company.",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_lap_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "description": "FR-HR-003: first day of leave.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "description": "FR-HR-003: last day of leave.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "half_day",
+   "fieldtype": "Check",
+   "label": "Half Day",
+   "description": "FR-HR-003: counts the leave as half a day. Only meaningful on a single-day application."
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nPending Approval\nApproved\nRejected\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition."
+  },
+  {
+   "fieldname": "sec_lap_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "description": "FR-HR-003: the calendar whose days are skipped. Taken from the leave period when left blank.",
+   "options": "KNIT 360 Holiday List"
+  },
+  {
+   "fieldname": "total_leave_days",
+   "fieldtype": "Float",
+   "label": "Total Leave Days",
+   "description": "FR-HR-003: working days between the two dates, after skipping holidays. Computed, never typed.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_lap_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "leave_balance",
+   "fieldtype": "Float",
+   "label": "Balance Before This Application",
+   "description": "FR-HR-003: the balance when this application was last saved. A record of what was checked, not a live figure.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "description": "FR-HR-003: the date the application was made."
+  },
+  {
+   "fieldname": "sec_lap_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "leave_approver",
+   "fieldtype": "Link",
+   "label": "Leave Approver",
+   "description": "FR-HR-003: who is to decide. Approval routing is not built; this records the intended approver.",
+   "options": "User"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "description": "FR-HR-003: why the leave is being taken."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Leave Application",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:LAP-{YYYY}-{####}",
+ "title_field": "employee"
+}

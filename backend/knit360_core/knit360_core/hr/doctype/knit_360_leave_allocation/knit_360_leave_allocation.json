@@ -1,0 +1,159 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- grants an employee a balance of one leave type.",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "leave_type",
+  "company",
+  "col_lal_1",
+  "leave_period",
+  "from_date",
+  "to_date",
+  "knit360_business_status",
+  "sec_lal_1",
+  "new_leaves_allocated",
+  "carried_forward",
+  "col_lal_2",
+  "total_leaves_allocated",
+  "sec_lal_2",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "description": "FR-HR-001: who is being given leave.",
+   "options": "KNIT 360 Employee",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "label": "Leave Type",
+   "description": "FR-HR-003: which leave is being given.",
+   "options": "KNIT 360 Leave Type",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "description": "FR-HR-003: the employing company.",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_lal_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "leave_period",
+   "fieldtype": "Link",
+   "label": "Leave Period",
+   "description": "FR-HR-003: the period this allocation belongs to.",
+   "options": "KNIT 360 Leave Period",
+   "reqd": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "description": "FR-HR-003: first day the allocation is usable.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "description": "FR-HR-003: last day the allocation is usable.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nAllocated\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition."
+  },
+  {
+   "fieldname": "sec_lal_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "new_leaves_allocated",
+   "fieldtype": "Float",
+   "label": "New Leaves Allocated",
+   "description": "FR-HR-003: days granted for this period.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "carried_forward",
+   "fieldtype": "Float",
+   "label": "Carried Forward",
+   "description": "FR-HR-003: days brought in from the previous period. Carrying forward is not calculated automatically; this is entered."
+  },
+  {
+   "fieldname": "col_lal_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_leaves_allocated",
+   "fieldtype": "Float",
+   "label": "Total Leaves Allocated",
+   "description": "FR-HR-003: new plus carried forward. Computed, never typed.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_lal_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-HR-003: why this allocation was made."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Leave Allocation",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "format:LAL-{YYYY}-{####}",
+ "title_field": "employee"
+}

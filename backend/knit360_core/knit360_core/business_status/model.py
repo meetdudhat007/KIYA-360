@@ -493,6 +493,48 @@ SALES_INVOICE = Lifecycle(
 	happy_path=("Draft", "Pending Approval", "Posted / Unpaid", "Partly Paid", "Paid"),
 )
 
+# --- HR -------------------------------------------------------------------
+#
+# FR-HR-003 is recorded in the BRD as "Attendance & Leave" with the detail
+# "TBD -- The BRD does not specify this detail." Both lifecycles below are
+# therefore BRD-DERIVED under CD-001's ERP-standard-baseline rule, the same
+# basis as every other lifecycle here whose source gives a name and no states.
+# They are inferred, not quoted, and OQ-024 asks the owner to confirm them.
+
+LEAVE_ALLOCATION = Lifecycle(
+	name="Leave Allocation",
+	initial="Draft",
+	transitions={
+		"Draft": {"Allocated", "Cancelled"},
+		"Allocated": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft"},
+	submitted_states={"Allocated"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Allocated"),
+)
+
+# Rejected returns to Draft rather than ending the document, matching DEFAULT:
+# a rejected request is usually re-dated and re-submitted, not re-typed. It is
+# a draft state because a rejected application must not touch the ledger.
+LEAVE_APPLICATION = Lifecycle(
+	name="Leave Application",
+	initial="Draft",
+	transitions={
+		"Draft": {"Pending Approval", "Cancelled"},
+		"Pending Approval": {"Approved", "Rejected", "Draft"},
+		"Approved": {"Cancelled"},
+		"Rejected": {"Draft"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft", "Pending Approval", "Rejected"},
+	submitted_states={"Approved"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Approval", "Approved"),
+)
+
+
 REGISTRY = {
 	"KNIT 360 Journal Entry": JOURNAL_ENTRY,
 	"KNIT 360 Sales Invoice": SALES_INVOICE,
@@ -516,6 +558,8 @@ REGISTRY = {
 	"KNIT 360 Asset": ASSET,
 	"KNIT 360 Service Contract": SERVICE_CONTRACT,
 	"KNIT 360 Service Dispatch": SERVICE_DISPATCH,
+	"KNIT 360 Leave Allocation": LEAVE_ALLOCATION,
+	"KNIT 360 Leave Application": LEAVE_APPLICATION,
 }
 
 

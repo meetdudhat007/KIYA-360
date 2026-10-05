@@ -41,6 +41,12 @@ MODULES = {
 	"Quality": ("quality", 120, ["Quality Inspection", "Non Conformance Report"], {}),
 	"Asset Management": ("assets", 130, ["Asset"], {}),
 	"Maintenance": ("support", 140, ["Service Request", "Field Work Order", "Service Contract"], {}),
+	"HR": ("users", 145, ["Employee", "Leave Application", "Leave Allocation", "Leave Type"], {
+		"People": ["Employee", "Designation", "Department"],
+		"Leave": ["Leave Type", "Leave Period", "Leave Allocation", "Leave Application",
+		          "Leave Ledger Entry"],
+		"Calendar": ["Holiday List"],
+	}),
 	"Business Status": ("workflow", 150, ["Business Status Log"], {}),
 }
 
@@ -68,6 +74,11 @@ def _doctypes(module):
 			pluck="name",
 		)
 	)
+
+
+def _exists(doctype):
+	"""Whether a doctype is installed, regardless of which module owns it."""
+	return bool(frappe.db.exists("DocType", doctype))
 
 
 def _short(name):
@@ -152,7 +163,11 @@ def build():
 
 		placed, cards = set(), {}
 		for card_label, wanted in named_cards.items():
-			rows = [PREFIX + n for n in wanted if PREFIX + n in doctypes]
+			# A named card may reach into another module. HR needs Employee,
+			# which lives in Platform because the BRD traces it to FR-PADM-1.4.4
+			# rather than to FR-HR-001. Linking to it is cheaper and more honest
+			# than moving a doctype away from the requirement it came from.
+			rows = [PREFIX + n for n in wanted if _exists(PREFIX + n)]
 			if rows:
 				cards[card_label] = rows
 				placed.update(rows)
@@ -163,7 +178,7 @@ def build():
 		shortcuts = [
 			("DocType", PREFIX + n, _short(PREFIX + n), "Blue")
 			for n in shortcut_names
-			if PREFIX + n in doctypes
+			if _exists(PREFIX + n)
 		]
 		built.append(_upsert(module, icon, module, sequence, shortcuts, cards))
 

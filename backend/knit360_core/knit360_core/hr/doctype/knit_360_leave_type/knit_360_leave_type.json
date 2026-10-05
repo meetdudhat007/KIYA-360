@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-05 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "description": "FR-HR-003 -- a category of leave and the rules attached to it.",
+ "engine": "InnoDB",
+ "field_order": [
+  "leave_type_name",
+  "description",
+  "col_lt_1",
+  "is_paid_leave",
+  "is_carry_forward",
+  "allow_negative_balance",
+  "include_holidays_in_leave",
+  "sec_lt_1",
+  "max_leaves_allowed"
+ ],
+ "fields": [
+  {
+   "fieldname": "leave_type_name",
+   "fieldtype": "Data",
+   "label": "Leave Type",
+   "description": "FR-HR-003: e.g. Casual Leave, Sick Leave.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description",
+   "description": "FR-HR-003: what this leave is for."
+  },
+  {
+   "fieldname": "col_lt_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_paid_leave",
+   "fieldtype": "Check",
+   "label": "Paid Leave",
+   "description": "FR-HR-003: whether days taken are paid. Unpaid leave still consumes a balance but is treated differently by payroll, which is not built.",
+   "default": "1"
+  },
+  {
+   "fieldname": "is_carry_forward",
+   "fieldtype": "Check",
+   "label": "Carry Forward",
+   "description": "FR-HR-003: whether an unused balance may be carried into the next leave period."
+  },
+  {
+   "fieldname": "allow_negative_balance",
+   "fieldtype": "Check",
+   "label": "Allow Negative Balance",
+   "description": "FR-HR-003: whether an application may exceed the balance. Off by default, so an over-application is refused rather than silently allowed."
+  },
+  {
+   "fieldname": "include_holidays_in_leave",
+   "fieldtype": "Check",
+   "label": "Count Holidays As Leave",
+   "description": "FR-HR-003: when set, holidays falling inside a leave period are counted as leave days. When clear they are skipped."
+  },
+  {
+   "fieldname": "sec_lt_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "max_leaves_allowed",
+   "fieldtype": "Float",
+   "label": "Maximum Leaves Per Period",
+   "description": "FR-HR-003: an upper bound on what may be allocated in one leave period. Zero means no limit is enforced."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-10-05 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HR",
+ "name": "KNIT 360 Leave Type",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:leave_type_name",
+ "title_field": "leave_type_name"
+}
