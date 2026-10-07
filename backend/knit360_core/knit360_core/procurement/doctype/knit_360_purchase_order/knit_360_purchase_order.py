@@ -9,13 +9,14 @@ uses, so a purchase order and a sales order are costed by one piece of code.
 import frappe
 from frappe.model.document import Document
 
-from knit360_core.pricing import totals
+from knit360_core.pricing import price_list, totals
 
 SHAPE = totals.Shape(table="items", rate="rate", discount="discount_percentage")
 
 
 class KNIT360PurchaseOrder(Document):
 	def validate(self):
+		price_list.apply(self, SHAPE, price_list.BUYING, date_field="order_date")
 		grand_total = totals.apply(self, SHAPE)
 		if self.items and not grand_total:
 			frappe.throw(

@@ -28,6 +28,7 @@ from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine, guard, model
 from knit360_core.finance import chart_of_accounts, ledger, settlement
+from knit360_core.pricing import price_list
 from knit360_core.stock import ledger as stock_ledger
 
 #: Acceptance data lives under its own company so a run is isolated from
@@ -2724,6 +2725,284 @@ def n_single_writer():
 	return "stock/ledger.py is the sole writer"
 
 
+# --- O. pricing from the master -----------------------------------------
+#
+# FR-SALES-004. The Price List and Item Price masters existed and were
+# populated; no document read them, so every rate was typed. These checks prove
+# a rate now comes from the master, that a typed rate still wins, and that the
+# validity window and the unit of measure are honoured rather than ignored.
+
+
+def stock_uom(item_code):
+	return frappe.db.get_value("KNIT 360 Item", item_code, "stock_uom")
+
+
+def a_price_list(name, applies_to, disabled=0):
+	if not frappe.db.exists("KNIT 360 Price List", name):
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Price List",
+				"price_list_name": name,
+				"currency": CURRENCY,
+				"applies_to": applies_to,
+				"disabled": disabled,
+			}
+		).insert(ignore_permissions=True)
+	elif frappe.db.get_value("KNIT 360 Price List", name, "disabled") != disabled:
+		frappe.db.set_value("KNIT 360 Price List", name, "disabled", disabled,
+		                    update_modified=False)
+	return name
+
+
+def a_price(item_code, price_list, rate, uom=None, valid_from=None, valid_upto=None):
+	existing = frappe.get_all(
+		"KNIT 360 Item Price",
+		filters={"item_code": item_code, "price_list": price_list},
+		pluck="name",
+	)
+	for name in existing:
+		frappe.delete_doc("KNIT 360 Item Price", name, force=True,
+		                  ignore_permissions=True)
+	return frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Item Price",
+			"item_code": item_code,
+			"price_list": price_list,
+			"uom": uom,
+			"rate": rate,
+			"currency": CURRENCY,
+			"valid_from": valid_from,
+			"valid_upto": valid_upto,
+		}
+	).insert(ignore_permissions=True)
+
+
+def a_priced_quotation(item_code, qty=1, rate=None, price_list=None, uom=None):
+	quotation = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Quotation",
+			"company": company(),
+			"customer": a_payer(),
+			"price_list": price_list,
+			"items": [{"item_code": item_code, "qty": qty, "unit_rate": rate or 0, "uom": uom}],
+		}
+	).insert(ignore_permissions=True)
+	return quotation
+
+
+@check("O. Pricing", "A rate nobody typed comes from the price list")
+def o_rate_comes_from_the_master():
+	item = an_item("Acceptance Priced Coil")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(item, selling, 4400, uom=stock_uom(item))
+
+	quotation = a_priced_quotation(item, qty=3, price_list=selling)
+	expect(
+		flt(quotation.items[0].unit_rate) == 4400,
+		f"the line priced at {quotation.items[0].unit_rate}, expected 4400 from the master",
+	)
+	expect(
+		flt(quotation.net_total) == 13200,
+		f"the quotation totals {quotation.net_total}, expected 13200",
+	)
+	frappe.db.commit()
+	return f"{quotation.name}: nothing typed, 3 x 4400 = 13,200 read from {selling}"
+
+
+@check("O. Pricing", "A rate somebody typed is never overwritten")
+def o_typed_rate_wins():
+	"""The master is a starting point, not a cage.
+
+	The list rate is kept beside the rate charged, so the difference is on the
+	document instead of being lost -- which is the whole point of recording it.
+	"""
+	item = an_item("Acceptance Priced Panel")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(item, selling, 9000, uom=stock_uom(item))
+
+	quotation = a_priced_quotation(item, qty=2, rate=8100, price_list=selling)
+	expect(
+		flt(quotation.items[0].unit_rate) == 8100,
+		f"the typed rate became {quotation.items[0].unit_rate}; it must stand",
+	)
+	expect(
+		flt(quotation.items[0].price_list_rate) == 9000,
+		f"the list rate was recorded as {quotation.items[0].price_list_rate}, expected 9000",
+	)
+	frappe.db.commit()
+	return f"{quotation.name}: charged 8,100 against a list price of 9,000, both visible"
+
+
+@check("O. Pricing", "A price that has expired is not used")
+def o_expired_price_ignored():
+	item = an_item("Acceptance Expired Price Item")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(
+		item, selling, 7000, uom=stock_uom(item),
+		valid_from=add_days(nowdate(), -60), valid_upto=add_days(nowdate(), -1),
+	)
+	rate = price_list.rate_for(item, selling, nowdate(), stock_uom(item))
+	expect(rate is None, f"an expired price was still used: {rate}")
+	return "a price that lapsed yesterday is not applied today"
+
+
+@check("O. Pricing", "A price that has not started yet is not used")
+def o_future_price_ignored():
+	item = an_item("Acceptance Future Price Item")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(item, selling, 7000, uom=stock_uom(item), valid_from=add_days(nowdate(), 7))
+	expect(
+		price_list.rate_for(item, selling, nowdate(), stock_uom(item)) is None,
+		"a price starting next week was applied today",
+	)
+	expect(
+		flt(price_list.rate_for(item, selling, add_days(nowdate(), 8), stock_uom(item))) == 7000,
+		"the same price was not applied after it started",
+	)
+	return "a price starting in seven days applies then, not now"
+
+
+@check("O. Pricing", "Where two prices apply, the later decision wins")
+def o_later_price_wins():
+	item = an_item("Acceptance Repriced Item")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(item, selling, 1000, uom=stock_uom(item), valid_from=add_days(nowdate(), -90))
+	frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Item Price",
+			"item_code": item,
+			"price_list": selling,
+			"uom": stock_uom(item),
+			"rate": 1250,
+			"currency": CURRENCY,
+			"valid_from": add_days(nowdate(), -10),
+		}
+	).insert(ignore_permissions=True)
+
+	rate = price_list.rate_for(item, selling, nowdate(), stock_uom(item))
+	expect(flt(rate) == 1250, f"the rate used was {rate}, expected the newer 1250")
+	frappe.db.commit()
+	return "1,000 from ninety days ago, 1,250 from ten days ago; 1,250 is used"
+
+
+@check("O. Pricing", "The unit of measure decides which price applies")
+def o_uom_specific_price():
+	"""A price per kilogram must not be charged on a line counted in boxes."""
+	item = an_item("Acceptance Two Unit Item")
+	selling = a_price_list("Acceptance Selling List", "Selling")
+	a_price(item, selling, 820, uom=stock_uom(item))
+
+	other = [
+		name for name in frappe.get_all("KNIT 360 UOM", pluck="name")
+		if name != stock_uom(item)
+	]
+	expect(other, "the site has only one unit of measure, so this cannot be proven")
+	frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Item Price",
+			"item_code": item,
+			"price_list": selling,
+			"uom": other[0],
+			"rate": 20500,
+			"currency": CURRENCY,
+		}
+	).insert(ignore_permissions=True)
+
+	expect(
+		flt(price_list.rate_for(item, selling, nowdate(), stock_uom(item))) == 820,
+		"the stock unit did not get its own price",
+	)
+	expect(
+		flt(price_list.rate_for(item, selling, nowdate(), other[0])) == 20500,
+		f"the {other[0]} price was not used for a {other[0]} line",
+	)
+	frappe.db.commit()
+	return f"820 per {stock_uom(item)}, 20,500 per {other[0]}, each on its own line"
+
+
+@check("O. Pricing", "A sale will not be priced from a buying list")
+def o_wrong_side_refused():
+	item = an_item("Acceptance Priced Coil")
+	buying = a_price_list("Acceptance Buying List", "Buying")
+	refused = refuses(lambda: a_priced_quotation(item, qty=1, rate=100, price_list=buying))
+	expect("buying" in refused.lower(), f"refused, but for another reason: {refused}")
+	return "a selling document refuses a buying price list: selling at cost is stopped"
+
+
+@check("O. Pricing", "A disabled price list is refused rather than used")
+def o_disabled_list_refused():
+	item = an_item("Acceptance Priced Coil")
+	stale = a_price_list("Acceptance Retired List", "Selling", disabled=1)
+	refused = refuses(lambda: a_priced_quotation(item, qty=1, rate=100, price_list=stale))
+	expect("disabled" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return "a retired list cannot price a new document"
+
+
+@check("O. Pricing", "The document records which list it priced from")
+def o_list_is_recorded():
+	"""Without this, a price cannot be explained six months later."""
+	item = an_item("Acceptance Priced Coil")
+	quotation = a_priced_quotation(item, qty=1, rate=500)
+	chosen = quotation.price_list
+	expect(chosen, "the quotation priced without recording which list it used")
+	side = frappe.db.get_value("KNIT 360 Price List", chosen, "applies_to")
+	expect(side == "Selling", f"a quotation chose a {side} list by default")
+	frappe.db.commit()
+	return f"{quotation.name} recorded {chosen}, a {side} list, chosen by default"
+
+
+@check("O. Pricing", "A supplier's own quoted price is left alone")
+def o_supplier_quotation_not_priced():
+	"""A bid is what the supplier said. Filling it in from our own master would
+	put words in their mouth and make the bid comparison meaningless."""
+	item = an_item("Acceptance Bid Item")
+	buying = a_price_list("Acceptance Buying List", "Buying")
+	a_price(item, buying, 6000, uom=stock_uom(item))
+
+	bid = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Supplier Quotation",
+			"company": company(),
+			"supplier": a_supplier(),
+			"items": [{"item_code": item, "qty": 1, "rate": 6400}],
+		}
+	).insert(ignore_permissions=True)
+	expect(
+		flt(bid.items[0].rate) == 6400,
+		f"the bid was moved to {bid.items[0].rate}; the supplier said 6,400",
+	)
+	source = pathlib.Path(
+		frappe.get_app_path(
+			"knit360_core", "procurement", "doctype", "knit_360_supplier_quotation",
+			"knit_360_supplier_quotation.py",
+		)
+	).read_text(encoding="utf-8")
+	expect("price_list" not in source.split('"""')[2], "the controller prices from a list")
+	frappe.db.commit()
+	return f"{bid.name}: the supplier said 6,400, our list says 6,000, the bid stays 6,400"
+
+
+@check("O. Pricing", "No document lets a person type the list rate")
+def o_list_rate_is_read_only():
+	offenders = []
+	for doctype in frappe.get_all(
+		"DocType", filters={"module": ["like", "%"], "name": ["like", "KNIT 360%"]}, pluck="name"
+	):
+		meta = frappe.get_meta(doctype)
+		field = meta.get_field(price_list.LINE_PRICE_FIELD)
+		if field and not field.read_only:
+			offenders.append(doctype)
+	expect(not offenders, f"the list rate can be typed on: {offenders}")
+	carriers = [
+		doctype for doctype in frappe.get_all("DocType", filters={"name": ["like", "KNIT 360%"]},
+		                                      pluck="name")
+		if frappe.get_meta(doctype).get_field(price_list.LINE_PRICE_FIELD)
+	]
+	expect(len(carriers) >= 4, f"only {len(carriers)} line tables record the list rate")
+	return f"{len(carriers)} line tables record the list rate, none of them editable"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -2833,8 +3112,11 @@ def cleanup():
 		wipe(doctype, {"company": COMPANY}, force=True)
 
 	wipe("KNIT 360 Warehouse", {"company": COMPANY}, force=True)
-	# Item is not company-scoped, so the acceptance ones are named.
+	# Prices point at the items, so they go first. Neither is company-scoped,
+	# so both are matched by the acceptance naming.
+	wipe("KNIT 360 Item Price", {"item_code": ["like", "Acceptance %"]}, force=True)
 	wipe("KNIT 360 Item", {"item_code": ["like", "Acceptance %"]}, force=True)
+	wipe("KNIT 360 Price List", {"price_list_name": ["like", "Acceptance %"]}, force=True)
 
 	# HR leave, before the finance documents, for the same reason: the leave
 	# ledger refuses deletion exactly as the general ledger does, so its rows
@@ -2900,6 +3182,11 @@ def cleanup():
 		"UPDATE `tabKNIT 360 Supplier Invoice` SET docstatus = 0 WHERE company = %s", (COMPANY,)
 	)
 	wipe("KNIT 360 Supplier Invoice", {"company": COMPANY}, force=True)
+	frappe.db.sql(
+		"UPDATE `tabKNIT 360 Supplier Quotation` SET docstatus = 0 WHERE company = %s",
+		(COMPANY,),
+	)
+	wipe("KNIT 360 Supplier Quotation", {"company": COMPANY}, force=True)
 	wipe("KNIT 360 Supplier", {"company": COMPANY}, force=True)
 	wipe("KNIT 360 Tax Template", {"company": COMPANY}, force=True)
 

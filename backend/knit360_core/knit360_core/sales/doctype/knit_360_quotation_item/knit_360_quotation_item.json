@@ -12,6 +12,7 @@
   "qty",
   "uom",
   "unit_rate",
+  "price_list_rate",
   "discount_percentage",
   "amount"
  ],
@@ -50,6 +51,13 @@
    "label": "Unit Rate",
    "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "price_list_rate",
+   "fieldtype": "Currency",
+   "label": "Price List Rate",
+   "read_only": 1,
+   "description": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible."
   },
   {
    "fieldname": "discount_percentage",

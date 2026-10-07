@@ -15,6 +15,7 @@
   "ship_to_warehouse",
   "knit360_business_status",
   "sec_11",
+  "price_list",
   "items",
   "sec_12",
   "tax_template",
@@ -82,6 +83,13 @@
    "fieldname": "sec_11",
    "fieldtype": "Section Break",
    "label": "Items"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "KNIT 360 Price List",
+   "description": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
   },
   {
    "fieldname": "items",

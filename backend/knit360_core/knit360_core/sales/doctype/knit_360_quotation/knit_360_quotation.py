@@ -14,7 +14,7 @@ rather than assumed.
 import frappe
 from frappe.model.document import Document
 
-from knit360_core.pricing import totals
+from knit360_core.pricing import price_list, totals
 
 SHAPE = totals.Shape(
 	table="items",
@@ -25,6 +25,8 @@ SHAPE = totals.Shape(
 
 class KNIT360Quotation(Document):
 	def validate(self):
+		# Rates nobody typed come from the Item Price master -- FR-SALES-004.
+		price_list.apply(self, SHAPE, price_list.SELLING)
 		grand_total = totals.apply(self, SHAPE)
 		if self.items and not grand_total:
 			frappe.throw(

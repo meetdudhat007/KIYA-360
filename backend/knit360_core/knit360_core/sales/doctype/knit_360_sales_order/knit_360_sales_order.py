@@ -12,13 +12,14 @@ uses, so an order carries the same arithmetic as the quotation it came from.
 import frappe
 from frappe.model.document import Document
 
-from knit360_core.pricing import totals
+from knit360_core.pricing import price_list, totals
 
 SHAPE = totals.Shape(table="items", rate="rate")
 
 
 class KNIT360SalesOrder(Document):
 	def validate(self):
+		price_list.apply(self, SHAPE, price_list.SELLING)
 		grand_total = totals.apply(self, SHAPE)
 		if self.items and not grand_total:
 			frappe.throw(

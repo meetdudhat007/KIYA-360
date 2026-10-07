@@ -30,7 +30,7 @@ from frappe.model.document import Document
 from frappe.utils import flt
 
 from knit360_core.finance import ledger
-from knit360_core.pricing import totals
+from knit360_core.pricing import price_list, totals
 
 COMPANY = "KNIT 360 Company"
 
@@ -43,6 +43,9 @@ class KNIT360SalesInvoice(Document):
 		self._resolve_defaults()
 
 	def _compute_totals(self):
+		# Rates nobody typed come from the Item Price master -- FR-SALES-004.
+		price_list.apply(self, SHAPE, price_list.SELLING, date_field="posting_date")
+
 		# Shared with Quotation and Sales Order, so an invoice raised from an
 		# order cannot total differently from the order it bills.
 		if not totals.apply(self, SHAPE):

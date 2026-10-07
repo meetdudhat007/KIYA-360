@@ -9,6 +9,12 @@ shared pricing engine runs here too.
 tax, not a rate table, so no tax total is computed from it. The grand total is
 therefore the net of the lines. Comparing bids on net is the right comparison
 anyway, because tax is the same for every supplier.
+
+Prices are **not** read from the buying price list here, although every other
+pricing document reads its list -- FR-SALES-004. A supplier quotation records
+what the supplier said their price is. Filling that in from our own master
+would be putting words in their mouth, and the bid comparison this document
+exists for would then be comparing our own figures with each other.
 """
 
 import frappe

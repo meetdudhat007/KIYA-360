@@ -16,6 +16,7 @@
   "currency",
   "knit360_business_status",
   "sec1",
+  "price_list",
   "items",
   "sec2",
   "billing_address",
@@ -91,6 +92,13 @@
    "fieldname": "sec1",
    "fieldtype": "Section Break",
    "label": "Items"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "KNIT 360 Price List",
+   "description": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
   },
   {
    "fieldname": "items",
