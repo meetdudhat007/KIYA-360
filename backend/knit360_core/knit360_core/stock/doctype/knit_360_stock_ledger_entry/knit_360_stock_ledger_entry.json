@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SLE-.YYYY.-.######",
+ "creation": "2026-10-07 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "in_create": 1,
+ "description": "One movement of one item in one warehouse. Written only by knit360_core.stock.ledger, never edited, never deleted.",
+ "field_order": [
+  "item_code",
+  "warehouse",
+  "company",
+  "column_break_1",
+  "posting_date",
+  "voucher_type",
+  "voucher_no",
+  "section_break_1",
+  "actual_qty",
+  "rate",
+  "column_break_2",
+  "value_change",
+  "is_cancelled",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item",
+   "options": "KNIT 360 Item",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1,
+   "description": "FR-INV-002: Stock Quantity -- the item that moved."
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Warehouse",
+   "options": "KNIT 360 Warehouse",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1,
+   "description": "FR-INV-002: Stock Quantity -- stock is counted per item per warehouse. A Bin is a place to walk to, not a quantity."
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "KNIT 360 Company",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "FR-INV-002: Stock Quantity -- whose stock this is."
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "FR-INV-002: Stock Quantity -- when the movement happened. Movements are replayed in this order to value an issue."
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Data",
+   "label": "Voucher Type",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "FR-INV-002: Stock Quantity -- the kind of document that moved it."
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Voucher",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1,
+   "description": "FR-INV-002: Stock Quantity -- the document that moved it. Every movement has one; nothing moves stock on its own."
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "actual_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Quantity",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "FR-INV-002: Stock Quantity -- signed. Positive is received, negative is issued. The stock held is the sum of these."
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "read_only": 1,
+   "description": "FR-INV-006: Stock Valuation -- what one unit was worth in this movement. On an issue this is worked out by the ledger, not supplied by the document."
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "value_change",
+   "fieldtype": "Currency",
+   "label": "Value Change",
+   "read_only": 1,
+   "description": "FR-INV-006: Stock Valuation -- signed money. The value of the stock held is the sum of these, and it is what the ledger posts."
+  },
+  {
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Cancelled",
+   "read_only": 1,
+   "description": "FR-INV-002: Stock Quantity -- set on both an original and its mirror when a document is reversed, so a query that excludes them sees neither."
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks",
+   "read_only": 1,
+   "description": "FR-INV-002: Stock Quantity -- why this movement happened, where the document does not already say."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "KNIT 360 Stock Ledger Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

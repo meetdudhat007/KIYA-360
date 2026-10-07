@@ -28,6 +28,7 @@ from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine, guard, model
 from knit360_core.finance import chart_of_accounts, ledger, settlement
+from knit360_core.stock import ledger as stock_ledger
 
 #: Acceptance data lives under its own company so a run is isolated from
 #: anything a person has entered. GL entries are immutable by design, so an
@@ -495,6 +496,10 @@ def d_all_totals():
 		"KNIT 360 Tax Template": "its `rate` column is a percentage, not an amount",
 		"KNIT 360 Payment Entry": "its `allocated_amount` settles invoices rather than "
 		                          "pricing lines; allocation is its own unbuilt feature",
+		"KNIT 360 Goods Receipt": "its `rate` values stock for the stock ledger rather "
+		                          "than pricing a payable; what the goods cost is held "
+		                          "in the stock ledger and what is owed for them is on "
+		                          "the supplier's invoice",
 	}
 	MONEY = {"rate", "unit_rate", "amount", "price"}
 
@@ -2392,6 +2397,333 @@ def m_write_off_bounded():
 	return f"refused: {message}"
 
 
+# --- N. stock -----------------------------------------------------------
+#
+# DEC-023. Stock is counted per item per warehouse and derived from the
+# movements; a Bin is a place to walk to, not a quantity. Valuation is FIFO by
+# default, weighted average per item, and LIFO is not offered because Ind AS 2
+# paragraph 25 does not permit it.
+
+
+def a_warehouse(name="Acceptance Store"):
+	if not frappe.db.exists("KNIT 360 Warehouse", name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Warehouse", "warehouse_name": name, "company": company()}
+		).insert(ignore_permissions=True)
+	return name
+
+
+def an_item(code, method=None):
+	if not frappe.db.exists("KNIT 360 Item", code):
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Item",
+				"item_code": code,
+				"item_name": code,
+				"stock_uom": frappe.db.get_value("KNIT 360 UOM", {}, "name") or None,
+				"valuation_method": method or "FIFO",
+			}
+		).insert(ignore_permissions=True)
+	elif method:
+		frappe.db.set_value("KNIT 360 Item", code, "valuation_method", method,
+		                    update_modified=False)
+	return code
+
+
+def a_receipt(item_code, qty, rate, warehouse=None, rejected=0, target="Received in Bay"):
+	"""A goods receipt driven to a submitted state."""
+	warehouse = warehouse or a_warehouse()
+	receipt = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Goods Receipt",
+			"company": COMPANY,
+			"receiving_warehouse": warehouse,
+			"challan_number": f"ACC-{frappe.generate_hash(length=6)}",
+			"challan_date": nowdate(),
+			"items": [
+				{
+					"item_code": item_code,
+					"qty_arrived": qty,
+					"qty_rejected_on_arrival": rejected,
+					"rate": rate,
+				}
+			],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Goods Receipt", receipt.name, target)
+	receipt.reload()
+	return receipt
+
+
+def a_dispatch(item_code, qty, warehouse=None):
+	warehouse = warehouse or a_warehouse()
+	note = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Delivery Note",
+			"company": COMPANY,
+			"source_warehouse": warehouse,
+			"delivery_note_date": nowdate(),
+			"items": [{"item_code": item_code, "qty": qty}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Delivery Note", note.name, "Dispatched / In Transit")
+	note.reload()
+	return note
+
+
+@check("N. Stock", "A receipt raises the stock and carries its value")
+def n_receipt_raises_stock():
+	item = an_item("Acceptance Coil")
+	a_receipt(item, 10, 100)
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	worth = stock_ledger.value(item, a_warehouse(), COMPANY)
+	expect(flt(held) == 10, f"{held} in stock after receiving 10")
+	expect(flt(worth) == 1000, f"the stock is worth {worth}, expected 1000")
+	frappe.db.commit()
+	return f"{item}: 10 received at 100, stock 10 worth 1000"
+
+
+@check("N. Stock", "The stock held is derived, and stored nowhere")
+def n_stock_is_derived():
+	"""No field anywhere holds a quantity, which is what makes the figure safe.
+
+	A Bin has an aisle, a rack and a shelf and no quantity, on purpose: it
+	tells you where to walk, not what you own.
+	"""
+	holders = []
+	for doctype in parent_doctypes():
+		meta = frappe.get_meta(doctype)
+		for fieldname in ("stock_qty", "actual_qty", "qty_in_stock", "balance_qty", "on_hand"):
+			if doctype != "KNIT 360 Stock Ledger Entry" and meta.has_field(fieldname):
+				holders.append(f"{doctype}.{fieldname}")
+	expect(not holders, f"these store a stock quantity instead of deriving it: {holders}")
+
+	bin_meta = frappe.get_meta("KNIT 360 Bin")
+	expect(
+		not any(f.fieldname in ("actual_qty", "stock_qty", "qty") for f in bin_meta.fields),
+		"Bin carries a quantity; it is a storage address, not a balance",
+	)
+	item = an_item("Acceptance Coil")
+	entries = len(stock_ledger._movements(item, a_warehouse(), COMPANY))
+	return f"balance == sum of {entries} movements; no doctype stores a quantity"
+
+
+@check("N. Stock", "A dispatch reduces the stock and costs what it cost")
+def n_dispatch_reduces_stock():
+	item = an_item("Acceptance Panel")
+	a_receipt(item, 20, 250)
+	note = a_dispatch(item, 8)
+
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	expect(flt(held) == 12, f"{held} left after dispatching 8 of 20")
+
+	note.reload()
+	expect(
+		flt(note.items[0].valuation_rate) == 250,
+		f"the line was costed at {note.items[0].valuation_rate}, expected 250",
+	)
+	expect(
+		flt(note.items[0].stock_value) == 2000,
+		f"the line cost total is {note.items[0].stock_value}, expected 2000",
+	)
+	frappe.db.commit()
+	return f"{note.name}: 8 out at 250, 12 left, cost 2000"
+
+
+@check("N. Stock", "FIFO costs the oldest stock first")
+def n_fifo():
+	"""The worked example in DEC-023.
+
+	Buy 10 at 100 then 10 at 120, sell 5. FIFO says those five cost 500, not
+	the 550 a blended rate would give or the 600 LIFO would.
+	"""
+	item = an_item("Acceptance FIFO Coil", method="FIFO")
+	a_receipt(item, 10, 100)
+	a_receipt(item, 10, 120)
+
+	rate = stock_ledger.outgoing_rate(item, a_warehouse(), 5, COMPANY)
+	expect(flt(rate) == 100, f"FIFO costed the issue at {rate}, expected 100")
+
+	a_dispatch(item, 5)
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	worth = stock_ledger.value(item, a_warehouse(), COMPANY)
+	expect(flt(held) == 15, f"{held} left, expected 15")
+	expect(flt(worth) == 1700, f"the remaining stock is worth {worth}, expected 1700")
+	frappe.db.commit()
+	return "10 at 100 then 10 at 120, issued 5 at 100; 15 left worth 1700"
+
+
+@check("N. Stock", "Weighted average costs the blend instead")
+def n_moving_average():
+	"""Ind AS 2 paragraph 25 permits either, per class of inventary -- so the
+	formula is the Item's, not the company's.
+	"""
+	item = an_item("Acceptance Average Coil", method="Moving Average")
+	a_receipt(item, 10, 100)
+	a_receipt(item, 10, 120)
+
+	rate = stock_ledger.outgoing_rate(item, a_warehouse(), 5, COMPANY)
+	expect(flt(rate) == 110, f"the blended rate is {rate}, expected 110")
+	expect(
+		stock_ledger.method_for(item) == "Moving Average",
+		"the item's own formula was not used",
+	)
+	frappe.db.commit()
+	return "same two receipts, blended to 110 because the item says so"
+
+
+@check("N. Stock", "LIFO is not offered at all")
+def n_no_lifo():
+	"""Ind AS 2 paragraph 25 lists FIFO and weighted average. Offering LIFO
+	would be offering a setting that puts the client in breach.
+	"""
+	expect("LIFO" not in stock_ledger.METHODS, f"LIFO is on offer: {stock_ledger.METHODS}")
+	options = (frappe.get_meta("KNIT 360 Item").get_field("valuation_method").options or "")
+	expect("LIFO" not in options, f"the Item form offers LIFO: {options!r}")
+	# An item set to it anyway falls back rather than costing by it.
+	item = an_item("Acceptance Rogue Coil")
+	frappe.db.set_value("KNIT 360 Item", item, "valuation_method", "LIFO",
+	                    update_modified=False)
+	expect(
+		stock_ledger.method_for(item) == "FIFO",
+		f"an item set to LIFO costs by {stock_ledger.method_for(item)}",
+	)
+	frappe.db.commit()
+	return f"offered: {', '.join(stock_ledger.METHODS)}; LIFO falls back to FIFO"
+
+
+@check("N. Stock", "Issuing more than is held is refused")
+def n_negative_stock_refused():
+	"""Negative stock means the books claim goods nobody has, and every
+	valuation after it is wrong.
+	"""
+	item = an_item("Acceptance Scarce Coil")
+	a_receipt(item, 3, 500)
+	message = refuses(a_dispatch, item, 10)
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	expect(flt(held) == 3, f"the refusal still moved stock: {held} left")
+	frappe.db.commit()
+	return f"refused: {message}"
+
+
+@check("N. Stock", "Stock received at no cost is refused")
+def n_nil_rate_refused():
+	item = an_item("Acceptance Free Coil")
+	message = refuses(a_receipt, item, 5, 0)
+	frappe.db.rollback()
+	return f"refused: {message}"
+
+
+@check("N. Stock", "Goods turned away at the gate never enter stock")
+def n_rejected_at_gate():
+	item = an_item("Acceptance Turned Away")
+	before = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	receipt = a_receipt(item, 50, 90, target="Rejected at Gate")
+	after = stock_ledger.balance(item, a_warehouse(), COMPANY)
+
+	expect(flt(before) == flt(after), f"stock moved from {before} to {after} on a rejection")
+	expect(
+		not stock_ledger.voucher_movements("KNIT 360 Goods Receipt", receipt.name),
+		"a receipt rejected at the gate wrote stock movements",
+	)
+	frappe.db.commit()
+	return f"{receipt.name} rejected at the gate: no movement, stock still {after:g}"
+
+
+@check("N. Stock", "Only what was accepted is put away")
+def n_accepted_not_arrived():
+	item = an_item("Acceptance Damaged Coil")
+	receipt = a_receipt(item, 100, 40, rejected=15)
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	expect(flt(held) == 85, f"{held} entered stock; 100 arrived and 15 were rejected")
+	expect(
+		flt(receipt.items[0].accepted_qty) == 85,
+		f"the line shows {receipt.items[0].accepted_qty} accepted, expected 85",
+	)
+	frappe.db.commit()
+	return f"{receipt.name}: 100 arrived, 15 rejected, 85 in stock"
+
+
+@check("N. Stock", "Cancelling a movement reverses it rather than deleting it")
+def n_cancel_reverses():
+	item = an_item("Acceptance Returned Coil")
+	receipt = a_receipt(item, 12, 75)
+	expect(flt(stock_ledger.balance(item, a_warehouse(), COMPANY)) == 12, "it never arrived")
+
+	engine.transition("KNIT 360 Goods Receipt", receipt.name, "Cancelled")
+	held = stock_ledger.balance(item, a_warehouse(), COMPANY)
+	expect(abs(flt(held)) < 0.005, f"{held} still in stock after cancelling the receipt")
+
+	kept = stock_ledger.voucher_movements("KNIT 360 Goods Receipt", receipt.name,
+	                                      include_cancelled=1)
+	expect(len(kept) == 2, f"{len(kept)} movements kept; a reversal keeps both sides")
+	frappe.db.commit()
+	return f"{receipt.name} cancelled: stock back to nil, both movements kept"
+
+
+@check("N. Stock", "A stock movement cannot be edited or deleted")
+def n_movements_are_immutable():
+	# Makes its own receipt rather than picking up another check's. The first
+	# version took whichever came back first and got the cancelled one from
+	# the reversal check, whose movements are all flagged -- so it found
+	# nothing and failed for the wrong reason.
+	item = an_item("Acceptance Immutable Coil")
+	receipt = a_receipt(item, 4, 60)
+	# Committed before the refusals are tested, because the rollback below
+	# would otherwise take the fixture with it -- and the check would then
+	# pass by asserting that a movement which no longer exists was not edited.
+	frappe.db.commit()
+	entries = stock_ledger.voucher_movements("KNIT 360 Goods Receipt", receipt.name)
+	expect(entries, f"{receipt.name} wrote no movement to test against")
+	name = entries[0].name
+	expect(frappe.db.exists(stock_ledger.SLE, name), "the fixture is not there to begin with")
+
+	deleted = refuses(frappe.delete_doc, stock_ledger.SLE, name, ignore_permissions=True)
+	entry = frappe.get_doc(stock_ledger.SLE, name)
+	entry.actual_qty = flt(entry.actual_qty) + 1
+	edited = refuses(entry.save, ignore_permissions=True)
+	frappe.db.rollback()
+
+	expect(frappe.db.exists(stock_ledger.SLE, name), "the movement is gone after the refusals")
+	return f"delete refused ({deleted[:46]}...), edit refused ({edited[:46]}...)"
+
+
+@check("N. Stock", "The accounts agree with the stock ledger")
+def n_accounts_match_stock():
+	"""Perpetual inventory -- DEC-030. Stock In Hand must equal what the stock
+	ledger says the stock is worth, or the balance sheet is wrong.
+	"""
+	stock_account = frappe.db.get_value(COMPANY_DOCTYPE, COMPANY, "default_stock_account")
+	expect(stock_account, f"{COMPANY} has no Default Stock Account")
+
+	in_accounts = flt(ledger.balance(stock_account, COMPANY))
+	in_stock = flt(
+		sum(flt(row["value"]) for row in stock_ledger.stock_on_hand(company=COMPANY))
+	)
+	expect(
+		abs(in_accounts - in_stock) < 0.005,
+		f"the accounts hold {in_accounts:.2f} of stock and the stock ledger says "
+		f"{in_stock:.2f}",
+	)
+	return f"Stock In Hand {in_accounts:.2f} matches the stock ledger"
+
+
+@check("N. Stock", "The stock ledger is the only module that writes movements")
+def n_single_writer():
+	import pathlib as _pathlib
+
+	root = _pathlib.Path(frappe.get_app_path("knit360_core"))
+	offenders = []
+	for path in root.rglob("*.py"):
+		if path.name in ("ledger.py", "acceptance.py") or path.name.startswith("test_"):
+			continue
+		text = path.read_text(encoding="utf-8")
+		if "KNIT 360 Stock Ledger Entry" in text and ("insert(" in text or "new_doc(" in text):
+			offenders.append(str(path.relative_to(root)))
+	expect(not offenders, f"stock movements are written outside stock/ledger.py by: {offenders}")
+	return "stock/ledger.py is the sole writer"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -2484,6 +2816,25 @@ def cleanup():
 			f"cleanup() refuses to run against {COMPANY!r}. It deletes ledger "
 			f"entries directly and is only ever meant for the acceptance company."
 		)
+
+	# Stock movements refuse deletion the same way, and for the same reason,
+	# so they go by the same scoped raw delete before their documents.
+	stock_rows = frappe.db.count("KNIT 360 Stock Ledger Entry", {"company": COMPANY})
+	if stock_rows:
+		frappe.db.sql(
+			"DELETE FROM `tabKNIT 360 Stock Ledger Entry` WHERE company = %s", (COMPANY,)
+		)
+		removed["Stock Ledger Entry"] = stock_rows
+
+	for doctype in ("KNIT 360 Delivery Note", "KNIT 360 Goods Receipt"):
+		frappe.db.sql(
+			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
+		)
+		wipe(doctype, {"company": COMPANY}, force=True)
+
+	wipe("KNIT 360 Warehouse", {"company": COMPANY}, force=True)
+	# Item is not company-scoped, so the acceptance ones are named.
+	wipe("KNIT 360 Item", {"item_code": ["like", "Acceptance %"]}, force=True)
 
 	# HR leave, before the finance documents, for the same reason: the leave
 	# ledger refuses deletion exactly as the general ledger does, so its rows

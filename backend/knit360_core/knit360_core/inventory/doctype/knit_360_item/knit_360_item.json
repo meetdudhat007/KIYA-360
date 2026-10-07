@@ -94,9 +94,11 @@
   },
   {
    "fieldname": "valuation_method",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "label": "Valuation Method",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: Stock Valuation (FR-INV-006); BRD example FIFO, enumeration TBD"
+   "description": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies.",
+   "options": "\nFIFO\nMoving Average",
+   "default": "FIFO"
   },
   {
    "fieldname": "brand",

@@ -806,6 +806,89 @@ def buying():
 	return made
 
 
+#: (item, warehouse, qty, rate, how many days ago). Two receipts of the same
+#: item at different prices, so a dispatch has something to choose between and
+#: FIFO can be shown rather than asserted.
+RECEIPTS = [
+	("CM-IGBT-01", "Main Store", 40, 7200, 60),
+	("CM-IGBT-01", "Main Store", 40, 7650, 20),
+	("CM-CAP-01", "Main Store", 25, 3100, 45),
+	("RM-CU-01", "Main Store", 400, 790, 50),
+	("FG-COIL-01", "Finished Goods Store", 12, 18400, 30),
+	("FG-PANEL-01", "Finished Goods Store", 5, 64000, 30),
+]
+
+#: (item, warehouse, qty, how many days ago). Deliberately crosses the two
+#: IGBT receipts: 50 out of 80 takes all forty at 7,200 and ten at 7,650.
+DISPATCHES = [
+	("FG-COIL-01", "Finished Goods Store", 4, 12),
+	("CM-IGBT-01", "Main Store", 50, 5),
+]
+
+
+def stock():
+	"""Receive and dispatch, so the stock ledger has something to show.
+
+	The receipts are priced differently on purpose. A demonstration of FIFO
+	where every receipt cost the same proves nothing -- the screen worth
+	showing is the dispatch that crossed two price layers.
+	"""
+	from knit360_core.stock import ledger as stock_ledger
+
+	made = {"receipts": 0, "dispatches": 0}
+
+	if frappe.db.count("KNIT 360 Goods Receipt", {"company": COMPANY}):
+		made["receipts"] = "already received"
+	else:
+		for item, warehouse, qty, rate, days in RECEIPTS:
+			receipt = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Goods Receipt",
+					"company": COMPANY,
+					"receiving_warehouse": warehouse,
+					"challan_number": f"CH-{nowdate().replace('-', '')}-{made['receipts'] + 1:03d}",
+					"challan_date": add_days(nowdate(), -days),
+					"items": [
+						{
+							"item_code": item,
+							"qty_arrived": qty,
+							"qty_rejected_on_arrival": 0,
+							"rate": rate,
+						}
+					],
+				}
+			).insert(ignore_permissions=True)
+			reached = _walk_to("KNIT 360 Goods Receipt", receipt.name, "Received in Bay")
+			if reached != "Received in Bay":
+				frappe.throw(f"{receipt.name} stopped at {reached!r}; nothing was put away.")
+			made["receipts"] += 1
+
+	if frappe.db.count("KNIT 360 Delivery Note", {"company": COMPANY}):
+		made["dispatches"] = "already dispatched"
+	else:
+		for item, warehouse, qty, days in DISPATCHES:
+			note = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Delivery Note",
+					"company": COMPANY,
+					"source_warehouse": warehouse,
+					"delivery_note_date": add_days(nowdate(), -days),
+					"items": [{"item_code": item, "qty": qty}],
+				}
+			).insert(ignore_permissions=True)
+			reached = _walk_to("KNIT 360 Delivery Note", note.name, "Dispatched / In Transit")
+			if reached != "Dispatched / In Transit":
+				frappe.throw(f"{note.name} stopped at {reached!r}; no stock left the warehouse.")
+			made["dispatches"] += 1
+
+	made["on_hand"] = [
+		f"{row['item_code']} @ {row['warehouse']}: {row['qty']:g} worth {row['value']:,.2f}"
+		for row in stock_ledger.stock_on_hand(company=COMPANY)
+	]
+	frappe.db.commit()
+	return made
+
+
 def seed():
 	"""Fill the masters and build the pipeline. Safe to run more than once."""
 	report = {"company": company(), "masters": masters()}
@@ -817,6 +900,7 @@ def seed():
 	report["settlements"] = settlements()
 	report["hr"] = hr()
 	report["buying"] = buying()
+	report["stock"] = stock()
 
 	trial = ledger.trial_balance(COMPANY)
 	report["trial_balance"] = {
@@ -836,6 +920,7 @@ def seed():
 	print(f"settlements        {report['settlements']}")
 	print(f"hr                 {report['hr']}")
 	print(f"buying             {report['buying']}")
+	print(f"stock              {report['stock']}")
 	print(f"trial balance      {report['trial_balance']}")
 	print("\nThis is sample data. Edit it or delete it; none of it is a requirement.")
 	return report

@@ -9,6 +9,7 @@
  "field_order": [
   "sales_order",
   "company",
+  "source_warehouse",
   "delivery_note_date",
   "col1",
   "packing_slip_id",
@@ -28,9 +29,8 @@
    "fieldname": "sales_order",
    "fieldtype": "Link",
    "label": "Sales Order",
-   "description": "FR-SALES-005: Sales Order reference (DR-C2C-012 Inputs)",
+   "description": "FR-SALES-005: the Sales Order these goods were sold on, where there was one. Not required: a free replacement, a sample and a return to a supplier all leave the warehouse without one, and stock has to be able to move for each of them.",
    "options": "KNIT 360 Sales Order",
-   "reqd": 1,
    "in_list_view": 1
   },
   {
@@ -40,6 +40,15 @@
    "description": "FR-SALES-005: BRD-DERIVED: company context (FR-PADM-1.1.1)",
    "options": "KNIT 360 Company",
    "reqd": 1
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Ship From Warehouse",
+   "options": "KNIT 360 Warehouse",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "FR-SALES-005 / FR-INV-002: the warehouse the goods leave. Stock is counted per item per warehouse, so a dispatch that does not say where from cannot reduce anything."
   },
   {
    "fieldname": "delivery_note_date",
@@ -146,5 +155,6 @@
  "states": [],
  "track_changes": 1,
  "autoname": "DN-.YYYY.-.####",
- "title_field": "sales_order"
+ "title_field": "sales_order",
+ "is_submittable": 1
 }

@@ -107,6 +107,12 @@ def transition(reference_doctype, reference_name, to_status, reason=None):
 		)
 
 	from_docstatus = doc.docstatus
+	# Where the document is going, for a controller that needs to know during
+	# on_submit. The status field itself is only written on the line below,
+	# after the submit, so until then the document still reads its old status.
+	# Goods Receipt needs this: both "Received in Bay" and "Rejected at Gate"
+	# submit from the same draft state, and only one of them puts stock away.
+	doc.flags.knit360_to_status = to_status
 	_apply_docstatus(doc, lifecycle.required_docstatus(to_status, from_docstatus))
 	doc.db_set(FIELD, to_status, update_modified=True)
 	_log(doc, from_status, to_status, reason, from_docstatus, doc.docstatus)

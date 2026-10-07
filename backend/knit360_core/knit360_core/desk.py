@@ -34,7 +34,10 @@ MODULES = {
 	"Tax": ("income", 50, ["Tax Template"], {}),
 	"Procurement": ("buying", 60, ["Purchase Requisition", "Request for Quotation", "Purchase Order", "Goods Receipt"], {}),
 	"Supplier Management": ("users", 70, ["Supplier", "Supplier Scorecard"], {}),
-	"Inventory": ("stock", 80, ["Item", "Stock Reservation"], {}),
+	"Inventory": ("stock", 80, ["Item", "Stock Ledger Entry", "Item Price"], {
+		"Stock": ["Item", "Item Price", "Stock Ledger Entry", "Stock Reservation"],
+		"Movements": ["Goods Receipt", "Delivery Note"],
+	}),
 	"Warehouse": ("retail", 90, ["Warehouse", "Bin", "Putaway Task"], {}),
 	"MRP": ("milestone", 100, ["Material Plan"], {}),
 	"Manufacturing": ("tool", 110, ["BOM", "Work Order"], {}),

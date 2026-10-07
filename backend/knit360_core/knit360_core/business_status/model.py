@@ -236,6 +236,7 @@ DELIVERY_NOTE = Lifecycle(
 	draft_states={"Draft"},
 	submitted_states={"Dispatched / In Transit", "Delivered", "Return Initiated"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Dispatched / In Transit", "Delivered"),
 )
 
 # DR-P2P-001 (Supplier): A master; it posts nothing.
@@ -331,6 +332,8 @@ GOODS_RECEIPT = Lifecycle(
 	draft_states={"Draft / Gate Logged"},
 	submitted_states={"Accepted & Staged", "Pending Inspection", "Received in Bay", "Rejected at Gate"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft / Gate Logged", "Received in Bay", "Pending Inspection",
+	            "Accepted & Staged"),
 )
 
 # DR-P2P-007 (Quality Inspection): An inspection record; it posts nothing itself.

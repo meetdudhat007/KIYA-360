@@ -26,9 +26,8 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "description": "FR-PROC-005 / FR-WH-001: Purchase Order reference",
+   "description": "FR-PROC-005 / FR-WH-001: the Purchase Order these goods were ordered on, where there was one. Not required: opening stock, a customer return and a free sample all arrive without a purchase order, and no client can start using the system without entering opening stock. Matching a receipt against its order is three-way matching, which is `W7` and not built.",
    "options": "KNIT 360 Purchase Order",
-   "reqd": 1,
    "in_list_view": 1
   },
   {
@@ -91,8 +90,10 @@
    "fieldname": "receiving_warehouse",
    "fieldtype": "Link",
    "label": "Receiving Warehouse / Bay",
-   "description": "FR-PROC-005 / FR-WH-001: target receiving warehouse/bay",
-   "options": "KNIT 360 Warehouse"
+   "description": "FR-PROC-005 / FR-INV-002: where the goods are put away. Stock is counted per item per warehouse.",
+   "options": "KNIT 360 Warehouse",
+   "reqd": 1,
+   "in_list_view": 1
   },
   {
    "fieldname": "sec_14",
@@ -133,5 +134,6 @@
  "states": [],
  "track_changes": 1,
  "title_field": "purchase_order",
- "autoname": "GRN-.YYYY.-.####"
+ "autoname": "GRN-.YYYY.-.####",
+ "is_submittable": 1
 }

@@ -94,6 +94,12 @@ DEFAULTS = {
 	# it belongs in an asset. Neither is income or expense.
 	"default_output_tax_account": "Output Tax Payable",
 	"default_input_tax_account": "Input Tax Credit",
+	# Perpetual inventory -- DEC-030. Stock on hand is an asset; the cost of
+	# what has been sold is an expense; goods received but not yet billed are
+	# a liability, because they are ours and we owe for them.
+	"default_stock_account": "Stock In Hand",
+	"default_cogs_account": "Cost of Goods Sold",
+	"stock_received_but_not_billed": "Stock Received But Not Billed",
 }
 
 

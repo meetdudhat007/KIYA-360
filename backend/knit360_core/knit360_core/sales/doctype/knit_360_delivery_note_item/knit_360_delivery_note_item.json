@@ -9,15 +9,19 @@
  "field_order": [
   "item_code",
   "description",
-  "qty"
+  "qty",
+  "valuation_rate",
+  "stock_value"
  ],
  "fields": [
   {
    "fieldname": "item_code",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Item Code",
-   "description": "FR-SALES-005: BRD-DERIVED from the Sales Order reference; becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
-   "in_list_view": 1
+   "description": "FR-SALES-005 / FR-INV-002: a real item. Stock cannot be issued for something that does not exist, and a typed code would let it be.",
+   "in_list_view": 1,
+   "options": "KNIT 360 Item",
+   "reqd": 1
   },
   {
    "fieldname": "description",
@@ -31,7 +35,23 @@
    "fieldtype": "Float",
    "label": "Quantity",
    "description": "FR-SALES-005: BRD-DERIVED: dispatched quantity",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Currency",
+   "label": "Cost",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "FR-INV-006: what these units cost us, worked out by the stock ledger when they left. Not a selling price, and not typed."
+  },
+  {
+   "fieldname": "stock_value",
+   "fieldtype": "Currency",
+   "label": "Cost Total",
+   "read_only": 1,
+   "description": "FR-INV-006: quantity times cost -- what left the warehouse in money."
   }
  ],
  "index_web_pages_for_search": 0,

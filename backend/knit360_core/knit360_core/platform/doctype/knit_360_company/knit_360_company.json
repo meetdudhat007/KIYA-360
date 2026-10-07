@@ -29,6 +29,9 @@
   "default_bank_account",
   "round_off_account",
   "write_off_tolerance",
+  "default_stock_account",
+  "default_cogs_account",
+  "stock_received_but_not_billed",
   "default_output_tax_account",
   "default_input_tax_account",
   "default_cost_center"
@@ -166,6 +169,27 @@
    "fieldtype": "Currency",
    "label": "Write Off Tolerance",
    "description": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
+  },
+  {
+   "fieldname": "default_stock_account",
+   "fieldtype": "Link",
+   "label": "Default Stock Account",
+   "options": "KNIT 360 Account",
+   "description": "FR-INV-006: where the value of stock on hand is held. An asset."
+  },
+  {
+   "fieldname": "default_cogs_account",
+   "fieldtype": "Link",
+   "label": "Default Cost of Goods Sold Account",
+   "options": "KNIT 360 Account",
+   "description": "FR-INV-006: where the cost of stock that has been sold is charged."
+  },
+  {
+   "fieldname": "stock_received_but_not_billed",
+   "fieldtype": "Link",
+   "label": "Stock Received But Not Billed",
+   "options": "KNIT 360 Account",
+   "description": "FR-INV-006: holds the value of goods received whose supplier bill has not arrived. A liability -- the goods are ours and we owe for them."
   },
   {
    "fieldname": "default_output_tax_account",
