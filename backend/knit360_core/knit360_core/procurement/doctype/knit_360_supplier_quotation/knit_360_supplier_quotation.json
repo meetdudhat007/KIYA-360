@@ -157,5 +157,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "format:SQ-{YYYY}-{####}"
+ "autoname": "SQ-.YYYY.-.####"
 }

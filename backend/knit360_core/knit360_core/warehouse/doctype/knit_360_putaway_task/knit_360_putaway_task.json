@@ -102,5 +102,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "goods_receipt",
- "autoname": "format:PUT-{YYYY}-{####}"
+ "autoname": "PUT-.YYYY.-.####"
 }

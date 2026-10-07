@@ -95,5 +95,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "asset",
- "autoname": "format:MS-{YYYY}-{####}"
+ "autoname": "MS-.YYYY.-.####"
 }

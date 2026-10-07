@@ -170,6 +170,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:LAP-{YYYY}-{####}",
+ "autoname": "LAP-.YYYY.-.####",
  "title_field": "employee"
 }

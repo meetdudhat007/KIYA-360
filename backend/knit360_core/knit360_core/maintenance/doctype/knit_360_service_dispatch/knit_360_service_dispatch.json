@@ -116,5 +116,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "service_request",
- "autoname": "format:DSP-{YYYY}-{####}"
+ "autoname": "DSP-.YYYY.-.####"
 }

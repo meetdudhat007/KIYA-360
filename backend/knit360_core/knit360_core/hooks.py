@@ -54,7 +54,16 @@ after_migrate = [
 	# A default account field added after a company was created would otherwise
 	# stay empty for ever; setup() will not re-enter an existing chart. DEC-021.
 	"knit360_core.finance.chart_of_accounts.backfill_defaults",
+	# Indexes any document that has no search row yet. Cheap when there is
+	# nothing missing, and self-healing after an import or a restore; a full
+	# rebuild stays an explicit command.
+	"knit360_core.search.index.top_up",
 ]
+
+# --- Search ---------------------------------------------------------------
+# The framework's own index only holds fields a doctype marks for it, and no
+# KNIT 360 field did, so the bar found nothing. This adds our index as a source.
+awesomebar_search = ["knit360_core.search.api.awesomebar"]
 
 # --- Lifecycle integrity -------------------------------------------------
 # CD-002 makes the business status the lifecycle. These refuse a submit or
@@ -64,5 +73,14 @@ doc_events = {
 	"*": {
 		"before_submit": "knit360_core.business_status.guard.before_submit",
 		"before_cancel": "knit360_core.business_status.guard.before_cancel",
+		# --- Search -----------------------------------------------------
+		# One index row per document, kept current by the document's own
+		# lifecycle rather than by a scheduled job, so a document is findable
+		# the moment it exists. The handlers ignore anything that is not a
+		# KNIT 360 parent document. See knit360_core/search/index.py.
+		"after_insert": "knit360_core.search.index.index_document",
+		"on_update": "knit360_core.search.index.index_document",
+		"after_rename": "knit360_core.search.index.rename_document",
+		"on_trash": "knit360_core.search.index.remove_document",
 	}
 }

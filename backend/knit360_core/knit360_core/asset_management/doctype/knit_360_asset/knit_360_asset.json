@@ -154,5 +154,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "asset_name",
- "autoname": "format:AST-{YYYY}-{####}"
+ "autoname": "AST-.YYYY.-.####"
 }

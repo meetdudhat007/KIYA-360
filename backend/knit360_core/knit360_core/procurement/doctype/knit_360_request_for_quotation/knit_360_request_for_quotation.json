@@ -141,5 +141,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "title",
- "autoname": "format:RFQ-{YYYY}-{####}"
+ "autoname": "RFQ-.YYYY.-.####"
 }

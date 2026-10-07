@@ -147,6 +147,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:ENQ-{YYYY}-{####}",
+ "autoname": "ENQ-.YYYY.-.####",
  "title_field": "title"
 }

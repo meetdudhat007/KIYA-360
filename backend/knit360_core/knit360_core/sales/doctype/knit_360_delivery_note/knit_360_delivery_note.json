@@ -145,6 +145,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:DN-{YYYY}-{####}",
+ "autoname": "DN-.YYYY.-.####",
  "title_field": "sales_order"
 }

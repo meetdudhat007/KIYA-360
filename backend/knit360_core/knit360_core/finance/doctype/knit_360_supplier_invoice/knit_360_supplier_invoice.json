@@ -181,5 +181,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "format:PINV-{YYYY}-{####}"
+ "autoname": "PINV-.YYYY.-.####"
 }

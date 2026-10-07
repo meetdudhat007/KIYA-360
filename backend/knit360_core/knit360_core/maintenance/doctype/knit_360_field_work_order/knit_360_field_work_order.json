@@ -5,7 +5,7 @@
  "doctype": "DocType",
  "editable_grid": 0,
  "engine": "InnoDB",
- "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT 360 Work Order (manufacturing) \u2014 doc 33 forbids sharing that schema.",
+ "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT 360 Work Order (manufacturing) — doc 33 forbids sharing that schema.",
  "field_order": [
   "service_request",
   "asset",
@@ -143,5 +143,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "service_request",
- "autoname": "format:FWO-{YYYY}-{####}"
+ "autoname": "FWO-.YYYY.-.####"
 }

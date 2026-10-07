@@ -166,5 +166,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "format:PO-{YYYY}-{####}"
+ "autoname": "PO-.YYYY.-.####"
 }

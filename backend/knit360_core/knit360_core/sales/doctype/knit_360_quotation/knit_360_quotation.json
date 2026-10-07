@@ -169,6 +169,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:QTN-{YYYY}-{####}",
+ "autoname": "QTN-.YYYY.-.####",
  "title_field": "customer"
 }

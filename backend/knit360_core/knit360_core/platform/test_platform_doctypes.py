@@ -182,10 +182,18 @@ class TestDoctypeDefinitions(unittest.TestCase):
 	def test_every_field_is_traceable(self):
 		"""Non-layout fields carry the BRD requirement they came from."""
 		layout = {"Section Break", "Column Break", "Tab Break", "HTML"}
+		#: Modules that implement no BRD requirement, and why. A module is only
+		#: exempt because the capability genuinely appears nowhere in the 238 --
+		#: not because a trace was hard to find. Inventing an FR- to satisfy
+		#: this test would be inventing a requirement, which AGENTS.md forbids.
+		INFRASTRUCTURE = {
+			"Business Status": "CD-002 lifecycle plumbing; the BRD names no audit-log record",
+			"Search": "no requirement among the 238 mentions search, lookup or find",
+		}
 		for path in self.files:
 			d = load(path)
-			if d["module"] == "Business Status":
-				continue  # infrastructure, not a BRD requirement
+			if d["module"] in INFRASTRUCTURE:
+				continue
 			for f in d["fields"]:
 				if f["fieldtype"] in layout:
 					continue

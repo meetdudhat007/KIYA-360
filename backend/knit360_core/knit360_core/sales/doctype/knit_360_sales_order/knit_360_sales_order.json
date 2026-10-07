@@ -186,6 +186,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:SO-{YYYY}-{####}",
+ "autoname": "SO-.YYYY.-.####",
  "title_field": "customer"
 }

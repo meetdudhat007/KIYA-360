@@ -123,5 +123,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "format:SCR-{YYYY}-{####}"
+ "autoname": "SCR-.YYYY.-.####"
 }

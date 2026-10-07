@@ -212,7 +212,7 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:SINV-{YYYY}-{####}",
+ "autoname": "SINV-.YYYY.-.####",
  "title_field": "customer",
  "is_submittable": 1
 }

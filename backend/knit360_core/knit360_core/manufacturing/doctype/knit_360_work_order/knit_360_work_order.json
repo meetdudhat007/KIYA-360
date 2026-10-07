@@ -96,5 +96,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "production_item",
- "autoname": "format:WO-{YYYY}-{####}"
+ "autoname": "WO-.YYYY.-.####"
 }

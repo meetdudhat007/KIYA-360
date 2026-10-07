@@ -103,7 +103,39 @@ knit360.branding = {
 			// is cosmetic, so a failure to set the flag is not worth surfacing.
 		}
 	},
+
+	suppress_search_bar_vendor_entries() {
+		// Two things the search bar offers that are not ours to offer.
+		//
+		// The first is "Search for ...", which opens the framework's own index.
+		// That index only ever holds fields a doctype marks for it, no KNIT 360
+		// field does, and so it has always returned nothing. KNIT 360 now
+		// supplies the bar with its own results through the awesomebar_search
+		// hook, so the empty one is removed rather than left to disappoint.
+		//
+		// The second is "Install ... from Marketplace", which links to the
+		// framework vendor's commercial store.
+		if (!frappe.search || !frappe.search.AwesomeBar) {
+			console.warn(
+				"KNIT 360: frappe.search.AwesomeBar not found, so the vendor search " +
+					"entries could not be suppressed. Check awesome_bar.js after an upgrade."
+			);
+			return;
+		}
+
+		frappe.search.AwesomeBar.prototype.make_global_search = function () {
+			// Deliberately nothing. KNIT 360's own results come from the
+			// awesomebar_search hook -- see knit360_core/search/api.py.
+		};
+
+		if (frappe.search.utils) {
+			frappe.search.utils.get_marketplace_apps = function () {
+				return [];
+			};
+		}
+	},
 };
 
 knit360.branding.suppress_vendor_banners();
+knit360.branding.suppress_search_bar_vendor_entries();
 knit360.branding.replace_about_dialog();

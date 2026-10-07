@@ -154,6 +154,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:LAL-{YYYY}-{####}",
+ "autoname": "LAL-.YYYY.-.####",
  "title_field": "employee"
 }

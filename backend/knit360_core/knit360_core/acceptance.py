@@ -1794,6 +1794,291 @@ def j_supplier_tax_is_entered():
 	return f"{invoice.name}: kept the billed {odd}, total {invoice.grand_total}"
 
 
+# --- K. numbering -------------------------------------------------------
+#
+# `format:SINV-{YYYY}-{####}` handed the counter an empty prefix, so every
+# document type in the system drew from one pool: OPP-2026-0163, QTN-2026-0164,
+# SO-2026-0165 and SINV-2026-0166 were four documents created in one second.
+# These assert the counters are separate and stay separate.
+
+
+@check("K. Numbering", "No document type is named from the shared counter")
+def k_no_shared_counter():
+	"""The defect itself: a Series row with an empty key means one counter."""
+	shared = frappe.db.sql("SELECT current FROM tabSeries WHERE name = ''")
+	expect(not shared, f"the shared empty-key counter is back, at {shared}")
+
+	stragglers = []
+	for doctype in parent_doctypes():
+		autoname = frappe.db.get_value("DocType", doctype, "autoname") or ""
+		if autoname.startswith("format:") and "{#" in autoname:
+			stragglers.append(doctype.replace("KNIT 360 ", ""))
+	expect(
+		not stragglers,
+		f"{len(stragglers)} document types still use a format: series, which "
+		f"shares one counter: {', '.join(sorted(stragglers))}",
+	)
+	counted = frappe.db.sql("SELECT COUNT(*) FROM tabSeries")[0][0]
+	return f"no shared counter; {counted} separate counters in use"
+
+
+@check("K. Numbering", "Two document types number independently")
+def k_counters_are_separate():
+	"""Create one of each and assert the numbers do not interleave.
+
+	This is the check that would have caught the original defect. Under the old
+	naming these two came back consecutive.
+	"""
+	company()
+	lead = a_lead(lead_name="Numbering Contact")
+	customer_name = "Acceptance Numbering Customer"
+	if not frappe.db.exists("KNIT 360 Customer", customer_name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": customer_name, "company": COMPANY}
+		).insert(ignore_permissions=True)
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Invoice",
+			"company": COMPANY,
+			"customer": customer_name,
+			"posting_date": nowdate(),
+			"due_date": add_days(nowdate(), 30),
+			"items": [{"item_name": "Numbering widget", "qty": 1, "rate": 100}],
+		}
+	).insert(ignore_permissions=True)
+
+	lead_number = int(lead.name.rsplit("-", 1)[1])
+	invoice_number = int(invoice.name.rsplit("-", 1)[1])
+	expect(
+		lead_number != invoice_number + 1 and invoice_number != lead_number + 1,
+		f"{lead.name} and {invoice.name} are consecutive, so they are still "
+		f"sharing a counter",
+	)
+	expect(lead.name.startswith("LEAD-"), f"{lead.name} has the wrong prefix")
+	expect(invoice.name.startswith("SINV-"), f"{invoice.name} has the wrong prefix")
+	frappe.db.commit()
+	return f"{lead.name} and {invoice.name} came from different counters"
+
+
+@check("K. Numbering", "A document number carries its own year")
+def k_year_in_the_number():
+	"""The year is part of the counter key, not decoration on the end.
+
+	Under the old naming the counter never reset, so the year said 2026 while
+	the number counted from the beginning of the system.
+	"""
+	company()
+	lead = a_lead(lead_name="Year Contact")
+	year = getdate(nowdate()).year
+	expect(
+		f"-{year}-" in lead.name,
+		f"{lead.name} does not carry {year}, so the series is not year-scoped",
+	)
+	key = lead.name.rsplit("-", 1)[0] + "-"
+	counter = (frappe.db.sql("SELECT current FROM tabSeries WHERE name = %s", (key,)) or [[None]])[0][0]
+	expect(counter, f"no counter exists for {key!r}")
+	frappe.db.commit()
+	return f"{lead.name} from counter {key!r}, now at {counter}"
+
+
+@check("K. Numbering", "No ledger entry points at a document that is not there")
+def k_no_orphaned_vouchers():
+	"""Renaming is only safe if the references follow.
+
+	`GL Entry.voucher_no` is a Data field, so Frappe does not update it on a
+	rename -- the renumbering had to sweep for it by value. 19 references
+	needed rewriting. This asserts none were missed, and keeps asserting it.
+	"""
+	rows = frappe.get_all(
+		"KNIT 360 GL Entry",
+		fields=["name", "voucher_type", "voucher_no", "against_voucher_type", "against_voucher"],
+	)
+	orphans = [
+		row.name
+		for row in rows
+		if (row.voucher_no and not frappe.db.exists(row.voucher_type, row.voucher_no))
+		or (row.against_voucher and not frappe.db.exists(row.against_voucher_type, row.against_voucher))
+	]
+	expect(not orphans, f"{len(orphans)} ledger rows point at documents that do not exist: {orphans[:5]}")
+	return f"{len(rows)} ledger rows checked, every reference resolves"
+
+
+# --- L. search ----------------------------------------------------------
+#
+# Search appears in none of the 238 BRD requirements. It exists because the
+# framework's own index only holds fields a doctype marks for it, no KNIT 360
+# field did, and so typing a document number into the bar returned nothing.
+
+
+@check("L. Search", "Every document is in the index")
+def l_everything_indexed():
+	from knit360_core.search import index
+
+	company()
+	report = index.coverage()
+	expect(
+		not report["incomplete"],
+		f"these record types have documents missing from the index: {report['incomplete']}",
+	)
+	expect(report["documents"], "there are no documents at all, so this proves nothing")
+	return f"{report['indexed']} of {report['documents']} documents indexed"
+
+
+@check("L. Search", "A new document is findable by its number straight away")
+def l_findable_on_insert():
+	"""Indexed by the document's own lifecycle, not by a scheduled job."""
+	from knit360_core.search import api
+
+	lead = a_lead(lead_name="Findable Contact")
+	frappe.db.commit()
+
+	hits = api.search(lead.name)
+	names = [h["name"] for h in hits]
+	expect(lead.name in names, f"{lead.name} is not findable; search returned {names[:5]}")
+	expect(hits[0]["name"] == lead.name, f"the exact number ranked {names.index(lead.name) + 1}, not first")
+	return f"{lead.name} found, ranked first of {len(hits)}"
+
+
+@check("L. Search", "A part of a number finds the document")
+def l_partial_match():
+	"""The reason this is not a word-based index.
+
+	Full text matches whole words, so `SINV-2026` would not find
+	`SINV-2026-0001` -- which is exactly what a person types.
+	"""
+	from knit360_core.search import api
+
+	lead = a_lead(lead_name="Partial Contact")
+	frappe.db.commit()
+	stem = lead.name.rsplit("-", 1)[0]
+
+	names = [h["name"] for h in api.search(stem)]
+	expect(lead.name in names, f"{stem!r} did not find {lead.name}; returned {names[:5]}")
+	return f"{stem!r} found {len(names)} documents including {lead.name}"
+
+
+@check("L. Search", "A document is findable by what is on it, not only its number")
+def l_find_by_content():
+	from knit360_core.search import api
+
+	lead = a_lead(lead_name="Marigold Searchable", organization_name="Marigold Castings Pvt Ltd")
+	frappe.db.commit()
+
+	names = [h["name"] for h in api.search("Marigold")]
+	expect(lead.name in names, f"searching an organisation name did not find {lead.name}")
+	return f"'Marigold' found {lead.name} by its organisation name"
+
+
+@check("L. Search", "A renamed document is findable by its new number, not its old")
+def l_rename_follows():
+	"""The index is keyed on the document, so a rename must move it."""
+	from knit360_core.search import api, index
+
+	lead = a_lead(lead_name="Renamed Contact")
+	old = lead.name
+	new = f"{old}-RENAMED"
+	frappe.db.set_value("DocType", "KNIT 360 Lead", "allow_rename", 1, update_modified=False)
+	frappe.clear_cache()
+	try:
+		frappe.rename_doc("KNIT 360 Lead", old, new, force=True)
+	finally:
+		frappe.db.set_value("DocType", "KNIT 360 Lead", "allow_rename", 0, update_modified=False)
+		frappe.clear_cache()
+	frappe.db.commit()
+
+	expect(
+		new in [h["name"] for h in api.search(new)],
+		f"the renamed document is not findable as {new}",
+	)
+	stale = frappe.db.count(index.INDEX, {"reference_doctype": "KNIT 360 Lead", "reference_name": old})
+	expect(not stale, f"{stale} index row(s) still point at the old name {old}")
+	frappe.delete_doc("KNIT 360 Lead", new, force=True, ignore_permissions=True)
+	frappe.db.commit()
+	return f"{old} -> {new}: index followed, no stale row"
+
+
+@check("L. Search", "A deleted document leaves no result behind")
+def l_delete_removes():
+	from knit360_core.search import api, index
+
+	lead = a_lead(lead_name="Vanishing Contact")
+	name = lead.name
+	frappe.db.commit()
+	expect(name in [h["name"] for h in api.search(name)], "it was not findable before deletion")
+
+	frappe.delete_doc("KNIT 360 Lead", name, force=True, ignore_permissions=True)
+	frappe.db.commit()
+
+	rows = frappe.db.count(index.INDEX, {"reference_doctype": "KNIT 360 Lead", "reference_name": name})
+	expect(not rows, f"{rows} index row(s) survive a document that does not")
+	expect(
+		name not in [h["name"] for h in api.search(name)],
+		f"{name} is still a search result after being deleted",
+	)
+	return f"{name} deleted; no index row, no result"
+
+
+@check("L. Search", "An index row cannot be written by hand")
+def l_index_is_derived():
+	"""It describes a document. Edited alone it would describe nothing, until
+	that document was next saved and the edit silently vanished.
+	"""
+	from knit360_core.search import index
+
+	message = refuses(
+		frappe.get_doc(
+			{
+				"doctype": index.INDEX,
+				"reference_doctype": "KNIT 360 Lead",
+				"reference_name": "LEAD-2026-0001",
+				"title": "typed by hand",
+			}
+		).insert,
+		ignore_permissions=True,
+	)
+	return f"refused: {message}"
+
+
+@check("L. Search", "A ledger row does not outrank the document it came from")
+def l_derived_rank_last():
+	"""A GL entry's content holds the number of the invoice it posted, so
+	without a rank the invoice is buried under its own ledger rows.
+	"""
+	from knit360_core.search import index
+
+	company()
+	customer_name = "Acceptance Ranking Customer"
+	if not frappe.db.exists("KNIT 360 Customer", customer_name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": customer_name, "company": COMPANY}
+		).insert(ignore_permissions=True)
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Invoice",
+			"company": COMPANY,
+			"customer": customer_name,
+			"posting_date": nowdate(),
+			"due_date": add_days(nowdate(), 30),
+			"items": [{"item_name": "Ranking widget", "qty": 1, "rate": 700}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Sales Invoice", invoice.name, "Posted / Unpaid")
+	frappe.db.commit()
+
+	rows = index.search_sql(invoice.name, limit=10)
+	expect(rows, f"nothing at all was found for {invoice.name}")
+	expect(
+		rows[0].reference_doctype == "KNIT 360 Sales Invoice",
+		f"the first result for {invoice.name} is a "
+		f"{rows[0].reference_doctype}, not the invoice itself",
+	)
+	derived = [r for r in rows if r.weight]
+	return (
+		f"{invoice.name} ranked first of {len(rows)}, "
+		f"with {len(derived)} derived row(s) below it"
+	)
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -1952,6 +2237,21 @@ def cleanup():
 	wipe("KNIT 360 Supplier Invoice", {"company": COMPANY}, force=True)
 	wipe("KNIT 360 Supplier", {"company": COMPANY}, force=True)
 	wipe("KNIT 360 Tax Template", {"company": COMPANY}, force=True)
+
+	# Search index rows are derived, so they go with whatever they described.
+	# Anything still pointing at a document that no longer exists is swept,
+	# which also covers a fixture deleted by a check rather than by here.
+	orphan_index = [
+		row.name
+		for row in frappe.get_all(
+			"KNIT 360 Search Index", fields=["name", "reference_doctype", "reference_name"]
+		)
+		if not frappe.db.exists(row.reference_doctype, row.reference_name)
+	]
+	for name in orphan_index:
+		frappe.db.sql("DELETE FROM `tabKNIT 360 Search Index` WHERE name = %s", (name,))
+	if orphan_index:
+		removed["Search Index"] = len(orphan_index)
 
 	# Accounts are a tree: a node cannot go before its children. In a nested
 	# set the width `rgt - lft` is 1 for a leaf and grows with depth of

@@ -193,6 +193,7 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:GL-{YYYY}-{######}",
- "title_field": "account"
+ "autoname": "GL-.YYYY.-.######",
+ "title_field": "account",
+ "in_create": 1
 }

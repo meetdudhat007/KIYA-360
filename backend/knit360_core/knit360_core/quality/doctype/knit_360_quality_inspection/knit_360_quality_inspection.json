@@ -129,5 +129,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "reference_name",
- "autoname": "format:QI-{YYYY}-{####}"
+ "autoname": "QI-.YYYY.-.####"
 }

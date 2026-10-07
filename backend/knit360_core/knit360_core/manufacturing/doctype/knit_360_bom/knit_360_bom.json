@@ -95,5 +95,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "item_code",
- "autoname": "format:BOM-{YYYY}-{####}"
+ "autoname": "BOM-.YYYY.-.####"
 }

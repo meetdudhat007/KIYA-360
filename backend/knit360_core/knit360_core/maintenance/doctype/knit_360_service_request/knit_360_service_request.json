@@ -121,5 +121,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "asset",
- "autoname": "format:SR-{YYYY}-{####}"
+ "autoname": "SR-.YYYY.-.####"
 }

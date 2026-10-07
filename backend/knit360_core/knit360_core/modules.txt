@@ -14,3 +14,4 @@ Supplier Management
 Tax
 Warehouse
 HR
+Search

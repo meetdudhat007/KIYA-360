@@ -80,5 +80,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "title",
- "autoname": "format:PR-{YYYY}-{####}"
+ "autoname": "PR-.YYYY.-.####"
 }

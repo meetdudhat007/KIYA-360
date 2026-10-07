@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-07 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "One row per KNIT 360 document, holding what that document can be found by. Written only by knit360_core.search.index.",
+ "field_order": [
+  "reference_doctype",
+  "reference_name",
+  "column_break_1",
+  "record_type",
+  "route",
+  "weight",
+  "indexed_at",
+  "section_break_1",
+  "title",
+  "subtitle",
+  "company",
+  "content"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Record Type",
+   "options": "DocType",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Document",
+   "options": "reference_doctype",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "record_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Shown As",
+   "read_only": 1,
+   "description": "The record type without the product prefix, as a person reads it."
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Opens",
+   "read_only": 1,
+   "description": "Where selecting this result goes."
+  },
+  {
+   "fieldname": "weight",
+   "fieldtype": "Int",
+   "label": "Rank",
+   "read_only": 1,
+   "description": "0 for a document somebody authors, 1 for a row the system derived from one. A ledger row mentions the document it came from, so without this it buries that document in its own search results."
+  },
+  {
+   "fieldname": "indexed_at",
+   "fieldtype": "Datetime",
+   "label": "Indexed At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "subtitle",
+   "fieldtype": "Data",
+   "label": "Subtitle",
+   "read_only": 1,
+   "description": "Shown under the title in the result list, to tell two similar documents apart."
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Text",
+   "label": "Searchable Content",
+   "read_only": 1,
+   "description": "Every searchable value on the document, joined. This is what a typed query is matched against."
+  }
+ ],
+ "hide_toolbar": 1,
+ "in_create": 1,
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Search",
+ "name": "KNIT 360 Search Index",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

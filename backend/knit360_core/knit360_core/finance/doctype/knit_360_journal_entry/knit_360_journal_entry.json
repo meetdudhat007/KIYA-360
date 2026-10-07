@@ -151,7 +151,7 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "autoname": "format:JV-{YYYY}-{####}",
+ "autoname": "JV-.YYYY.-.####",
  "title_field": "entry_type",
  "is_submittable": 1
 }

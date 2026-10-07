@@ -96,5 +96,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "sales_order",
- "autoname": "format:RSV-{YYYY}-{####}"
+ "autoname": "RSV-.YYYY.-.####"
 }

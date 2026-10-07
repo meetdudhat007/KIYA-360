@@ -159,5 +159,5 @@
  "states": [],
  "track_changes": 1,
  "title_field": "title",
- "autoname": "format:OPP-{YYYY}-{####}"
+ "autoname": "OPP-.YYYY.-.####"
 }
