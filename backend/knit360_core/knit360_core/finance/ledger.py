@@ -271,6 +271,10 @@ def voucher_entries(voucher_type, voucher_no, include_cancelled=0):
 		GL,
 		filters=filters,
 		fields=["name", "posting_date", "account", "debit", "credit",
-		        "party_type", "party", "against_account", "remarks", "is_cancelled"],
+		        "party_type", "party", "against_account", "remarks", "is_cancelled",
+		        # Which document this line settles. Without these a caller
+		        # cannot tell an allocated line from an advance, and reads
+		        # every line as unallocated.
+		        "against_voucher_type", "against_voucher"],
 		order_by="creation",
 	)

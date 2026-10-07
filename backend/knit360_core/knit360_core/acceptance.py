@@ -27,12 +27,13 @@ import frappe
 from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine, guard, model
-from knit360_core.finance import chart_of_accounts, ledger
+from knit360_core.finance import chart_of_accounts, ledger, settlement
 
 #: Acceptance data lives under its own company so a run is isolated from
 #: anything a person has entered. GL entries are immutable by design, so an
 #: acceptance run that posted into the real company could not be undone.
 COMPANY = "KNIT Acceptance Co"
+COMPANY_DOCTYPE = "KNIT 360 Company"
 CURRENCY = "INR"
 
 CHECKS = []
@@ -2079,6 +2080,318 @@ def l_derived_rank_last():
 	)
 
 
+# --- M. settlement ------------------------------------------------------
+#
+# DEC-022. Before this, an invoice could be marked Paid with no record of any
+# money arriving: the status moved and nothing else did. These assert that what
+# is owed comes from the ledger and that the refusals hold.
+
+
+def a_payer():
+	name = "Acceptance Paying Customer"
+	if not frappe.db.exists("KNIT 360 Customer", name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": name, "company": company()}
+		).insert(ignore_permissions=True)
+	return name
+
+
+def a_posted_invoice(total, customer=None):
+	"""A submitted invoice for `total`, ready to be settled."""
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Invoice",
+			"company": company(),
+			"customer": customer or a_payer(),
+			"posting_date": nowdate(),
+			"due_date": add_days(nowdate(), 30),
+			"items": [{"item_name": "Acceptance settled widget", "qty": 1, "rate": total}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Sales Invoice", invoice.name, "Posted / Unpaid")
+	invoice.reload()
+	return invoice
+
+
+def a_payment(amount, allocations, customer=None, post=True):
+	"""A receipt, optionally driven all the way to Disbursed / Cleared."""
+	payment = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Payment Entry",
+			"company": COMPANY,
+			"payment_direction": "Receive",
+			"party_type": "KNIT 360 Customer",
+			"party": customer or a_payer(),
+			"payment_date": nowdate(),
+			"amount": amount,
+			"bank_account": account("Bank Account"),
+			"allocations": [
+				{
+					"reference_doctype": "KNIT 360 Sales Invoice",
+					"reference_name": name,
+					"allocated_amount": value,
+				}
+				for name, value in allocations
+			],
+		}
+	).insert(ignore_permissions=True)
+	if post:
+		engine.transition("KNIT 360 Payment Entry", payment.name, "Pending Bank Authorization")
+		engine.transition("KNIT 360 Payment Entry", payment.name, "Disbursed / Cleared")
+		payment.reload()
+	return payment
+
+
+@check("M. Settlement", "A receipt settles an invoice and reaches the ledger")
+def m_receipt_posts():
+	invoice = a_posted_invoice(5000)
+	expect(
+		flt(settlement.outstanding(invoice.doctype, invoice.name)) == 5000,
+		f"a fresh invoice owes {settlement.outstanding(invoice.doctype, invoice.name)}, expected 5000",
+	)
+	payment = a_payment(5000, [(invoice.name, 5000)])
+	invoice.reload()
+
+	left = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(abs(left) < 0.005, f"after paying in full, {left} is still outstanding")
+
+	entries = ledger.voucher_entries("KNIT 360 Payment Entry", payment.name)
+	bank = [r for r in entries if r.account == account("Bank Account")]
+	expect(len(bank) == 1, f"{len(bank)} lines hit the bank account, expected 1")
+	expect(flt(bank[0].debit) == 5000, f"the bank was debited {bank[0].debit}, expected 5000")
+	debits = flt(sum(flt(r.debit) for r in entries))
+	credits = flt(sum(flt(r.credit) for r in entries))
+	expect(abs(debits - credits) < 0.005, f"the receipt does not balance: {debits} vs {credits}")
+	frappe.db.commit()
+	return f"{payment.name} settled {invoice.name}; bank debited 5000, nothing outstanding"
+
+
+@check("M. Settlement", "A part payment leaves the rest owing, and says so")
+def m_part_payment():
+	"""The status moves because the money moved, not instead of it."""
+	invoice = a_posted_invoice(50000)
+	a_payment(20000, [(invoice.name, 20000)])
+	invoice.reload()
+
+	left = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(flt(left) == 30000, f"{left} outstanding after paying 20000 of 50000, expected 30000")
+	expect(
+		invoice.knit360_business_status == "Partly Paid",
+		f"status is {invoice.knit360_business_status!r}, expected 'Partly Paid'",
+	)
+	expect(
+		flt(invoice.outstanding_amount) == 30000,
+		f"the invoice shows {invoice.outstanding_amount}, the ledger says {left}",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: paid 20000 of 50000, 30000 owing, status Partly Paid"
+
+
+@check("M. Settlement", "What is owed is read from the ledger, not from a stored total")
+def m_outstanding_is_derived():
+	"""The field is a cache. Break it and the ledger still knows the truth."""
+	invoice = a_posted_invoice(8000)
+	a_payment(3000, [(invoice.name, 3000)])
+
+	# Corrupt the cache behind the system's back.
+	frappe.db.set_value(
+		"KNIT 360 Sales Invoice", invoice.name, "outstanding_amount", 999999,
+		update_modified=False,
+	)
+	derived = settlement.outstanding("KNIT 360 Sales Invoice", invoice.name)
+	expect(flt(derived) == 5000, f"the ledger says {derived} is owed, expected 5000")
+
+	wrong = settlement.check_cache()
+	expect(invoice.name in wrong, "a corrupted cache was not detected")
+
+	settlement.refresh("KNIT 360 Sales Invoice", invoice.name)
+	# Scoped to this invoice: check_cache() reads the whole site, and an
+	# earlier check deliberately leaves a refused invoice behind.
+	expect(
+		invoice.name not in settlement.check_cache(),
+		f"the cache still disagrees after a refresh: {settlement.check_cache()}",
+	)
+	frappe.db.commit()
+	return f"ledger said 5000 while the cache said 999999; detected and repaired"
+
+
+@check("M. Settlement", "Allocating more than is owed is refused, not quietly capped")
+def m_over_allocation_refused():
+	invoice = a_posted_invoice(4000)
+	message = refuses(a_payment, 10000, [(invoice.name, 10000)])
+	frappe.db.rollback()
+	return f"refused: {message}"
+
+
+@check("M. Settlement", "A payment cannot allocate more than it is worth")
+def m_over_commit_refused():
+	first = a_posted_invoice(3000)
+	second = a_posted_invoice(3000)
+	message = refuses(a_payment, 4000, [(first.name, 3000), (second.name, 3000)])
+	frappe.db.rollback()
+	return f"refused: {message}"
+
+
+@check("M. Settlement", "An overpayment is held for the party, not added to the invoice")
+def m_overpayment_is_an_advance():
+	"""DEC-022. The surplus is a debt to the customer, never income."""
+	invoice = a_posted_invoice(6000)
+	payment = a_payment(10000, [(invoice.name, 6000)])
+	invoice.reload()
+
+	expect(
+		flt(payment.unallocated_amount) == 4000,
+		f"unallocated is {payment.unallocated_amount}, expected 4000",
+	)
+	expect(
+		abs(settlement.outstanding(invoice.doctype, invoice.name)) < 0.005,
+		"the invoice is not settled",
+	)
+	expect(
+		flt(invoice.grand_total) == 6000,
+		f"the invoice total became {invoice.grand_total}; an overpayment inflated it",
+	)
+
+	entries = ledger.voucher_entries("KNIT 360 Payment Entry", payment.name)
+	advance = [r for r in entries if not r.against_voucher and flt(r.credit)]
+	expect(
+		len(advance) == 1,
+		f"{len(advance)} unallocated lines, expected 1: "
+		+ "; ".join(f"{r.account} cr {r.credit} av={r.against_voucher!r}" for r in advance),
+	)
+	expect(flt(advance[0].credit) == 4000, f"the advance is {advance[0].credit}, expected 4000")
+	frappe.db.commit()
+	return f"{payment.name}: 6000 settled, 4000 held as an advance against the party"
+
+
+@check("M. Settlement", "One payment settles several invoices")
+def m_one_payment_many_invoices():
+	first = a_posted_invoice(1000)
+	second = a_posted_invoice(2000)
+	third = a_posted_invoice(3000)
+	payment = a_payment(6000, [(first.name, 1000), (second.name, 2000), (third.name, 3000)])
+
+	for invoice in (first, second, third):
+		left = settlement.outstanding(invoice.doctype, invoice.name)
+		expect(abs(left) < 0.005, f"{invoice.name} still owes {left}")
+		expect(
+			frappe.db.get_value("KNIT 360 Sales Invoice", invoice.name,
+			                    "knit360_business_status") == "Paid",
+			f"{invoice.name} is not Paid",
+		)
+	expect(flt(payment.unallocated_amount) == 0, "something was left unallocated")
+	frappe.db.commit()
+	return f"{payment.name} settled three invoices totalling 6000"
+
+
+@check("M. Settlement", "A payment cannot settle another party's invoice")
+def m_wrong_party_refused():
+	other = "Acceptance Other Customer"
+	if not frappe.db.exists("KNIT 360 Customer", other):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": other, "company": company()}
+		).insert(ignore_permissions=True)
+	invoice = a_posted_invoice(2500, customer=other)
+	message = refuses(a_payment, 2500, [(invoice.name, 2500)])  # paid by the usual payer
+	frappe.db.rollback()
+	return f"refused: {message}"
+
+
+@check("M. Settlement", "Money cannot move through an account that is not bank or cash")
+def m_bank_account_checked():
+	invoice = a_posted_invoice(1500)
+	message = refuses(
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Payment Entry",
+				"company": COMPANY,
+				"payment_direction": "Receive",
+				"party_type": "KNIT 360 Customer",
+				"party": a_payer(),
+				"payment_date": nowdate(),
+				"amount": 1500,
+				"bank_account": account("Sales"),  # an income account
+				"allocations": [
+					{
+						"reference_doctype": "KNIT 360 Sales Invoice",
+						"reference_name": invoice.name,
+						"allocated_amount": 1500,
+					}
+				],
+			}
+		).insert,
+		ignore_permissions=True,
+	)
+	frappe.db.rollback()
+	return f"refused: {message}"
+
+
+@check("M. Settlement", "Cancelling a payment puts the debt back")
+def m_cancel_restores():
+	"""Reversal, not deletion -- the receipt and its mirror both stay."""
+	invoice = a_posted_invoice(7000)
+	payment = a_payment(7000, [(invoice.name, 7000)])
+	expect(
+		abs(settlement.outstanding(invoice.doctype, invoice.name)) < 0.005,
+		"the invoice was not settled in the first place",
+	)
+
+	engine.transition("KNIT 360 Payment Entry", payment.name, "Cancelled")
+	invoice.reload()
+
+	left = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(flt(left) == 7000, f"after cancelling the receipt, {left} is owed, expected 7000")
+	expect(
+		invoice.knit360_business_status != "Paid",
+		"the invoice is still marked Paid after its only receipt was cancelled",
+	)
+	kept = ledger.voucher_entries("KNIT 360 Payment Entry", payment.name, include_cancelled=1)
+	expect(len(kept) >= 4, f"only {len(kept)} ledger rows kept; a reversal keeps both sides")
+	frappe.db.commit()
+	return f"{payment.name} cancelled: 7000 owed again, {len(kept)} ledger rows kept"
+
+
+@check("M. Settlement", "A small residue is written off only when asked")
+def m_write_off_is_deliberate():
+	"""DEC-022: never automatic. An automatic write-off is how small amounts
+	of money leave a business without anyone noticing.
+	"""
+	frappe.db.set_value(COMPANY_DOCTYPE, COMPANY, "write_off_tolerance", 1.0,
+	                    update_modified=False)
+	invoice = a_posted_invoice(2000)
+	a_payment(1999.60, [(invoice.name, 1999.60)])
+	invoice.reload()
+
+	left = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(abs(flt(left) - 0.40) < 0.005, f"{left} left, expected 0.40")
+	expect(
+		invoice.knit360_business_status != "Paid",
+		"a 40 paise residue marked the invoice Paid on its own",
+	)
+
+	settlement.write_off("KNIT 360 Sales Invoice", invoice.name, reason="Acceptance residue")
+	invoice.reload()
+	after = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(abs(after) < 0.005, f"{after} still outstanding after the write-off")
+	expect(
+		invoice.knit360_business_status == "Paid",
+		f"status is {invoice.knit360_business_status!r} after writing the residue off",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: 0.40 left unpaid until asked, then written off"
+
+
+@check("M. Settlement", "A residue larger than the tolerance is not written off")
+def m_write_off_bounded():
+	frappe.db.set_value(COMPANY_DOCTYPE, COMPANY, "write_off_tolerance", 1.0,
+	                    update_modified=False)
+	invoice = a_posted_invoice(9000)
+	a_payment(5000, [(invoice.name, 5000)])
+	message = refuses(settlement.write_off, "KNIT 360 Sales Invoice", invoice.name)
+	frappe.db.commit()
+	return f"refused: {message}"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -2202,6 +2515,7 @@ def cleanup():
 	# directly instead -- again only for the acceptance company, and only
 	# because these documents are about to stop existing.
 	for doctype in (
+		"KNIT 360 Payment Entry",
 		"KNIT 360 Sales Invoice", "KNIT 360 Sales Order", "KNIT 360 Journal Entry",
 		"KNIT 360 Quotation", "KNIT 360 Opportunity", "KNIT 360 Lead",
 	):

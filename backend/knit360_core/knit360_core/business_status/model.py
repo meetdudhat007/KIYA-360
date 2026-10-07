@@ -386,13 +386,20 @@ PAYMENT_ENTRY = Lifecycle(
 	transitions={
 		"Draft": {"Cancelled", "Pending Bank Authorization"},
 		"Pending Bank Authorization": {"Cancelled", "Disbursed / Cleared", "Rejected / Bounced"},
-		"Disbursed / Cleared": set(),
+		# A cleared payment can still be reversed: a cheque bounces after it
+		# cleared, a receipt is matched to the wrong customer. Cancelling
+		# writes the mirror entry and the invoice it settled goes back to
+		# owing -- DEC-022. Sales Invoice allows the same from its posted
+		# states, and a payment that could never be undone would be the only
+		# posting in the system with no way back.
+		"Disbursed / Cleared": {"Cancelled"},
 		"Rejected / Bounced": set(),
 		"Cancelled": set(),
 	},
 	draft_states={"Draft", "Pending Bank Authorization"},
 	submitted_states={"Disbursed / Cleared", "Rejected / Bounced"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Bank Authorization", "Disbursed / Cleared"),
 )
 
 # DR-P2P-012 (Supplier Scorecard): An analytics period; it posts nothing.
@@ -484,7 +491,11 @@ SALES_INVOICE = Lifecycle(
 		"Posted / Unpaid": {"Partly Paid", "Paid", "Overdue", "Cancelled"},
 		"Partly Paid": {"Paid", "Overdue", "Cancelled"},
 		"Overdue": {"Partly Paid", "Paid", "Cancelled"},
-		"Paid": set(),
+		# Paid is not the end of the road. A receipt can be cancelled -- a
+		# cheque bounces, a payment was matched to the wrong customer -- and
+		# the invoice then owes again. Settlement moves it back to whichever
+		# of these the ledger says is true. DEC-022.
+		"Paid": {"Partly Paid", "Posted / Unpaid", "Overdue", "Cancelled"},
 		"Cancelled": set(),
 	},
 	draft_states={"Draft", "Pending Approval"},

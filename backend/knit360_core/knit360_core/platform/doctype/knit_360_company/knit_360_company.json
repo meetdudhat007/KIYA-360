@@ -28,6 +28,7 @@
   "default_cash_account",
   "default_bank_account",
   "round_off_account",
+  "write_off_tolerance",
   "default_output_tax_account",
   "default_input_tax_account",
   "default_cost_center"
@@ -159,6 +160,12 @@
    "label": "Round Off Account",
    "description": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
    "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "write_off_tolerance",
+   "fieldtype": "Currency",
+   "label": "Write Off Tolerance",
+   "description": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
   },
   {
    "fieldname": "default_output_tax_account",

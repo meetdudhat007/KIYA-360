@@ -32,7 +32,7 @@ only built the first time, so a second run does not multiply the deals.
 """
 
 import frappe
-from frappe.utils import add_days, nowdate
+from frappe.utils import add_days, flt, nowdate
 
 from knit360_core.business_status import engine
 from knit360_core.finance import chart_of_accounts, ledger
@@ -492,6 +492,96 @@ def opening_balances():
 	return entry.name
 
 
+def settlements():
+	"""Receive money against the demo invoices -- DEC-022.
+
+	Two of the three invoices are left owing something on purpose. A
+	demonstration where everything is paid shows nothing: the interesting
+	screen is the one with a part payment on it, where the invoice says what
+	arrived and what is still owed.
+
+	It also re-derives every invoice's status from the ledger before it starts.
+	A status moved by hand during a demonstration -- an invoice clicked to Paid
+	with no receipt behind it -- is put back to what the books actually say.
+	"""
+	from knit360_core.finance import settlement
+
+	made = {"realigned": [], "payments": 0}
+
+	# A residue smaller than one rupee may be written off, by asking. Nothing
+	# is ever written off on its own.
+	frappe.db.set_value("KNIT 360 Company", COMPANY, "write_off_tolerance", 1.0,
+	                    update_modified=False)
+
+	for name in frappe.get_all(
+		"KNIT 360 Sales Invoice", filters={"company": COMPANY, "docstatus": 1}, pluck="name"
+	):
+		before = frappe.db.get_value("KNIT 360 Sales Invoice", name, "knit360_business_status")
+		settlement.refresh("KNIT 360 Sales Invoice", name)
+		after = frappe.db.get_value("KNIT 360 Sales Invoice", name, "knit360_business_status")
+		if before != after:
+			made["realigned"].append(f"{name}: {before} -> {after}")
+
+	if frappe.db.count("KNIT 360 Payment Entry", {"company": COMPANY}):
+		made["payments"] = "already settled"
+		frappe.db.commit()
+		return made
+
+	bank = frappe.db.get_value("KNIT 360 Company", COMPANY, "default_bank_account")
+	mode = frappe.db.get_value("KNIT 360 Mode of Payment", {}, "name")
+
+	owing = [
+		row for row in frappe.get_all(
+			"KNIT 360 Sales Invoice",
+			filters={"company": COMPANY, "docstatus": 1},
+			fields=["name", "customer", "grand_total"],
+			order_by="posting_date asc",
+		)
+		if settlement.outstanding("KNIT 360 Sales Invoice", row.name) > 0
+	]
+
+	# The oldest gets a part payment; it is the screen worth showing.
+	for index, invoice in enumerate(owing[:2]):
+		left = settlement.outstanding("KNIT 360 Sales Invoice", invoice.name)
+		amount = flt(left * 0.4) if index == 0 else left
+		payment = frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Payment Entry",
+				"company": COMPANY,
+				"payment_direction": "Receive",
+				"party_type": "KNIT 360 Customer",
+				"party": invoice.customer,
+				"payment_date": nowdate(),
+				"amount": amount,
+				"payment_mode": mode,
+				"bank_account": bank,
+				"allocations": [
+					{
+						"doctype": "KNIT 360 Payment Allocation",
+						"reference_doctype": "KNIT 360 Sales Invoice",
+						"reference_name": invoice.name,
+						"allocated_amount": amount,
+					}
+				],
+			}
+		).insert(ignore_permissions=True)
+		reached = _walk_to("KNIT 360 Payment Entry", payment.name, "Disbursed / Cleared")
+		if reached != "Disbursed / Cleared":
+			# A payment left in Draft has settled nothing. Saying otherwise is
+			# how seeded data comes to disagree with the books.
+			frappe.throw(
+				f"{payment.name} stopped at {reached!r} instead of reaching "
+				f"'Disbursed / Cleared', so nothing was settled."
+			)
+		made["payments"] += 1
+		made.setdefault("against", []).append(
+			f"{payment.name} {amount:.2f} -> {invoice.name}"
+		)
+
+	frappe.db.commit()
+	return made
+
+
 def seed():
 	"""Fill the masters and build the pipeline. Safe to run more than once."""
 	report = {"company": company(), "masters": masters()}
@@ -500,6 +590,7 @@ def seed():
 	except Exception as exc:  # noqa: BLE001 - reported, not hidden
 		report["opening_balances"] = f"FAILED: {exc}"
 	report["pipeline"] = pipeline()
+	report["settlements"] = settlements()
 
 	trial = ledger.trial_balance(COMPANY)
 	report["trial_balance"] = {
@@ -516,6 +607,7 @@ def seed():
 		print(f"  {doctype:<18} {count}")
 	print(f"opening balances   {report['opening_balances']}")
 	print(f"pipeline           {report['pipeline']}")
+	print(f"settlements        {report['settlements']}")
 	print(f"trial balance      {report['trial_balance']}")
 	print("\nThis is sample data. Edit it or delete it; none of it is a requirement.")
 	return report
