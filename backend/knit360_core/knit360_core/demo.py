@@ -32,7 +32,7 @@ only built the first time, so a second run does not multiply the deals.
 """
 
 import frappe
-from frappe.utils import add_days, flt, nowdate
+from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine
 from knit360_core.finance import chart_of_accounts, ledger
@@ -582,6 +582,230 @@ def settlements():
 	return made
 
 
+#: (name, company-scoped). The organisation a demonstration needs before it
+#: can have an employee: somebody has to be in a department with a job title.
+DEPARTMENTS = ("Production", "Quality", "Sales", "Accounts")
+DESIGNATIONS = ("Plant Manager", "Quality Engineer", "Sales Executive", "Accountant")
+
+#: (name, designation, department, joined how many days ago)
+PEOPLE = [
+	("Anil Deshpande", "Plant Manager", "Production", 1400),
+	("Fatima Shaikh", "Quality Engineer", "Quality", 900),
+	("Vikram Thakkar", "Sales Executive", "Sales", 500),
+	("Leena Pillai", "Accountant", "Accounts", 260),
+]
+
+#: (name, paid, carry forward, allow a negative balance, days a year)
+LEAVE_TYPES = [
+	("Casual Leave", 1, 0, 0, 12),
+	("Sick Leave", 1, 0, 1, 8),
+	("Earned Leave", 1, 1, 0, 15),
+	("Leave Without Pay", 0, 0, 1, 0),
+]
+
+#: (month, day, what it is). Fixed-date national holidays only -- the ones that
+#: move with the lunar calendar are not invented here.
+HOLIDAYS = [
+	(1, 26, "Republic Day"),
+	(5, 1, "Labour Day"),
+	(8, 15, "Independence Day"),
+	(10, 2, "Gandhi Jayanti"),
+	(12, 25, "Christmas Day"),
+]
+
+
+def hr():
+	"""People, a holiday list, leave types, allocations and three requests.
+
+	The three requests are deliberately in three different states. A
+	demonstration of leave where everything is approved shows nothing: the
+	screens worth seeing are the one waiting for a decision and the one that
+	was refused and touched no balance.
+	"""
+	made = {}
+	year = getdate(nowdate()).year
+
+	for name in DESIGNATIONS:
+		_insert("KNIT 360 Designation", {"designation_name": name}, key="designation_name")
+	made["Designation"] = len(DESIGNATIONS)
+
+	for name in DEPARTMENTS:
+		_insert("KNIT 360 Department", {"department_name": name, "company": COMPANY},
+		        key="department_name")
+	made["Department"] = len(DEPARTMENTS)
+
+	holiday_list = f"India {year}"
+	if not frappe.db.exists("KNIT 360 Holiday List", holiday_list):
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Holiday List",
+				"holiday_list_name": holiday_list,
+				"company": COMPANY,
+				"from_date": f"{year}-01-01",
+				"to_date": f"{year}-12-31",
+				"holidays": [
+					{"holiday_date": f"{year}-{month:02d}-{day:02d}", "description": what}
+					for month, day, what in HOLIDAYS
+				],
+			}
+		).insert(ignore_permissions=True)
+	made["Holiday List"] = 1
+
+	period = f"{year} Leave Year"
+	if not frappe.db.exists("KNIT 360 Leave Period", period):
+		frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Leave Period",
+				"period_name": period,
+				"company": COMPANY,
+				"from_date": f"{year}-01-01",
+				"to_date": f"{year}-12-31",
+				"is_active": 1,
+				"holiday_list": holiday_list,
+			}
+		).insert(ignore_permissions=True)
+	made["Leave Period"] = 1
+
+	for name, paid, carry, negative, days in LEAVE_TYPES:
+		_insert(
+			"KNIT 360 Leave Type",
+			{
+				"leave_type_name": name,
+				"is_paid_leave": paid,
+				"is_carry_forward": carry,
+				"allow_negative_balance": negative,
+				"max_leaves_allowed": days,
+			},
+			key="leave_type_name",
+		)
+	made["Leave Type"] = len(LEAVE_TYPES)
+
+	employees = []
+	for name, designation, department, joined in PEOPLE:
+		existing = frappe.db.get_value("KNIT 360 Employee", {"employee_name": name}, "name")
+		if existing:
+			employees.append(existing)
+			continue
+		doc = frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Employee",
+				"employee_name": name,
+				"company": COMPANY,
+				"designation": designation,
+				"department": department,
+				"date_of_joining": add_days(nowdate(), -joined),
+				"is_active": 1,
+			}
+		).insert(ignore_permissions=True)
+		employees.append(doc.name)
+	made["Employee"] = len(employees)
+
+	# Everybody gets Casual and Sick leave for the year.
+	allocated = 0
+	for employee in employees:
+		for leave_type, days in (("Casual Leave", 12), ("Sick Leave", 8)):
+			if frappe.db.exists(
+				"KNIT 360 Leave Allocation",
+				{"employee": employee, "leave_type": leave_type, "leave_period": period,
+				 "docstatus": ["!=", 2]},
+			):
+				continue
+			allocation = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Leave Allocation",
+					"employee": employee,
+					"leave_type": leave_type,
+					"company": COMPANY,
+					"leave_period": period,
+					"from_date": f"{year}-01-01",
+					"to_date": f"{year}-12-31",
+					"new_leaves_allocated": days,
+					"description": f"{leave_type} entitlement for {year}",
+				}
+			).insert(ignore_permissions=True)
+			_walk_to("KNIT 360 Leave Allocation", allocation.name, "Allocated")
+			allocated += 1
+	made["Leave Allocation"] = allocated
+
+	# Three requests, three states, so each screen has something on it.
+	if not frappe.db.count("KNIT 360 Leave Application", {"company": COMPANY}):
+		requests = [
+			(employees[0], "Casual Leave", -20, -19, "Approved", "Family function"),
+			(employees[1], "Sick Leave", 5, 6, "Pending Approval", "Medical appointment"),
+			(employees[2], "Casual Leave", 12, 16, "Rejected", "Holiday - clashes with the audit"),
+		]
+		for employee, leave_type, start, end, target, reason in requests:
+			application = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Leave Application",
+					"employee": employee,
+					"leave_type": leave_type,
+					"company": COMPANY,
+					"from_date": add_days(nowdate(), start),
+					"to_date": add_days(nowdate(), end),
+					"holiday_list": holiday_list,
+					"reason": reason,
+				}
+			).insert(ignore_permissions=True)
+			if target == "Rejected":
+				engine.transition("KNIT 360 Leave Application", application.name,
+				                  "Pending Approval")
+				engine.transition("KNIT 360 Leave Application", application.name, "Rejected",
+				                  reason="Clashes with the statutory audit")
+			else:
+				reached = _walk_to("KNIT 360 Leave Application", application.name, target)
+				if reached != target:
+					frappe.throw(
+						f"{application.name} stopped at {reached!r}, not {target!r}."
+					)
+		made["Leave Application"] = len(requests)
+
+	frappe.db.commit()
+	return made
+
+
+#: (supplier, bill number, [(item, qty, rate)], freight, statutory tax)
+SUPPLIER_BILLS = [
+	("Precision Semiconductors Pvt Ltd", "PSPL/2026/4471",
+	 [("CM-IGBT-01", 20, 7400), ("CM-CAP-01", 10, 3100)], 2400, 31014),
+	("Hanover Komponenten GmbH", "HK-INV-90233",
+	 [("RM-CU-01", 150, 820)], 18500, 0),
+]
+
+
+def buying():
+	"""Supplier bills, so the buying side has something to show -- DEC-020.
+
+	These total but do not post to the ledger: Procure-to-Pay posting is `W7`
+	and is not built. The demonstration script says so rather than letting
+	anyone infer otherwise from a document that looks finished.
+	"""
+	made = {"Supplier Invoice": 0}
+	for supplier, bill_no, lines, freight, tax in SUPPLIER_BILLS:
+		if frappe.db.exists("KNIT 360 Supplier Invoice", {"bill_no": bill_no}):
+			continue
+		invoice = frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Supplier Invoice",
+				"supplier": supplier,
+				"company": COMPANY,
+				"bill_no": bill_no,
+				"bill_date": add_days(nowdate(), -12),
+				"currency": CURRENCY,
+				"freight_and_ancillary": freight,
+				"statutory_tax_amount": tax,
+				"payment_terms": "30 days from the date of the bill",
+				"items": [
+					{"item_code": code, "qty": qty, "rate": rate} for code, qty, rate in lines
+				],
+			}
+		).insert(ignore_permissions=True)
+		made["Supplier Invoice"] += 1
+		made.setdefault("totals", []).append(f"{invoice.name} {invoice.grand_total:,.2f}")
+	frappe.db.commit()
+	return made
+
+
 def seed():
 	"""Fill the masters and build the pipeline. Safe to run more than once."""
 	report = {"company": company(), "masters": masters()}
@@ -591,6 +815,8 @@ def seed():
 		report["opening_balances"] = f"FAILED: {exc}"
 	report["pipeline"] = pipeline()
 	report["settlements"] = settlements()
+	report["hr"] = hr()
+	report["buying"] = buying()
 
 	trial = ledger.trial_balance(COMPANY)
 	report["trial_balance"] = {
@@ -608,6 +834,8 @@ def seed():
 	print(f"opening balances   {report['opening_balances']}")
 	print(f"pipeline           {report['pipeline']}")
 	print(f"settlements        {report['settlements']}")
+	print(f"hr                 {report['hr']}")
+	print(f"buying             {report['buying']}")
 	print(f"trial balance      {report['trial_balance']}")
 	print("\nThis is sample data. Edit it or delete it; none of it is a requirement.")
 	return report
