@@ -195,14 +195,17 @@ group accounts, disabled accounts and closed fiscal years.
 
 ### Not working
 
-- **Payment Entry does not post.** An invoice marked Paid has no cash receipt
-  behind it. Largest single gap.
-- **No stock ledger.** Delivery Note and Goods Receipt record quantities only.
-- **Tax posts to the round-off account** as a visible placeholder pending
-  `OQ-005` / FR-TAX-001.
+- **Nothing clears Stock Received But Not Billed.** A goods receipt credits it
+  and only the supplier's bill can clear it, which is `W7` and is not built, so
+  the balance accumulates visibly.
+- **Stock is never written down to net realisable value.** Ind AS 2 paragraph
+  28 requires it; `OQ-026` is open and nothing writes stock down.
 - **No designed print formats and no letterhead.** Printing and PDF work via
-  Frappe's standard format; the output is a field-by-field dump. No outgoing
-  mail account is configured, so nothing can be emailed.
+  Frappe's standard format; the output is a field-by-field dump.
+- **No outgoing mail account, so nothing can be emailed.** The address at the
+  foot of an outgoing email is set on the site (System Settings → Email Footer
+  Address); the account that would actually send needs an SMTP server and an
+  application password, which only the owner can enter. `W10`.
 - **HR: leave is built and proven; nothing else in HR is.** Attendance,
   payroll, appraisal and recruitment are not started. See doc 45 for the
   observed reference surface and `OQ-024` for the open questions.
