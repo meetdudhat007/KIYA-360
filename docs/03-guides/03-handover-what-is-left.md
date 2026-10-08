@@ -20,8 +20,8 @@ What exists and is proven:
 | Record types built | 73 parent, 22 child — 95 in total |
 | BRD modules with record types built | **15 of 28** |
 | Lifecycle definitions | 25 |
-| Automated checks | **178** — 49 structural, 129 runtime |
-| Last full run | 49/49 and 129/129, 8 October 2026 |
+| Automated checks | **186** — 49 structural, 137 runtime |
+| Last full run | 49/49 and 137/137, 8 October 2026 |
 | BRD modules with nothing built yet | **13 of 28** (listed below) |
 | Flows running end to end | 1 of 3 (Customer-to-Cash) |
 
@@ -108,7 +108,7 @@ Not decisions — actions outside what I can reach.
 | **Y2** | **Hosting, domain, TLS, backups.** | Everything so far runs in Docker on one machine. There is no production environment, no backup schedule and no restore test. |
 | **Y3** | **The administrator password.** | It is not recorded anywhere in the repository. I did not guess it and I did not change it. You will need it to sign in during the demonstration. |
 | **Y4** | **The 238 BRD requirements are every one marked "TBD — the BRD does not specify this detail."** | Until a stakeholder fills those in, "match the BRD" means building to the ERP-standard baseline agreed in CD-001. That is what has been done. It is a reasonable reading, not the specification. |
-| **Y5** | **User acceptance testing by someone who does the job.** | My 178 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
+| **Y5** | **User acceptance testing by someone who does the job.** | My 186 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
 | **Y6** | **Decide what happens to the seven ERPNext reference documents** in `docs/` (`erpnext_accounting_module.md` and six others, roughly 4,200 lines). | I did not write them; they were swept into commit `2be7a50` by a `git add -A`. They are reference material about a GPL-3 product sitting in this repository. I flagged this previously and have had no answer. **This is the one item on this list I would act on soonest.** |
 | **Y7** | **Delete or keep the "Kelvinotherm Induction LLP" company** on the demo site. | It predates this work and holds one lead from 23 September. Harmless, but it appears in the company dropdown during a demonstration. |
 
@@ -128,7 +128,7 @@ Ordered by value. Each is a self-contained piece of work.
 | **W6** | Data import — opening balances, customers, items | Medium | Blocks the first customer, not the tenth. | — |
 | ~~**W7**~~ | ~~Procure-to-Pay posting~~ | — | **Done 8 October 2026** (`DEC-033`). A bill creates the payable, clears what its receipt could not value, and a payment settles it. `OQ-025` answered: freight is expensed. Thirteen checks. | — |
 | **W8** | Credit and debit notes | Medium | Returns cannot be settled without them. | **D13** |
-| **W9** | Customer credit limit and credit hold | Small | A finance controller asks for this in the first demonstration. | **D13** |
+| ~~**W9**~~ | ~~Customer credit limit and credit hold~~ | — | **Done 8 October 2026** (`DEC-036`). Checked against the ledger when an order is confirmed and an invoice posted; a blank limit is no limit. Eight checks. | — |
 | **W10** | Email on status change | Small | Nothing is sent by the system today. | D8 for content |
 | **W11** | **Roles other than System Manager** | Medium | All 65 record types grant access to `System Manager` and nothing else, verified against the permissions table. So a salesperson cannot be given leads without also being given the power to delete the company's accounts. Acceptable for a pilot, not for a live client. | — |
 
@@ -185,7 +185,7 @@ docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site kn
 ```bash
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
-129 runtime checks. Drives the live system, then removes its own data.
+137 runtime checks. Drives the live system, then removes its own data.
 
 ```bash
 docker exec knit-bench bash -lc 'cat /home/frappe/frappe-bench/sites/apps.txt'

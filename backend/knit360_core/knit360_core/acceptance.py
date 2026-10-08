@@ -27,7 +27,7 @@ import frappe
 from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine, guard, model
-from knit360_core.finance import chart_of_accounts, ledger, settlement
+from knit360_core.finance import chart_of_accounts, credit, ledger, settlement
 from knit360_core.pricing import price_list
 from knit360_core.stock import ledger as stock_ledger
 
@@ -3333,6 +3333,141 @@ def p_buying_balances():
 		f"debits {flt(totals_row.debit):,.2f} equal credits "
 		f"{flt(totals_row.credit):,.2f}"
 	)
+
+
+# --- Q. credit control ---------------------------------------------------
+#
+# DEC-036. A credit limit is a question asked of the ledger at the moment
+# somebody adds to the debt, not a stored total compared with another stored
+# total. A blank limit means nobody has decided, never refuse everything.
+
+
+def a_limited_customer(limit=None, hold=0, name="Acceptance Limited Customer"):
+	if not frappe.db.exists("KNIT 360 Customer", name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": name, "company": company()}
+		).insert(ignore_permissions=True)
+	frappe.db.set_value(
+		"KNIT 360 Customer", name,
+		{"credit_limit": limit or 0, "credit_hold": hold},
+		update_modified=False,
+	)
+	return name
+
+
+@check("Q. Credit Control", "What a customer owes is read from the ledger")
+def q_exposure_is_derived():
+	customer = a_limited_customer()
+	before = credit.exposure(customer, COMPANY)
+	a_posted_invoice(4000, customer=customer)
+	after = credit.exposure(customer, COMPANY)
+	expect(
+		abs((after - before) - 4000) < 0.005,
+		f"exposure moved by {after - before} after a 4,000 invoice",
+	)
+	frappe.db.commit()
+	return f"{customer}: owes {after:,.2f}, derived from the receivable postings"
+
+
+@check("Q. Credit Control", "A payment gives the headroom back")
+def q_payment_restores_headroom():
+	customer = a_limited_customer(limit=10000, name="Acceptance Paying Limited Customer")
+	invoice = a_posted_invoice(6000, customer=customer)
+	a_payment(6000, [(invoice.name, 6000)], customer=customer)
+	expect(
+		credit.exposure(customer, COMPANY) < 0.005,
+		f"{customer} still shows {credit.exposure(customer, COMPANY)} owing after paying in full",
+	)
+	expect(
+		abs(credit.headroom(customer, COMPANY) - 10000) < 0.005,
+		"the headroom did not come back when the invoice was paid",
+	)
+	frappe.db.commit()
+	return f"{customer}: 6,000 invoiced and paid, the whole 10,000 limit free again"
+
+
+@check("Q. Credit Control", "An invoice over the limit is refused")
+def q_over_the_limit_is_refused():
+	customer = a_limited_customer(limit=5000, name="Acceptance Capped Customer")
+	a_posted_invoice(4000, customer=customer)
+	refused = refuses(lambda: a_posted_invoice(2000, customer=customer))
+	expect("credit limit" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return f"4,000 owing against a 5,000 limit: a further 2,000 refused -- {refused[:70]}"
+
+
+@check("Q. Credit Control", "An invoice within the limit goes through")
+def q_within_the_limit_is_allowed():
+	customer = a_limited_customer(limit=5000, name="Acceptance Roomy Customer")
+	invoice = a_posted_invoice(4500, customer=customer)
+	expect(invoice.docstatus == 1, "an invoice inside the limit was not posted")
+	left = credit.headroom(customer, COMPANY)
+	expect(abs(left - 500) < 0.005, f"headroom reads {left}, expected 500")
+	frappe.db.commit()
+	return f"{invoice.name}: 4,500 of a 5,000 limit used, 500 left"
+
+
+@check("Q. Credit Control", "A blank limit is no limit, not a limit of nothing")
+def q_blank_limit_means_no_limit():
+	"""The commonest state of any master field is empty."""
+	customer = a_limited_customer(limit=0, name="Acceptance Unlimited Customer")
+	invoice = a_posted_invoice(250000, customer=customer)
+	expect(invoice.docstatus == 1, "a customer with no limit set was refused credit")
+	expect(
+		credit.headroom(customer, COMPANY) is None,
+		"a blank limit reported headroom instead of reporting no limit",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: 250,000 posted against a customer with no limit set"
+
+
+@check("Q. Credit Control", "A customer on hold is refused whatever they owe")
+def q_hold_refuses_regardless():
+	customer = a_limited_customer(hold=1, name="Acceptance Held Customer")
+	expect(
+		credit.exposure(customer, COMPANY) < 0.005,
+		"this check needs a customer who owes nothing, to prove the hold is what refused",
+	)
+	refused = refuses(lambda: a_posted_invoice(100, customer=customer))
+	expect("hold" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return f"{customer} owes nothing and is still refused: {refused[:70]}"
+
+
+@check("Q. Credit Control", "Confirming an order checks the credit too")
+def q_order_checks_credit():
+	"""The order is where the business commits; the invoice is too late to find out."""
+	customer = a_limited_customer(limit=1000, name="Acceptance Ordering Customer")
+	a_posted_invoice(900, customer=customer)
+	order = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Order",
+			"company": company(),
+			"customer": customer,
+			"items": [{"item_code": "Acceptance ordered widget", "qty": 1, "rate": 500}],
+		}
+	).insert(ignore_permissions=True)
+	refused = refuses(
+		lambda: engine.transition("KNIT 360 Sales Order", order.name, "Confirmed / Booked")
+	)
+	expect("credit limit" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return f"{order.name}: 900 owing of a 1,000 limit, a 500 order stopped at confirmation"
+
+
+@check("Q. Credit Control", "An advance counts against what is owed")
+def q_advance_reduces_exposure():
+	"""Money held for a customer is money they do not owe."""
+	customer = a_limited_customer(limit=10000, name="Acceptance Advancing Customer")
+	a_posted_invoice(3000, customer=customer)
+	a_payment(5000, [], customer=customer)
+	owed = credit.exposure(customer, COMPANY)
+	expect(
+		owed < 0.005,
+		f"{customer} shows {owed} owing after a 5,000 payment against a 3,000 invoice",
+	)
+	frappe.db.commit()
+	return f"{customer}: 3,000 invoiced, 5,000 paid, nothing owing and the limit free"
 
 
 # --- the runner ---------------------------------------------------------

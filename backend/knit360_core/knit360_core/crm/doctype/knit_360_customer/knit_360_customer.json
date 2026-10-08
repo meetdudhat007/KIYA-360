@@ -19,7 +19,9 @@
   "col2",
   "address",
   "customer_group",
-  "default_price_list"
+  "default_price_list",
+  "credit_limit",
+  "credit_hold"
  ],
  "fields": [
   {
@@ -104,6 +106,19 @@
    "label": "Default Price List",
    "description": "Pricing & Discounts -- the list used for this customer",
    "options": "KNIT 360 Price List"
+  },
+  {
+   "fieldname": "credit_limit",
+   "fieldtype": "Currency",
+   "label": "Credit Limit",
+   "description": "The most this customer may owe at one time. Left blank there is no limit -- blank means nobody has decided, never refuse everything. Checked against what the ledger says they owe when an order is confirmed and when an invoice is posted."
+  },
+  {
+   "fieldname": "credit_hold",
+   "fieldtype": "Check",
+   "label": "On Credit Hold",
+   "default": "0",
+   "description": "Refuses new orders and invoices for this customer whatever their balance. A hold is about trust -- a dispute, a bounced payment -- where a limit is about size."
   }
  ],
  "index_web_pages_for_search": 0,

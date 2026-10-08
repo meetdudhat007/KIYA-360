@@ -12,6 +12,7 @@ uses, so an order carries the same arithmetic as the quotation it came from.
 import frappe
 from frappe.model.document import Document
 
+from knit360_core.finance import credit
 from knit360_core.pricing import price_list, totals
 
 SHAPE = totals.Shape(table="items", rate="rate")
@@ -26,3 +27,8 @@ class KNIT360SalesOrder(Document):
 				"This order has lines but totals nothing. "
 				"Enter a rate, or remove the lines."
 			)
+
+	def on_submit(self):
+		# Confirming an order is where the business commits to the debt, so it
+		# is where the customer's credit is checked -- FR-FIN-003.
+		credit.check_can_owe(self.customer, self.company, self.grand_total, self.name)

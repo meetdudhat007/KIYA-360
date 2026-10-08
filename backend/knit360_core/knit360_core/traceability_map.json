@@ -117,6 +117,8 @@
  "KNIT 360 Customer": {
   "address": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
   "company": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "credit_hold": "FR-FIN-003 / FR-SALES-003: Accounts Receivable -- refuses new commitments for this customer whatever their balance",
+  "credit_limit": "FR-FIN-003 / FR-SALES-003: Accounts Receivable -- the most this customer may owe at one time, checked when an order is confirmed and an invoice posted",
   "customer_group": "FR-PADM-1.4.1: Customer Master -- segmentation",
   "customer_name": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: unified Customer Master (DR-C2C-001)",
   "customer_type": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED; enumeration TBD",

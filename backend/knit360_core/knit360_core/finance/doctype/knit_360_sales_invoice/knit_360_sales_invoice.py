@@ -29,7 +29,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
 
-from knit360_core.finance import ledger
+from knit360_core.finance import credit, ledger
 from knit360_core.pricing import price_list, totals
 
 COMPANY = "KNIT 360 Company"
@@ -86,6 +86,11 @@ class KNIT360SalesInvoice(Document):
 	# --- ledger ---------------------------------------------------------
 
 	def on_submit(self):
+		# Posting an invoice is the moment the debt becomes real, so the
+		# customer's credit is checked before anything reaches the books --
+		# FR-FIN-003. An order confirmed within the limit can still be stopped
+		# here if the customer has run it up since.
+		credit.check_can_owe(self.customer, self.company, self.grand_total, self.name)
 		ledger.post(
 			self.doctype,
 			self.name,
