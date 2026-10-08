@@ -149,7 +149,7 @@ A report is still a report. This is the part that is not.
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
 
-About a minute, one line per check, ending `137/137 checks passed`, then it
+About a minute, one line per check, ending `149/149 checks passed`, then it
 removes its own data.
 
 > **"That was not a recording. It just created a company and its chart of
@@ -164,7 +164,7 @@ The twelve `Proven` requirements are these checks. Show one connection explicitl
   posts a receivable and reports it outstanding"*
 - That exact line appears in the run output.
 
-**186 checks in total**: 49 structural, 137 runtime. Structural ones read the
+**198 checks in total**: 49 structural, 149 runtime. Structural ones read the
 definitions; runtime ones drive the system.
 
 ---

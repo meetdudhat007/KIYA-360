@@ -62,6 +62,9 @@ TREE = {
 		("Direct Income", None, [
 			("Sales", "Income Account", []),
 			("Service Revenue", "Income Account", []),
+			# A sale given back. Kept apart from Sales so the books can answer
+			# "how much did we take back?" -- DEC-037.
+			("Sales Returns", "Income Account", []),
 		]),
 		("Indirect Income", None, [
 			("Other Income", "Income Account", []),
@@ -71,6 +74,8 @@ TREE = {
 		("Cost of Goods Sold", "Cost of Goods Sold", []),
 		("Direct Expenses", None, [
 			("Freight and Forwarding", "Expense Account", []),
+			# A purchase sent back, for the same reason -- DEC-037.
+			("Purchase Returns", "Expense Account", []),
 		]),
 		("Indirect Expenses", None, [
 			("Administrative Expenses", "Expense Account", []),
@@ -104,6 +109,10 @@ DEFAULTS = {
 	# part of the cost of the goods. It sits beside Cost of Goods Sold so that
 	# gross margin still carries it.
 	"default_freight_account": "Freight and Forwarding",
+	# DEC-037. Returns go to their own accounts rather than straight back
+	# against Sales and the expense, so the size of them is answerable.
+	"default_sales_returns_account": "Sales Returns",
+	"default_purchase_returns_account": "Purchase Returns",
 }
 
 
@@ -141,14 +150,72 @@ def _walk(company, nodes, root_type, parent):
 	return created
 
 
+def _path_to(leaf, nodes=None, root_type=None, trail=()):
+	"""Where a leaf sits in TREE: (root_type, [ancestor names], account_type).
+
+	Returns None for a leaf the tree does not describe, which is how a
+	hand-added default is left alone rather than invented.
+	"""
+	if nodes is None:
+		for root_name, (root, children) in TREE.items():
+			found = _path_to(leaf, children, root, (root_name,))
+			if found:
+				return found
+		return None
+	for name, account_type, children in nodes:
+		if name == leaf and not children:
+			return root_type, list(trail), account_type
+		if children:
+			found = _path_to(leaf, children, root_type, trail + (name,))
+			if found:
+				return found
+	return None
+
+
+def _ensure_leaf(company, leaf):
+	"""The named leaf in this company's chart, created from TREE if missing.
+
+	A chart built before an account was added to TREE has no way to grow one,
+	and the first document that needs it refuses to post -- which is how this
+	came to be written. Only accounts TREE describes are created, and only
+	under the parents it names, so this can add a leaf but never invent a
+	structure.
+	"""
+	existing = frappe.db.get_value(
+		ACCOUNT, {"company": company, "account_name": leaf, "is_group": 0}, "name"
+	)
+	if existing:
+		return existing
+
+	described = _path_to(leaf)
+	if not described:
+		return None
+	root_type, ancestors, account_type = described
+
+	parent = None
+	for name in ancestors:
+		found = frappe.db.get_value(
+			ACCOUNT, {"company": company, "account_name": name, "is_group": 1}, "name"
+		)
+		if not found:
+			# A missing branch, not a missing leaf. Left alone: this company's
+			# chart has been rearranged, and guessing where to graft a new
+			# account onto someone else's structure is worse than refusing.
+			return None
+		parent = found
+
+	return _create(company, leaf, root_type, account_type, parent, False)
+
+
 @frappe.whitelist()
 def backfill_defaults(company=None):
 	"""Fill a default account field that is empty, from the existing chart.
 
 	setup() refuses to touch a company that already has accounts, which is the
 	right rule -- but it means a company created before a default was added
-	never gets it. This fills only what is empty, by looking the leaf up in the
-	chart the company already has, and never overwrites a chosen account.
+	never gets it. This fills only what is empty, and never overwrites a
+	chosen account. Where the account itself is missing too, it is created
+	from TREE under the parent TREE names -- see _ensure_leaf.
 	"""
 	companies = [company] if company else frappe.get_all(COMPANY, pluck="name")
 	filled = {}
@@ -160,9 +227,7 @@ def backfill_defaults(company=None):
 		for field, leaf in DEFAULTS.items():
 			if current.get(field):
 				continue
-			account = frappe.db.get_value(
-				ACCOUNT, {"company": name, "account_name": leaf, "is_group": 0}, "name"
-			)
+			account = _ensure_leaf(name, leaf)
 			if account:
 				values[field] = account
 		if values:

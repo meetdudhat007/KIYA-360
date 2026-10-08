@@ -85,7 +85,9 @@
   "default_input_tax_account": "FR-TAX-001: where tax paid to a supplier is held until it is recovered.",
   "default_output_tax_account": "FR-TAX-001: where tax charged to a customer is held until it is paid over. A liability, not income.",
   "default_payable_account": "FR-FIN-002: Accounts Payable -- the account a supplier invoice credits",
+  "default_purchase_returns_account": "FR-FIN-001 / FR-PROC-006 Where a debit note puts what was sent back.",
   "default_receivable_account": "FR-FIN-003: Accounts Receivable -- the account a customer invoice debits",
+  "default_sales_returns_account": "FR-FIN-001 / FR-SALES-007 Where a credit note puts what was given back. Kept apart from Sales so the books can say how much was returned.",
   "default_stock_account": "FR-INV-006: where the value of stock on hand is held. An asset.",
   "fiscal_year_end_date": "FR-PADM-1.1.1: fiscal year",
   "fiscal_year_start_date": "FR-PADM-1.1.1: fiscal year",
@@ -114,6 +116,28 @@
   "parent_cost_center": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
   "rgt": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework"
  },
+ "KNIT 360 Credit Note": {
+  "company": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- company",
+  "credit_to": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- credit to",
+  "customer": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- customer",
+  "grand_total": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- grand total",
+  "items": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- items",
+  "knit360_business_status": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- business status",
+  "net_total": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- net total",
+  "posting_date": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- posting date",
+  "reason": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- reason",
+  "sales_invoice": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- against sales invoice",
+  "tax_template": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- tax template",
+  "total_taxes": "FR-SALES-006 / FR-SALES-007 / FR-FIN-003: Returns and Credit Memos -- total taxes"
+ },
+ "KNIT 360 Credit Note Item": {
+  "amount": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- amount",
+  "description": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- description",
+  "item_code": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- item code",
+  "qty": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- quantity",
+  "rate": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- rate",
+  "uom": "FR-SALES-006 / FR-SALES-007: Returns and Credit Memos -- line items -- uom"
+ },
  "KNIT 360 Customer": {
   "address": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
   "company": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED: company context (FR-PADM-1.1.1)",
@@ -136,6 +160,27 @@
   "old_parent": "FR-PADM-1.4.1: BRD-DERIVED: previous parent, maintained by the framework",
   "parent_customer_group": "FR-PADM-1.4.1: BRD-DERIVED: hierarchy parent",
   "rgt": "FR-PADM-1.4.1: BRD-DERIVED: nested-set bound, maintained by the framework"
+ },
+ "KNIT 360 Debit Note": {
+  "company": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- company",
+  "debit_to": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- debit to",
+  "grand_total": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- grand total",
+  "items": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- items",
+  "knit360_business_status": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- business status",
+  "net_total": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- net total",
+  "posting_date": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- posting date",
+  "reason": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- reason",
+  "statutory_tax_amount": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- statutory tax amount",
+  "supplier": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- supplier",
+  "supplier_invoice": "FR-PROC-006 / FR-FIN-002: Returns -- a purchase reduced or sent back -- against supplier invoice"
+ },
+ "KNIT 360 Debit Note Item": {
+  "amount": "FR-PROC-006: Returns -- line items -- amount",
+  "description": "FR-PROC-006: Returns -- line items -- description",
+  "item_code": "FR-PROC-006: Returns -- line items -- item code",
+  "qty": "FR-PROC-006: Returns -- line items -- quantity",
+  "rate": "FR-PROC-006: Returns -- line items -- rate",
+  "uom": "FR-PROC-006: Returns -- line items -- uom"
  },
  "KNIT 360 Delivery Note": {
   "carrier_details": "FR-SALES-005: carrier details (DR-C2C-012 Inputs)",
@@ -796,29 +841,29 @@
   "supplier_group_name": "FR-SUPM-002: Supplier Classification -- how suppliers are grouped"
  },
  "KNIT 360 Supplier Invoice": {
-  "bill_date": "FR-PROC-006 / FR-FIN-002: Vendor invoice date",
-  "bill_no": "FR-PROC-006 / FR-FIN-002: Vendor invoice number",
-  "company": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "bill_date": "FR-FIN-002: Vendor invoice date",
+  "bill_no": "FR-FIN-002: Vendor invoice number",
+  "company": "FR-FIN-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
   "credit_to": "FR-FIN-002 The payable account this bill credits. Resolved from the company's Default Payable Account when the bill is saved, so a payment can land exactly where the bill put the debt.",
-  "currency": "FR-PROC-006 / FR-FIN-002: currency",
-  "freight_and_ancillary": "FR-PROC-006 / FR-FIN-002: freight/ancillary charges",
-  "goods_receipt": "FR-PROC-006 / FR-FIN-002: Goods Receipt reference (3-way match)",
+  "currency": "FR-FIN-002: currency",
+  "freight_and_ancillary": "FR-FIN-002: freight/ancillary charges",
+  "goods_receipt": "FR-FIN-002: Goods Receipt reference (3-way match)",
   "grand_total": "FR-FIN-002: Accounts Payable -- net total plus freight and statutory tax. The amount payable to the supplier, computed.",
-  "items": "FR-PROC-006 / FR-FIN-002: vendor billed quantities, unit rates",
-  "knit360_business_status": "FR-PROC-006 / FR-FIN-002: CD-002 'Supplier Invoice' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "items": "FR-FIN-002: vendor billed quantities, unit rates",
+  "knit360_business_status": "FR-FIN-002: CD-002 'Supplier Invoice' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
   "net_total": "FR-FIN-002: Accounts Payable -- sum of line amounts, computed",
   "outstanding_amount": "FR-FIN-004 What is still owed on this bill. A cache of the ledger figure derived by knit360_core.finance.settlement, refreshed whenever a payment settles against it.",
-  "payment_terms": "FR-PROC-006 / FR-FIN-002: payment terms",
-  "purchase_order": "FR-PROC-006 / FR-FIN-002: PO reference (3-way match)",
-  "statutory_tax_amount": "FR-PROC-006 / FR-FIN-002: statutory tax amounts",
-  "supplier": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED from the PO reference",
-  "tax_template": "FR-PROC-006 / FR-FIN-002: statutory tax amounts"
+  "payment_terms": "FR-FIN-002: payment terms",
+  "purchase_order": "FR-FIN-002: PO reference (3-way match)",
+  "statutory_tax_amount": "FR-FIN-002: statutory tax amounts",
+  "supplier": "FR-FIN-002: BRD-DERIVED from the PO reference",
+  "tax_template": "FR-FIN-002: statutory tax amounts"
  },
  "KNIT 360 Supplier Invoice Item": {
-  "amount": "FR-PROC-006 / FR-FIN-002: billed qty times unit rate, computed",
-  "item_code": "FR-PROC-006 / FR-FIN-002: vendor billed quantities; becomes a Link once the Item Master (FR-INV-001) is populated",
-  "qty": "FR-PROC-006 / FR-FIN-002: vendor billed quantities",
-  "rate": "FR-PROC-006 / FR-FIN-002: unit rates"
+  "amount": "FR-FIN-002: billed qty times unit rate, computed",
+  "item_code": "FR-FIN-002: vendor billed quantities; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty": "FR-FIN-002: vendor billed quantities",
+  "rate": "FR-FIN-002: unit rates"
  },
  "KNIT 360 Supplier Quotation": {
   "company": "FR-PROC-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",

@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-08 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "name": "KNIT 360 Credit Note",
+ "module": "Finance",
+ "autoname": "CRN-.YYYY.-.####",
+ "is_submittable": 1,
+ "title_field": "customer",
+ "description": "FR-SALES-006 / FR-SALES-007 - Returns and Credit Memos. A sale reduced or given back. Posts, so it submits.",
+ "field_order": [
+  "customer",
+  "company",
+  "sales_invoice",
+  "posting_date",
+  "col1",
+  "reason",
+  "credit_to",
+  "knit360_business_status",
+  "sec1",
+  "items",
+  "sec2",
+  "net_total",
+  "tax_template",
+  "col2",
+  "total_taxes",
+  "grand_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "KNIT 360 Customer",
+   "reqd": 1,
+   "description": "Who the money is being given back to."
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "KNIT 360 Company",
+   "reqd": 1,
+   "description": "The company issuing the credit note."
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Against Sales Invoice",
+   "options": "KNIT 360 Sales Invoice",
+   "description": "The invoice this credits. Named, the credit reduces what that invoice still owes; left blank, it sits as a balance in the customer's favour to set against a later invoice."
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1,
+   "description": "The date this lands in the books."
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "reqd": 1,
+   "description": "Why the credit is being given. Required: a credit note with no reason is the one an auditor asks about."
+  },
+  {
+   "fieldname": "credit_to",
+   "fieldtype": "Link",
+   "label": "Credit To",
+   "options": "KNIT 360 Account",
+   "read_only": 1,
+   "description": "The receivable account this credits, taken from the invoice it adjusts so the credit lands where the debt was put."
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "read_only": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
+   "options": "Draft\nPending Approval\nIssued\nCancelled",
+   "default": "Draft",
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Lines"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "KNIT 360 Credit Note Item",
+   "description": "What is being credited."
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "read_only": 1,
+   "description": "Sum of the line amounts, before tax."
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "options": "KNIT 360 Tax Template",
+   "description": "Rates applied to the net total. The tax charged on the original sale is given back with it."
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_taxes",
+   "fieldtype": "Currency",
+   "label": "Total Taxes",
+   "read_only": 1,
+   "description": "Tax given back with the credit."
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1,
+   "description": "The whole amount credited."
+  }
+ ]
+}

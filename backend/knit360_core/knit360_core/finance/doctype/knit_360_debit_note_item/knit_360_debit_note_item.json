@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-08 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "name": "KNIT 360 Debit Note Item",
+ "module": "Finance",
+ "istable": 1,
+ "description": "One line of a debit note.",
+ "field_order": [
+  "item_code",
+  "description",
+  "qty",
+  "uom",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "in_list_view": 1,
+   "description": "What is being returned."
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "in_list_view": 1,
+   "description": "How many are coming back. A positive number: the document's direction is what makes it a return."
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "KNIT 360 UOM"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "in_list_view": 1,
+   "description": "What the line was originally charged at."
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1,
+   "description": "Qty x rate. Computed by the shared pricing engine, never typed."
+  }
+ ]
+}

@@ -1,0 +1,157 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-08 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-08 00:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "name": "KNIT 360 Debit Note",
+ "module": "Finance",
+ "autoname": "DBN-.YYYY.-.####",
+ "is_submittable": 1,
+ "title_field": "supplier",
+ "description": "FR-PROC-006 / FR-FIN-002 - Returns. A purchase reduced or sent back. Posts, so it submits.",
+ "field_order": [
+  "supplier",
+  "company",
+  "supplier_invoice",
+  "posting_date",
+  "col1",
+  "reason",
+  "debit_to",
+  "knit360_business_status",
+  "sec1",
+  "items",
+  "sec2",
+  "net_total",
+  "col2",
+  "statutory_tax_amount",
+  "grand_total"
+ ],
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "KNIT 360 Supplier",
+   "reqd": 1,
+   "description": "Who owes the money back."
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "KNIT 360 Company",
+   "reqd": 1,
+   "description": "The company issuing the debit note."
+  },
+  {
+   "fieldname": "supplier_invoice",
+   "fieldtype": "Link",
+   "label": "Against Supplier Invoice",
+   "options": "KNIT 360 Supplier Invoice",
+   "description": "The bill this debits. Named, the debit reduces what that bill still owes; left blank, it sits as a balance in our favour against a later bill."
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1,
+   "description": "The date this lands in the books."
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "reqd": 1,
+   "description": "Why the supplier owes it back. Required: a debit note with no reason is one the supplier will dispute."
+  },
+  {
+   "fieldname": "debit_to",
+   "fieldtype": "Link",
+   "label": "Debit To",
+   "options": "KNIT 360 Account",
+   "read_only": 1,
+   "description": "The payable account this debits, taken from the bill it adjusts so the debit lands where the debt was put."
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "read_only": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
+   "options": "Draft\nPending Approval\nIssued\nCancelled",
+   "default": "Draft",
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "sec1",
+   "fieldtype": "Section Break",
+   "label": "Lines"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "KNIT 360 Debit Note Item",
+   "description": "What is being returned or disputed."
+  },
+  {
+   "fieldname": "sec2",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "net_total",
+   "fieldtype": "Currency",
+   "label": "Net Total",
+   "read_only": 1,
+   "description": "Sum of the line amounts, before tax."
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "statutory_tax_amount",
+   "fieldtype": "Currency",
+   "label": "Statutory Tax Amount",
+   "description": "Tax being reversed, as the supplier's own credit note states it. Entered, not computed, for the same reason the bill's tax is."
+  },
+  {
+   "fieldname": "grand_total",
+   "fieldtype": "Currency",
+   "label": "Grand Total",
+   "read_only": 1,
+   "description": "The whole amount the supplier owes back."
+  }
+ ]
+}

@@ -3470,6 +3470,232 @@ def q_advance_reduces_exposure():
 	return f"{customer}: 3,000 invoiced, 5,000 paid, nothing owing and the limit free"
 
 
+# --- R. returns ----------------------------------------------------------
+#
+# DEC-037. FR-SALES-006 Returns, FR-SALES-007 Credit Memos and FR-PROC-006
+# Returns. Before these documents existed a return could be agreed and never
+# settled: the invoice went on showing the full amount owing, and the only
+# ways to close it were to cancel an invoice that had genuinely happened or to
+# write the difference off as a loss. Both are lies about the business.
+
+
+def a_credit_note(amount, invoice=None, customer=None, tax_template=None, target="Issued"):
+	note = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Credit Note",
+			"company": company(),
+			"customer": customer or a_payer(),
+			"sales_invoice": invoice,
+			"posting_date": nowdate(),
+			"reason": "Acceptance: goods returned",
+			"tax_template": tax_template,
+			"items": [{"item_code": "Acceptance returned widget", "qty": 1, "rate": amount}],
+		}
+	).insert(ignore_permissions=True)
+	if target:
+		engine.transition("KNIT 360 Credit Note", note.name, "Pending Approval")
+		engine.transition("KNIT 360 Credit Note", note.name, target)
+	note.reload()
+	return note
+
+
+def a_debit_note(amount, bill=None, supplier=None, tax=0, target="Issued"):
+	note = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Debit Note",
+			"company": company(),
+			"supplier": supplier or a_supplier(),
+			"supplier_invoice": bill,
+			"posting_date": nowdate(),
+			"reason": "Acceptance: goods sent back",
+			"statutory_tax_amount": tax,
+			"items": [{"item_code": "Acceptance returned part", "qty": 1, "rate": amount}],
+		}
+	).insert(ignore_permissions=True)
+	if target:
+		engine.transition("KNIT 360 Debit Note", note.name, "Pending Approval")
+		engine.transition("KNIT 360 Debit Note", note.name, target)
+	note.reload()
+	return note
+
+
+@check("R. Returns", "A credit note reduces what the invoice owes")
+def r_credit_note_settles():
+	invoice = a_posted_invoice(10000)
+	a_credit_note(2500, invoice=invoice.name)
+	left = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(abs(left - 7500) < 0.005, f"{left} owing after crediting 2,500 of 10,000")
+	invoice.reload()
+	expect(
+		invoice.knit360_business_status == "Partly Paid",
+		f"the invoice reads {invoice.knit360_business_status!r} after a part credit",
+	)
+	frappe.db.commit()
+	return f"{invoice.name}: 2,500 credited, 7,500 owing, status Partly Paid"
+
+
+@check("R. Returns", "A credit note for the whole invoice closes it")
+def r_full_credit_closes_the_invoice():
+	invoice = a_posted_invoice(4000)
+	note = a_credit_note(4000, invoice=invoice.name)
+	expect(
+		settlement.outstanding(invoice.doctype, invoice.name) < 0.005,
+		"the invoice still shows an amount owing after being credited in full",
+	)
+	invoice.reload()
+	expect(
+		invoice.knit360_business_status == "Paid",
+		f"the invoice reads {invoice.knit360_business_status!r} after a full credit",
+	)
+	frappe.db.commit()
+	return f"{note.name} credited the whole of {invoice.name}; nothing owing"
+
+
+@check("R. Returns", "A credit note larger than the invoice is refused")
+def r_over_credit_refused():
+	"""Giving back more than was charged is a mistake, not a generosity."""
+	invoice = a_posted_invoice(1000)
+	refused = refuses(lambda: a_credit_note(1500, invoice=invoice.name))
+	expect(
+		"outstanding" in refused.lower() or "allocat" in refused.lower(),
+		f"refused, but for another reason: {refused}",
+	)
+	frappe.db.commit()
+	return f"1,500 against a 1,000 invoice refused -- {refused[:70]}"
+
+
+@check("R. Returns", "A credit note cannot cross to another customer's invoice")
+def r_credit_note_wrong_customer():
+	invoice = a_posted_invoice(2000)
+	other = a_limited_customer(name="Acceptance Other Customer")
+	refused = refuses(lambda: a_credit_note(500, invoice=invoice.name, customer=other))
+	expect("not" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return f"a credit for {other} against another party's invoice is refused"
+
+
+@check("R. Returns", "A credit note naming no invoice is money owed to the customer")
+def r_unallocated_credit():
+	"""A goodwill credit, or one agreed before the next invoice exists."""
+	customer = a_limited_customer(name="Acceptance Credited Customer")
+	invoice = a_posted_invoice(3000, customer=customer)
+	a_credit_note(1200, customer=customer)
+	owed = credit.exposure(customer, COMPANY)
+	expect(abs(owed - 1800) < 0.005, f"{customer} owes {owed}, expected 1,800")
+	expect(
+		abs(settlement.outstanding(invoice.doctype, invoice.name) - 3000) < 0.005,
+		"an unallocated credit silently settled an invoice it did not name",
+	)
+	frappe.db.commit()
+	return f"{customer}: 3,000 invoiced less a 1,200 free credit, 1,800 owed overall"
+
+
+@check("R. Returns", "What was given back has its own account")
+def r_sales_returns_is_separate():
+	"""Both leave the same profit. Only one can say how much came back."""
+	before = account_balance("Sales Returns")
+	a_credit_note(900)
+	moved = account_balance("Sales Returns") - before
+	expect(abs(moved - 900) < 0.005, f"Sales Returns moved by {moved}, expected 900")
+
+	root = frappe.db.get_value(
+		"KNIT 360 Account",
+		{"company": COMPANY, "account_name": "Sales Returns", "is_group": 0},
+		"root_type",
+	)
+	expect(root == "Income", f"Sales Returns is an {root} account; it must sit against Income")
+	frappe.db.commit()
+	return "900 debited to Sales Returns, an Income account, not hidden inside Sales"
+
+
+@check("R. Returns", "Tax charged on the sale is given back with it")
+def r_credit_note_returns_tax():
+	template = a_tax_template(
+		"Acceptance Credit Tax",
+		[("CGST", 9, account("Output Tax Payable")), ("SGST", 9, account("Output Tax Payable"))],
+	)
+	before = account_balance("Output Tax Payable")
+	note = a_credit_note(1000, tax_template=template)
+	moved = account_balance("Output Tax Payable") - before
+	expect(abs(moved - 180) < 0.005, f"Output Tax Payable moved by {moved}, expected 180")
+	expect(
+		abs(flt(note.grand_total) - 1180) < 0.005,
+		f"the credit note totals {note.grand_total}, expected 1,180",
+	)
+	frappe.db.commit()
+	return f"{note.name}: 1,000 credited and 180 of tax taken back with it"
+
+
+@check("R. Returns", "A debit note reduces what we owe the supplier")
+def r_debit_note_settles():
+	supplier = a_supplier()
+	bill = a_bill(9000, supplier=supplier)
+	a_debit_note(2000, bill=bill.name, supplier=supplier)
+	left = settlement.outstanding(bill.doctype, bill.name)
+	expect(abs(left - 7000) < 0.005, f"{left} owing after debiting 2,000 of 9,000")
+	status = frappe.db.get_value("KNIT 360 Supplier Invoice", bill.name, model.FIELD)
+	expect(status == "Partially Paid", f"the bill reads {status!r} after a part debit")
+	frappe.db.commit()
+	return f"{bill.name}: 2,000 debited back, 7,000 owing"
+
+
+@check("R. Returns", "What went back has its own account too")
+def r_purchase_returns_is_separate():
+	before = account_balance("Purchase Returns")
+	note = a_debit_note(700)
+	moved = account_balance("Purchase Returns") - before
+	expect(abs(moved + 700) < 0.005, f"Purchase Returns moved by {moved}, expected -700")
+	frappe.db.commit()
+	return f"{note.name}: 700 credited to Purchase Returns, not netted into the expense"
+
+
+@check("R. Returns", "A debit note cannot cross to another supplier's bill")
+def r_debit_note_wrong_supplier():
+	bill = a_bill(3000)
+	other = "Acceptance Second Supplier"
+	if not frappe.db.exists("KNIT 360 Supplier", other):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Supplier", "supplier_name": other, "company": company()}
+		).insert(ignore_permissions=True)
+	refused = refuses(lambda: a_debit_note(500, bill=bill.name, supplier=other))
+	expect("not" in refused.lower(), f"refused, but for another reason: {refused}")
+	frappe.db.commit()
+	return f"a debit from {other} against another supplier's bill is refused"
+
+
+@check("R. Returns", "Cancelling a credit note puts the debt back")
+def r_cancelling_a_credit_note():
+	invoice = a_posted_invoice(5000)
+	note = a_credit_note(2000, invoice=invoice.name)
+	expect(
+		abs(settlement.outstanding(invoice.doctype, invoice.name) - 3000) < 0.005,
+		"the credit did not reduce the invoice in the first place",
+	)
+	engine.transition("KNIT 360 Credit Note", note.name, "Cancelled")
+	back = settlement.outstanding(invoice.doctype, invoice.name)
+	expect(abs(back - 5000) < 0.005, f"{back} owing after the credit note was cancelled")
+	frappe.db.commit()
+	return f"{note.name} cancelled: {invoice.name} is owed in full again"
+
+
+@check("R. Returns", "A return note with no lines is refused")
+def r_empty_note_refused():
+	refused = refuses(
+		lambda: frappe.get_doc(
+			{
+				"doctype": "KNIT 360 Credit Note",
+				"company": company(),
+				"customer": a_payer(),
+				"posting_date": nowdate(),
+				"reason": "Acceptance: nothing at all",
+				"items": [],
+			}
+		).insert(ignore_permissions=True)
+	)
+	expect("credits nothing" in refused.lower(), f"refused, but for another reason: {refused}")
+	return "a credit note with no lines credits nothing, and is refused"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -3615,7 +3841,7 @@ def cleanup():
 	# directly instead -- again only for the acceptance company, and only
 	# because these documents are about to stop existing.
 	for doctype in (
-		"KNIT 360 Payment Entry",
+		"KNIT 360 Credit Note", "KNIT 360 Debit Note", "KNIT 360 Payment Entry",
 		"KNIT 360 Sales Invoice", "KNIT 360 Sales Order", "KNIT 360 Journal Entry",
 		"KNIT 360 Quotation", "KNIT 360 Opportunity", "KNIT 360 Lead",
 		"KNIT 360 Purchase Order",

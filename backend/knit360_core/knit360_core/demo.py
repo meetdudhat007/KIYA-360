@@ -917,6 +917,91 @@ def stock():
 	return made
 
 
+def returns():
+	"""One credit note and one debit note -- DEC-037.
+
+	A return is the screen a client asks about within the first ten minutes,
+	because every business has them and most systems handle them by cancelling
+	the invoice and pretending it never happened. The credit note here is
+	raised against a part-paid invoice on purpose: it shows the outstanding
+	falling for a reason other than money arriving.
+	"""
+	from knit360_core.finance import settlement
+
+	made = {"Credit Note": 0, "Debit Note": 0}
+
+	if frappe.db.count("KNIT 360 Credit Note", {"company": COMPANY}):
+		made["Credit Note"] = "already raised"
+	else:
+		owing = [
+			row for row in frappe.get_all(
+				"KNIT 360 Sales Invoice",
+				filters={"company": COMPANY, "docstatus": 1},
+				fields=["name", "customer"],
+				order_by="posting_date asc",
+			)
+			if settlement.outstanding("KNIT 360 Sales Invoice", row.name) > 1000
+		]
+		if owing:
+			invoice = owing[0]
+			note = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Credit Note",
+					"company": COMPANY,
+					"customer": invoice.customer,
+					"sales_invoice": invoice.name,
+					"posting_date": nowdate(),
+					"reason": "One coil returned: winding damaged in transit.",
+					"items": [{"item_code": "FG-COIL-01", "qty": 1, "rate": 24000}],
+				}
+			).insert(ignore_permissions=True)
+			reached = _walk_to("KNIT 360 Credit Note", note.name, "Issued")
+			if reached != "Issued":
+				frappe.throw(f"{note.name} stopped at {reached!r}; nothing was credited.")
+			made["Credit Note"] = 1
+			made["credited"] = (
+				f"{note.name} against {invoice.name}, now owing "
+				f"{settlement.outstanding('KNIT 360 Sales Invoice', invoice.name):,.2f}"
+			)
+
+	if frappe.db.count("KNIT 360 Debit Note", {"company": COMPANY}):
+		made["Debit Note"] = "already raised"
+	else:
+		bills = [
+			row for row in frappe.get_all(
+				"KNIT 360 Supplier Invoice",
+				filters={"company": COMPANY, "docstatus": 1},
+				fields=["name", "supplier"],
+				order_by="bill_date asc",
+			)
+			if settlement.outstanding("KNIT 360 Supplier Invoice", row.name) > 10000
+		]
+		if bills:
+			bill = bills[0]
+			note = frappe.get_doc(
+				{
+					"doctype": "KNIT 360 Debit Note",
+					"company": COMPANY,
+					"supplier": bill.supplier,
+					"supplier_invoice": bill.name,
+					"posting_date": nowdate(),
+					"reason": "Two modules failed incoming inspection and went back.",
+					"items": [{"item_code": "CM-IGBT-01", "qty": 2, "rate": 7200}],
+				}
+			).insert(ignore_permissions=True)
+			reached = _walk_to("KNIT 360 Debit Note", note.name, "Issued")
+			if reached != "Issued":
+				frappe.throw(f"{note.name} stopped at {reached!r}; nothing was debited.")
+			made["Debit Note"] = 1
+			made["debited"] = (
+				f"{note.name} against {bill.name}, now owing "
+				f"{settlement.outstanding('KNIT 360 Supplier Invoice', bill.name):,.2f}"
+			)
+
+	frappe.db.commit()
+	return made
+
+
 def seed():
 	"""Fill the masters and build the pipeline. Safe to run more than once."""
 	report = {"company": company(), "masters": masters()}
@@ -929,6 +1014,7 @@ def seed():
 	report["hr"] = hr()
 	report["stock"] = stock()
 	report["buying"] = buying()
+	report["returns"] = returns()
 
 	trial = ledger.trial_balance(COMPANY)
 	report["trial_balance"] = {
@@ -949,6 +1035,7 @@ def seed():
 	print(f"hr                 {report['hr']}")
 	print(f"stock              {report['stock']}")
 	print(f"buying             {report['buying']}")
+	print(f"returns            {report['returns']}")
 	print(f"trial balance      {report['trial_balance']}")
 	print("\nThis is sample data. Edit it or delete it; none of it is a requirement.")
 	return report

@@ -28,8 +28,8 @@ MODULES = {
 	"Sales": ("sell", 30, ["Enquiry", "Quotation", "Sales Order", "Delivery Note"], {}),
 	"Finance": ("accounting", 40, ["Sales Invoice", "Payment Entry", "Journal Entry", "Account"], {
 		"Ledger": ["Account", "GL Entry", "Journal Entry", "Cost Center", "Fiscal Year"],
-		"Receivables": ["Sales Invoice", "Payment Term", "Payment Terms Template"],
-		"Payables": ["Supplier Invoice", "Payment Entry", "Mode of Payment"],
+		"Receivables": ["Sales Invoice", "Credit Note", "Payment Term", "Payment Terms Template"],
+		"Payables": ["Supplier Invoice", "Debit Note", "Payment Entry", "Mode of Payment"],
 	}),
 	"Tax": ("income", 50, ["Tax Template"], {}),
 	"Procurement": ("buying", 60, ["Purchase Requisition", "Request for Quotation", "Purchase Order", "Goods Receipt"], {}),

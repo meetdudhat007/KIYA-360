@@ -168,15 +168,15 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 73 parent, 22 child — 95 total, across 18 application modules |
+| Record types | 75 parent, 24 child — 99 total, across 18 application modules |
 | BRD modules with record types | **15 of 28** |
 | Lifecycle definitions (`CD-002`) | 25 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
-| Automated checks | **186** — 49 structural, 137 runtime |
-| Last full run | 49/49 and 137/137, 8 October 2026, site `knit360.localhost` |
+| Automated checks | **198** — 49 structural, 149 runtime |
+| Last full run | 49/49 and 149/149, 8 October 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
-| BRD requirement coverage (live report) | **69 of 238 — 12 proven, 57 modelled, 169 not started** |
+| BRD requirement coverage (live report) | **71 of 238 — 12 proven, 59 modelled, 167 not started** |
 | Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `docs/03-guides/06-the-money-decisions-in-plain-language.md`. |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
@@ -218,7 +218,7 @@ group accounts, disabled accounts and closed fiscal years.
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 137 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 149 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

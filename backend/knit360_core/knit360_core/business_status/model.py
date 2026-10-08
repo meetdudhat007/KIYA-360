@@ -383,6 +383,39 @@ SUPPLIER_INVOICE = Lifecycle(
 	happy_path=("Draft", "Matched & Approved", "Partially Paid", "Paid in Full"),
 )
 
+# FR-SALES-006 / FR-SALES-007 (Credit Note): it posts, so it submits. The
+# approval step is deliberate: giving money back is a decision, not a typo.
+CREDIT_NOTE = Lifecycle(
+	name="Credit Note",
+	initial="Draft",
+	transitions={
+		"Draft": {"Pending Approval", "Cancelled"},
+		"Pending Approval": {"Issued", "Draft", "Cancelled"},
+		"Issued": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft", "Pending Approval"},
+	submitted_states={"Issued"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Approval", "Issued"),
+)
+
+# FR-PROC-006 (Debit Note): the mirror of the credit note.
+DEBIT_NOTE = Lifecycle(
+	name="Debit Note",
+	initial="Draft",
+	transitions={
+		"Draft": {"Pending Approval", "Cancelled"},
+		"Pending Approval": {"Issued", "Draft", "Cancelled"},
+		"Issued": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft", "Pending Approval"},
+	submitted_states={"Issued"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Pending Approval", "Issued"),
+)
+
 # DR-P2P-011 (Payment Entry): Disbursement moves cash, so it posts.
 PAYMENT_ENTRY = Lifecycle(
 	name="Payment Entry",
@@ -569,6 +602,8 @@ REGISTRY = {
 	"KNIT 360 Putaway Task": PUTAWAY_TASK,
 	"KNIT 360 Supplier Invoice": SUPPLIER_INVOICE,
 	"KNIT 360 Payment Entry": PAYMENT_ENTRY,
+	"KNIT 360 Credit Note": CREDIT_NOTE,
+	"KNIT 360 Debit Note": DEBIT_NOTE,
 	"KNIT 360 Supplier Scorecard": SUPPLIER_SCORECARD,
 	"KNIT 360 Asset": ASSET,
 	"KNIT 360 Service Contract": SERVICE_CONTRACT,

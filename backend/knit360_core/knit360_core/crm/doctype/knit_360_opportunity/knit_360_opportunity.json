@@ -117,7 +117,7 @@
    "fieldname": "loss_reason",
    "fieldtype": "Small Text",
    "label": "Loss Reason",
-   "description": "DR-C2C-002 prompts for a loss reason code when marked Lost",
+   "description": "Prompts for a loss reason code when marked Lost",
    "depends_on": "eval:doc.knit360_business_status=='Lost'"
   },
   {

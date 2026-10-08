@@ -35,6 +35,8 @@
   "stock_received_but_not_billed",
   "default_output_tax_account",
   "default_input_tax_account",
+  "default_sales_returns_account",
+  "default_purchase_returns_account",
   "default_cost_center"
  ],
  "fields": [
@@ -212,6 +214,20 @@
    "label": "Default Input Tax Account",
    "description": "Where tax paid to a supplier is held until it is recovered.",
    "options": "KNIT 360 Account"
+  },
+  {
+   "fieldname": "default_sales_returns_account",
+   "fieldtype": "Link",
+   "label": "Default Sales Returns Account",
+   "options": "KNIT 360 Account",
+   "description": "Where a credit note puts what was given back. Kept apart from Sales so the books can say how much was returned."
+  },
+  {
+   "fieldname": "default_purchase_returns_account",
+   "fieldtype": "Link",
+   "label": "Default Purchase Returns Account",
+   "options": "KNIT 360 Account",
+   "description": "Where a debit note puts what was sent back."
   },
   {
    "fieldname": "default_cost_center",
