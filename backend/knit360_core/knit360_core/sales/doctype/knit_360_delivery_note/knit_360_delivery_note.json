@@ -29,7 +29,7 @@
    "fieldname": "sales_order",
    "fieldtype": "Link",
    "label": "Sales Order",
-   "description": "FR-SALES-005: the Sales Order these goods were sold on, where there was one. Not required: a free replacement, a sample and a return to a supplier all leave the warehouse without one, and stock has to be able to move for each of them.",
+   "description": "The Sales Order these goods were sold on, where there was one. Not required: a free replacement, a sample and a return to a supplier all leave the warehouse without one, and stock has to be able to move for each of them.",
    "options": "KNIT 360 Sales Order",
    "in_list_view": 1
   },
@@ -37,7 +37,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-SALES-005: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -48,13 +48,13 @@
    "options": "KNIT 360 Warehouse",
    "reqd": 1,
    "in_list_view": 1,
-   "description": "FR-SALES-005 / FR-INV-002: the warehouse the goods leave. Stock is counted per item per warehouse, so a dispatch that does not say where from cannot reduce anything."
+   "description": "The warehouse the goods leave. Stock is counted per item per warehouse, so a dispatch that does not say where from cannot reduce anything."
   },
   {
    "fieldname": "delivery_note_date",
    "fieldtype": "Date",
    "label": "Delivery Note Date",
-   "description": "FR-SALES-005: delivery note date (DR-C2C-012 Inputs)"
+   "description": "Delivery note date"
   },
   {
    "fieldname": "col1",
@@ -64,19 +64,19 @@
    "fieldname": "packing_slip_id",
    "fieldtype": "Data",
    "label": "Packing Slip ID",
-   "description": "FR-SALES-005: Packing Slip ID (DR-C2C-012 Inputs)"
+   "description": "Packing Slip ID"
   },
   {
    "fieldname": "tracking_number",
    "fieldtype": "Data",
    "label": "Tracking Number",
-   "description": "FR-SALES-005: tracking number (DR-C2C-012 Inputs)"
+   "description": "Tracking number"
   },
   {
    "fieldname": "knit360_business_status",
    "fieldtype": "Select",
    "label": "Business Status",
-   "description": "FR-SALES-005: CD-002 lifecycle (PROPOSED, DR-C2C-012). Set only via knit360_core.business_status.engine.transition",
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
    "options": "Draft\nDispatched / In Transit\nDelivered\nReturn Initiated\nCancelled",
    "default": "Draft",
    "read_only": 1,
@@ -92,13 +92,13 @@
    "fieldname": "carrier_details",
    "fieldtype": "Small Text",
    "label": "Carrier Details",
-   "description": "FR-SALES-005: carrier details (DR-C2C-012 Inputs)"
+   "description": "Carrier details"
   },
   {
    "fieldname": "vehicle_number",
    "fieldtype": "Data",
    "label": "Vehicle Number",
-   "description": "FR-SALES-005: vehicle number (DR-C2C-012 Inputs)"
+   "description": "Vehicle number"
   },
   {
    "fieldname": "col2",
@@ -108,13 +108,13 @@
    "fieldname": "driver_details",
    "fieldtype": "Small Text",
    "label": "Driver Details",
-   "description": "FR-SALES-005: driver details (DR-C2C-012 Inputs)"
+   "description": "Driver details"
   },
   {
    "fieldname": "ship_to_address",
    "fieldtype": "Small Text",
    "label": "Ship To Address",
-   "description": "FR-SALES-005: ship-to address (DR-C2C-012 Inputs)"
+   "description": "Ship-to address"
   },
   {
    "fieldname": "sec2",
@@ -125,7 +125,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-SALES-005: BRD-DERIVED from the Sales Order reference",
+   "description": "From the Sales Order reference",
    "options": "KNIT 360 Delivery Note Item"
   }
  ],

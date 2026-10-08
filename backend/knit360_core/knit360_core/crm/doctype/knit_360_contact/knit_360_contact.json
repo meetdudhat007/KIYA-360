@@ -20,7 +20,7 @@
    "fieldname": "contact_name",
    "fieldtype": "Data",
    "label": "Contact Name",
-   "description": "FR-CRM-004: Contacts (FR-CRM-004)",
+   "description": "Contacts",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -28,14 +28,14 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-CRM-004: BRD-DERIVED: contacts belong to the unified Customer Master",
+   "description": "Contacts belong to the unified Customer Master",
    "options": "KNIT 360 Customer"
   },
   {
    "fieldname": "is_primary",
    "fieldtype": "Check",
    "label": "Is Primary Contact",
-   "description": "FR-CRM-004: PROPOSED: DR-C2C-001 requires a primary contact channel before conversion"
+   "description": "DR-C2C-001 requires a primary contact channel before conversion"
   },
   {
    "fieldname": "col1",
@@ -45,21 +45,21 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email",
-   "description": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Email"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
-   "description": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Phone"
   },
   {
    "fieldname": "designation",
    "fieldtype": "Data",
    "label": "Designation",
-   "description": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes"
+   "description": "The BRD does not specify contact attributes"
   }
  ],
  "index_web_pages_for_search": 0,

@@ -21,35 +21,35 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+   "description": "Ordered items",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs)",
+   "description": "Ordered items",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-SALES-003: quantities (DR-C2C-005 Inputs)",
+   "description": "Quantities",
    "in_list_view": 1
   },
   {
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-SALES-003: BRD-DERIVED; now a master",
+   "description": "Now a master",
    "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Agreed Rate",
-   "description": "FR-SALES-003: agreed rates (DR-C2C-005 Inputs)",
+   "description": "Agreed rates",
    "in_list_view": 1
   },
   {
@@ -57,20 +57,20 @@
    "fieldtype": "Currency",
    "label": "Price List Rate",
    "read_only": 1,
-   "description": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible."
+   "description": "What the Item Price master holds for this item on this document's price list and date. Read by the price list, never typed. Kept even where the rate charged differs, so the difference is visible."
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
    "read_only": 1,
-   "description": "FR-SALES-003 qty x rate. Computed by knit360_core.pricing.totals."
+   "description": "Qty x rate. Computed by the shared pricing engine."
   },
   {
    "fieldname": "delivery_date",
    "fieldtype": "Date",
    "label": "Delivery Date",
-   "description": "FR-SALES-003: delivery dates per line (DR-C2C-005 Inputs)",
+   "description": "Delivery dates per line",
    "in_list_view": 1
   }
  ],

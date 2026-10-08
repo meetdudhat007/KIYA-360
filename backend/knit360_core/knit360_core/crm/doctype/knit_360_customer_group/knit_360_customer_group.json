@@ -21,7 +21,7 @@
    "fieldname": "customer_group_name",
    "fieldtype": "Data",
    "label": "Customer Group",
-   "description": "FR-PADM-1.4.1: Customer Master -- BRD-DERIVED: how customers are segmented",
+   "description": "Customer Master -- how customers are segmented",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -29,7 +29,7 @@
    "fieldname": "parent_customer_group",
    "fieldtype": "Link",
    "label": "Parent",
-   "description": "FR-PADM-1.4.1: BRD-DERIVED: hierarchy parent",
+   "description": "Hierarchy parent",
    "options": "KNIT 360 Customer Group",
    "ignore_user_permissions": 1
   },
@@ -37,13 +37,13 @@
    "fieldname": "is_group",
    "fieldtype": "Check",
    "label": "Is Group",
-   "description": "FR-PADM-1.4.1: BRD-DERIVED: a group node holds children and is not selectable on a document"
+   "description": "A group node holds children and is not selectable on a document"
   },
   {
    "fieldname": "lft",
    "fieldtype": "Int",
    "label": "lft",
-   "description": "FR-PADM-1.4.1: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -52,7 +52,7 @@
    "fieldname": "rgt",
    "fieldtype": "Int",
    "label": "rgt",
-   "description": "FR-PADM-1.4.1: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -61,7 +61,7 @@
    "fieldname": "old_parent",
    "fieldtype": "Data",
    "label": "Old Parent",
-   "description": "FR-PADM-1.4.1: BRD-DERIVED: previous parent, maintained by the framework",
+   "description": "Previous parent, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -74,7 +74,7 @@
    "fieldname": "default_price_list",
    "fieldtype": "Link",
    "label": "Default Price List",
-   "description": "FR-SALES-004: Pricing & Discounts -- the list used for this group unless the customer overrides it",
+   "description": "Pricing & Discounts -- the list used for this group unless the customer overrides it",
    "options": "KNIT 360 Price List"
   }
  ],

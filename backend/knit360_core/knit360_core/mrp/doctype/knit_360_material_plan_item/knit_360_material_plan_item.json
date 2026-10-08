@@ -18,35 +18,35 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-MRP-002: material requirements; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Material requirements",
    "in_list_view": 1
   },
   {
    "fieldname": "required_qty",
    "fieldtype": "Float",
    "label": "Required Qty",
-   "description": "FR-MRP-002: Sales Order shortage lines",
+   "description": "Sales Order shortage lines",
    "in_list_view": 1
   },
   {
    "fieldname": "on_hand_qty",
    "fieldtype": "Float",
    "label": "On Hand",
-   "description": "FR-MRP-002: on-hand stock",
+   "description": "On-hand stock",
    "in_list_view": 1
   },
   {
    "fieldname": "shortage_qty",
    "fieldtype": "Float",
    "label": "Shortage",
-   "description": "FR-MRP-002: Sales Order shortage lines",
+   "description": "Sales Order shortage lines",
    "in_list_view": 1
   },
   {
    "fieldname": "required_by",
    "fieldtype": "Date",
    "label": "Required By",
-   "description": "FR-MRP-002: required delivery dates",
+   "description": "Required delivery dates",
    "in_list_view": 1
   }
  ],

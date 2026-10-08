@@ -16,7 +16,7 @@
    "fieldname": "holiday_date",
    "fieldtype": "Date",
    "label": "Date",
-   "description": "FR-HR-003: a single non-working day.",
+   "description": "A single non-working day.",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -24,14 +24,14 @@
    "fieldname": "description",
    "fieldtype": "Data",
    "label": "Description",
-   "description": "FR-HR-003: why the day is a holiday.",
+   "description": "Why the day is a holiday.",
    "in_list_view": 1
   },
   {
    "fieldname": "is_weekly_off",
    "fieldtype": "Check",
    "label": "Weekly Off",
-   "description": "FR-HR-003: set when the row came from a recurring weekly rest day rather than a named holiday.",
+   "description": "Set when the row came from a recurring weekly rest day rather than a named holiday.",
    "in_list_view": 1
   }
  ],

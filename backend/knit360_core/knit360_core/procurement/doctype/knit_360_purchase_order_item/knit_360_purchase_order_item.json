@@ -22,34 +22,34 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-PROC-004: line items (codes); becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Line items (codes)",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-PROC-004: line items (descriptions)",
+   "description": "Line items (descriptions)",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-PROC-004: line items (quantities)",
+   "description": "Line items (quantities)",
    "in_list_view": 1
   },
   {
    "fieldname": "uom",
    "fieldtype": "Data",
    "label": "UOM",
-   "description": "FR-PROC-004: line items (UOM)"
+   "description": "Line items (UOM)"
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Agreed Rate",
-   "description": "FR-PROC-004: line items (agreed rates)",
+   "description": "Line items (agreed rates)",
    "in_list_view": 1
   },
   {
@@ -57,26 +57,26 @@
    "fieldtype": "Currency",
    "label": "Price List Rate",
    "read_only": 1,
-   "description": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible."
+   "description": "What the Item Price master holds for this item on this document's price list and date. Read by the price list, never typed. Kept even where the rate charged differs, so the difference is visible."
   },
   {
    "fieldname": "discount_percentage",
    "fieldtype": "Percent",
    "label": "Discount %",
-   "description": "FR-PROC-004: line items (discounts)"
+   "description": "Line items (discounts)"
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
    "read_only": 1,
-   "description": "FR-PROC-004 qty x rate less the line discount. Computed by knit360_core.pricing.totals."
+   "description": "Qty x rate less the line discount. Computed by the shared pricing engine."
   },
   {
    "fieldname": "schedule_date",
    "fieldtype": "Date",
    "label": "Delivery Date",
-   "description": "FR-PROC-004: delivery schedule per item",
+   "description": "Delivery schedule per item",
    "in_list_view": 1
   }
  ],

@@ -21,14 +21,14 @@
    "fieldname": "holiday_list_name",
    "fieldtype": "Data",
    "label": "Holiday List Name",
-   "description": "FR-HR-003: names the calendar, e.g. the year and the location it applies to.",
+   "description": "Names the calendar, e.g. the year and the location it applies to.",
    "reqd": 1
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-HR-003: the company this calendar belongs to.",
+   "description": "The company this calendar belongs to.",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -40,21 +40,21 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date",
-   "description": "FR-HR-003: first day the calendar covers.",
+   "description": "First day the calendar covers.",
    "reqd": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date",
-   "description": "FR-HR-003: last day the calendar covers.",
+   "description": "Last day the calendar covers.",
    "reqd": 1
   },
   {
    "fieldname": "total_holidays",
    "fieldtype": "Int",
    "label": "Total Holidays",
-   "description": "FR-HR-003: count of rows below. Computed, never typed.",
+   "description": "Count of rows below. Computed, never typed.",
    "read_only": 1
   },
   {
@@ -65,7 +65,7 @@
    "fieldname": "holidays",
    "fieldtype": "Table",
    "label": "Holidays",
-   "description": "FR-HR-003: the days themselves.",
+   "description": "The days themselves.",
    "options": "KNIT 360 Holiday"
   }
  ],

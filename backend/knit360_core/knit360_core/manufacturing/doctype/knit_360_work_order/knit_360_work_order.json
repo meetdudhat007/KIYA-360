@@ -21,7 +21,7 @@
    "fieldname": "production_item",
    "fieldtype": "Data",
    "label": "Target Item",
-   "description": "FR-MFG-003: target item; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Target item",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -29,20 +29,20 @@
    "fieldname": "bom",
    "fieldtype": "Link",
    "label": "BOM",
-   "description": "FR-MFG-003: BOM reference",
+   "description": "BOM reference",
    "options": "KNIT 360 BOM"
   },
   {
    "fieldname": "qty_to_produce",
    "fieldtype": "Float",
    "label": "Quantity to Produce",
-   "description": "FR-MFG-003: quantity to produce"
+   "description": "Quantity to produce"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-MFG-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -54,19 +54,19 @@
    "fieldname": "routing_sequence",
    "fieldtype": "Small Text",
    "label": "Routing Sequence",
-   "description": "FR-MFG-003: routing sequence (FR-MFG-002)"
+   "description": "Routing sequence"
   },
   {
    "fieldname": "assigned_workstations",
    "fieldtype": "Small Text",
    "label": "Assigned Workstations",
-   "description": "FR-MFG-003: assigned workstations"
+   "description": "Assigned workstations"
   },
   {
    "fieldname": "sales_order",
    "fieldtype": "Link",
    "label": "Against Sales Order",
-   "description": "FR-MFG-003: BRD-DERIVED: C2C linkage (DEP-001)",
+   "description": "C2C linkage (DEP-001)",
    "options": "KNIT 360 Sales Order"
   }
  ],

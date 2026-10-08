@@ -5,7 +5,7 @@
  "doctype": "DocType",
  "editable_grid": 0,
  "engine": "InnoDB",
- "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT 360 Work Order (manufacturing) — doc 33 forbids sharing that schema.",
+ "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT 360 Work Order (manufacturing) \u2014 doc 33 forbids sharing that schema.",
  "field_order": [
   "service_request",
   "asset",
@@ -28,7 +28,7 @@
    "fieldname": "service_request",
    "fieldtype": "Link",
    "label": "Service Request",
-   "description": "FR-MFS-002 / FR-MFS-007: Service Request reference",
+   "description": "Service Request reference",
    "options": "KNIT 360 Service Request",
    "reqd": 1,
    "in_list_view": 1
@@ -37,21 +37,21 @@
    "fieldname": "asset",
    "fieldtype": "Link",
    "label": "Asset",
-   "description": "FR-MFS-002 / FR-MFS-007: Asset identifier",
+   "description": "Asset identifier",
    "options": "KNIT 360 Asset"
   },
   {
    "fieldname": "assigned_technician",
    "fieldtype": "Link",
    "label": "Assigned Technician",
-   "description": "FR-MFS-002 / FR-MFS-007: Assigned technician",
+   "description": "Assigned technician",
    "options": "User"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-MFS-002 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -63,25 +63,25 @@
    "fieldname": "planned_start",
    "fieldtype": "Datetime",
    "label": "Planned Start",
-   "description": "FR-MFS-002 / FR-MFS-007: Planned work start"
+   "description": "Planned work start"
   },
   {
    "fieldname": "planned_end",
    "fieldtype": "Datetime",
    "label": "Planned End",
-   "description": "FR-MFS-002 / FR-MFS-007: Planned work end"
+   "description": "Planned work end"
   },
   {
    "fieldname": "actual_labor_hours",
    "fieldtype": "Float",
    "label": "Actual Labour Hours",
-   "description": "FR-MFS-002 / FR-MFS-007: Actual labor hours"
+   "description": "Actual labor hours"
   },
   {
    "fieldname": "travel_hours",
    "fieldtype": "Float",
    "label": "Travel Hours",
-   "description": "FR-MFS-002 / FR-MFS-007: Travel hours"
+   "description": "Travel hours"
   },
   {
    "fieldname": "sec_25",
@@ -92,13 +92,13 @@
    "fieldname": "sop",
    "fieldtype": "Text",
    "label": "Standard Operating Procedures",
-   "description": "FR-MFS-002 / FR-MFS-007: Standard operating procedures (SOP)"
+   "description": "Standard operating procedures (SOP)"
   },
   {
    "fieldname": "findings",
    "fieldtype": "Text",
    "label": "Findings / Action Notes",
-   "description": "FR-MFS-002 / FR-MFS-007: Findings/Action notes"
+   "description": "Findings/Action notes"
   },
   {
    "fieldname": "col_35",
@@ -108,13 +108,13 @@
    "fieldname": "customer_signature",
    "fieldtype": "Data",
    "label": "Customer Signature",
-   "description": "FR-MFS-002 / FR-MFS-007: Customer signature"
+   "description": "Customer signature"
   },
   {
    "fieldname": "warranty_entitlement",
    "fieldtype": "Check",
    "label": "Under Warranty",
-   "description": "FR-MFS-002 / FR-MFS-007: Warranty entitlement flag (DR-A2S-006 Inputs)"
+   "description": "Warranty entitlement flag"
   }
  ],
  "index_web_pages_for_search": 0,

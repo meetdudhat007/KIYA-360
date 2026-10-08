@@ -25,13 +25,13 @@
    "fieldname": "inspection_type",
    "fieldtype": "Data",
    "label": "Inspection Type",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Incoming / In-Process / Final (FR-QLTY-002..004); enumeration TBD"
+   "description": "Incoming / In-Process / Final"
   },
   {
    "fieldname": "reference_name",
    "fieldtype": "Link",
    "label": "Against Goods Receipt",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Reference Goods Receipt ID",
+   "description": "Reference Goods Receipt ID",
    "options": "KNIT 360 Goods Receipt",
    "in_list_view": 1
   },
@@ -39,14 +39,14 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Purchase Order reference",
+   "description": "Purchase Order reference",
    "options": "KNIT 360 Purchase Order"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -58,26 +58,26 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Item Master; becomes a Link once the Item Master (FR-INV-001) is populated"
+   "description": "Item Master"
   },
   {
    "fieldname": "batch_no",
    "fieldtype": "Data",
    "label": "Lot / Batch Number",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: lot/batch number"
+   "description": "Lot/batch number"
   },
   {
    "fieldname": "inspection_template",
    "fieldtype": "Link",
    "label": "Inspection Template",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: inspection template",
+   "description": "Inspection template",
    "options": "KNIT 360 Inspection Template"
   },
   {
    "fieldname": "sample_size",
    "fieldtype": "Float",
    "label": "Sample Size",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: sample size"
+   "description": "Sample size"
   },
   {
    "fieldname": "knit360_business_status",
@@ -88,7 +88,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: CD-002 'Quality Inspection' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_17",
@@ -99,7 +99,7 @@
    "fieldname": "readings",
    "fieldtype": "Table",
    "label": "Readings",
-   "description": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: observed test parameter readings",
+   "description": "Observed test parameter readings",
    "options": "KNIT 360 Inspection Reading"
   }
  ],

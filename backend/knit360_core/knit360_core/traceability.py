@@ -4,10 +4,18 @@ What this answers, and what it refuses to answer.
 
 A client asking "have you met our requirements?" wants evidence, not a claim.
 This module produces the evidence by reading the system itself: every field on
-every KNIT 360 doctype carries the BRD requirement it came from in its
-description -- a rule the structural test suite enforces -- so the link from a
-requirement to the thing that implements it is already in the data. Nothing
-here is hand-maintained except one small list, described below.
+every KNIT 360 doctype records the BRD requirement it came from -- a rule the
+structural test suite enforces -- so the link from a requirement to the thing
+that implements it is already in the data. Nothing here is hand-maintained
+except one small list, described below.
+
+The trace lives in `traceability_map.json`, keyed by doctype and fieldname.
+It used to be the opening words of each field's `description`, which Frappe
+renders as help text under the input: a sales invoice showed nineteen
+requirement codes to anyone filling it in, and on a phone the form was mostly
+developer metadata. The trace moved out; the help text people need stayed
+(DEC-035). Descriptions are still scanned as well, so a citation written the
+old way still counts rather than silently disappearing.
 
 What it will not do is report that a requirement is "met". It cannot, for a
 reason that belongs to the BRD rather than to the build: all 238 requirements
@@ -41,6 +49,9 @@ CODE = re.compile(r"FR-[A-Z]+-[0-9]+(?:\.[0-9]+)*")
 #: Ranges such as "FR-QLTY-002..004" appear in a few descriptions, meaning
 #: every requirement between the two. Expanded rather than ignored.
 RANGE = re.compile(r"(FR-[A-Z]+-)([0-9]+)\.\.([0-9]+)")
+
+#: Where the requirement each field came from is recorded -- DEC-035.
+TRACE_MAP = "traceability_map.json"
 
 NOT_STARTED = "Not started"
 MODELLED = "Modelled"
@@ -83,12 +94,19 @@ def citations():
 	found = {}
 	app = pathlib.Path(frappe.get_app_path("knit360_core"))
 
+	traced = trace_map()
+
 	for path in app.glob("*/doctype/*/*.json"):
 		doc = json.loads(path.read_text(encoding="utf-8"))
 		if doc.get("doctype") != "DocType":
 			continue
+		for_doctype = traced.get(doc["name"], {})
 		for field in doc.get("fields", []):
-			text = field.get("description") or ""
+			text = " ".join(
+				part for part in
+				(for_doctype.get(field.get("fieldname")), field.get("description"))
+				if part
+			)
 			for prefix, start, end in RANGE.findall(text):
 				width = len(start)
 				for n in range(int(start), int(end) + 1):
@@ -108,6 +126,14 @@ def citations():
 				found.setdefault(code, {}).setdefault(doc["name"], 0)
 				found[code][doc["name"]] += 1
 	return found
+
+
+def trace_map():
+	"""doctype -> fieldname -> the requirement text that field traces to."""
+	path = pathlib.Path(frappe.get_app_path("knit360_core")) / TRACE_MAP
+	if not path.exists():
+		return {}
+	return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _implementers(by_doctype):

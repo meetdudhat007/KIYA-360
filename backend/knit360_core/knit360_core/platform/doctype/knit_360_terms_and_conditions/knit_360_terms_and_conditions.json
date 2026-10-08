@@ -17,7 +17,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
-   "description": "FR-SALES-002: BRD-DERIVED: named set of terms reused across documents",
+   "description": "Named set of terms reused across documents",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -26,7 +26,7 @@
    "fieldname": "applies_to",
    "fieldtype": "Select",
    "label": "Applies To",
-   "description": "FR-SALES-002: BRD-DERIVED: which side of the business these terms belong to",
+   "description": "Which side of the business these terms belong to",
    "options": "Both\nSelling\nBuying",
    "default": "Both",
    "in_list_view": 1
@@ -35,13 +35,13 @@
    "fieldname": "terms",
    "fieldtype": "Text Editor",
    "label": "Terms",
-   "description": "FR-SALES-002: BRD-DERIVED: the wording printed on the document"
+   "description": "The wording printed on the document"
   },
   {
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled",
-   "description": "FR-SALES-002: BRD-DERIVED: withdrawn from selection"
+   "description": "Withdrawn from selection"
   }
  ],
  "index_web_pages_for_search": 0,

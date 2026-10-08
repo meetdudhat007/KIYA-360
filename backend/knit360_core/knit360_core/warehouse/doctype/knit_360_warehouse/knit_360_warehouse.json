@@ -18,7 +18,7 @@
    "fieldname": "warehouse_name",
    "fieldtype": "Data",
    "label": "Warehouse Name",
-   "description": "FR-WH-001: Warehouse Setup (FR-WH-001)",
+   "description": "Warehouse Setup",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -27,7 +27,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-WH-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -39,14 +39,14 @@
    "fieldname": "parent_warehouse",
    "fieldtype": "Link",
    "label": "Parent Warehouse",
-   "description": "FR-WH-001: warehouse hierarchy (FR-WH-001)",
+   "description": "Warehouse hierarchy",
    "options": "KNIT 360 Warehouse"
   },
   {
    "fieldname": "location",
    "fieldtype": "Link",
    "label": "Location",
-   "description": "FR-WH-001: BRD-DERIVED: plant/warehouse (FR-PADM-1.1.6)",
+   "description": "Plant/warehouse",
    "options": "KNIT 360 Location"
   }
  ],

@@ -16,21 +16,19 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-CRM-002: item/service interest list (DR-C2C-002 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+   "description": "Item/service interest list",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-CRM-002: BRD-DERIVED",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-CRM-002: BRD-DERIVED",
    "in_list_view": 1
   }
  ],

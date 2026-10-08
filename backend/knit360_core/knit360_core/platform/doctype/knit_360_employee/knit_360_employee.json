@@ -30,7 +30,7 @@
    "fieldname": "employee_name",
    "fieldtype": "Data",
    "label": "Employee Name",
-   "description": "FR-PADM-1.4.4: Employee Master -- full name",
+   "description": "Employee Master -- full name",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -38,7 +38,7 @@
    "fieldname": "employee_number",
    "fieldtype": "Data",
    "label": "Employee Number",
-   "description": "FR-PADM-1.4.4: Employee Master -- payroll or staff number",
+   "description": "Employee Master -- payroll or staff number",
    "unique": 1,
    "in_list_view": 1
   },
@@ -46,7 +46,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PADM-1.1.1: the company that employs them",
+   "description": "The company that employs them",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -58,21 +58,21 @@
    "fieldname": "designation",
    "fieldtype": "Link",
    "label": "Designation",
-   "description": "FR-PADM-1.4.4: Employee Master -- job title",
+   "description": "Employee Master -- job title",
    "options": "KNIT 360 Designation"
   },
   {
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
-   "description": "FR-PADM-1.1.4: Department Master",
+   "description": "Department Master",
    "options": "KNIT 360 Department"
   },
   {
    "fieldname": "branch",
    "fieldtype": "Link",
    "label": "Branch",
-   "description": "FR-PADM-1.1.2: Branch Master",
+   "description": "Branch Master",
    "options": "KNIT 360 Branch"
   },
   {
@@ -84,14 +84,14 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Work Email",
-   "description": "FR-PADM-1.4.4: Employee Master -- contact",
+   "description": "Employee Master -- contact",
    "options": "Email"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
-   "description": "FR-PADM-1.4.4: Employee Master -- contact",
+   "description": "Employee Master -- contact",
    "options": "Phone"
   },
   {
@@ -102,7 +102,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "Linked User",
-   "description": "FR-PADM-1.2.1: User Management -- the login this person signs in with, when they have one",
+   "description": "User Management -- the login this person signs in with, when they have one",
    "options": "User"
   },
   {
@@ -114,7 +114,7 @@
    "fieldname": "date_of_joining",
    "fieldtype": "Date",
    "label": "Date of Joining",
-   "description": "FR-PADM-1.4.4: Employee Master -- start date"
+   "description": "Employee Master -- start date"
   },
   {
    "fieldname": "col_e3",
@@ -124,13 +124,13 @@
    "fieldname": "date_of_leaving",
    "fieldtype": "Date",
    "label": "Date of Leaving",
-   "description": "FR-PADM-1.4.4: Employee Master -- end date, when they have left"
+   "description": "Employee Master -- end date, when they have left"
   },
   {
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active",
-   "description": "FR-PADM-1.4.4: BRD-DERIVED: currently employed",
+   "description": "Currently employed",
    "default": "1",
    "in_list_view": 1
   }

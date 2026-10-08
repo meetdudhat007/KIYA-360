@@ -35,7 +35,7 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
-   "description": "FR-FIN-001: General Ledger -- the date the entry lands in the books",
+   "description": "General Ledger -- the date the entry lands in the books",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -43,7 +43,7 @@
    "fieldname": "account",
    "fieldtype": "Link",
    "label": "Account",
-   "description": "FR-FIN-001: General Ledger -- the account debited or credited",
+   "description": "General Ledger -- the account debited or credited",
    "options": "KNIT 360 Account",
    "reqd": 1,
    "in_list_view": 1
@@ -52,14 +52,14 @@
    "fieldname": "debit",
    "fieldtype": "Currency",
    "label": "Debit",
-   "description": "FR-FIN-001: General Ledger -- debit amount",
+   "description": "General Ledger -- debit amount",
    "in_list_view": 1
   },
   {
    "fieldname": "credit",
    "fieldtype": "Currency",
    "label": "Credit",
-   "description": "FR-FIN-001: General Ledger -- credit amount",
+   "description": "General Ledger -- credit amount",
    "in_list_view": 1
   },
   {
@@ -70,7 +70,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PADM-1.1.1: the company whose books this entry belongs to",
+   "description": "The company whose books this entry belongs to",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -78,14 +78,14 @@
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "description": "FR-FIN-006: Cost Accounting -- attribution",
+   "description": "Cost Accounting -- attribution",
    "options": "KNIT 360 Cost Center"
   },
   {
    "fieldname": "fiscal_year",
    "fieldtype": "Link",
    "label": "Fiscal Year",
-   "description": "FR-FIN-007: Financial Reporting -- the period this entry falls in",
+   "description": "Financial Reporting -- the period this entry falls in",
    "options": "KNIT 360 Fiscal Year"
   },
   {
@@ -97,7 +97,7 @@
    "fieldname": "party_type",
    "fieldtype": "Data",
    "label": "Party Type",
-   "description": "FR-FIN-002 / FR-FIN-003: which subsidiary ledger -- customer or supplier"
+   "description": "Which subsidiary ledger -- customer or supplier"
   },
   {
    "fieldname": "col_gl_2",
@@ -107,7 +107,7 @@
    "fieldname": "party",
    "fieldtype": "Data",
    "label": "Party",
-   "description": "FR-FIN-002 / FR-FIN-003: the customer or supplier this entry is against"
+   "description": "The customer or supplier this entry is against"
   },
   {
    "fieldname": "sec_gl_2",
@@ -118,14 +118,14 @@
    "fieldname": "voucher_type",
    "fieldtype": "Data",
    "label": "Voucher Type",
-   "description": "FR-FIN-001: General Ledger -- the doctype that posted this entry",
+   "description": "General Ledger -- the doctype that posted this entry",
    "reqd": 1
   },
   {
    "fieldname": "voucher_no",
    "fieldtype": "Data",
    "label": "Voucher No",
-   "description": "FR-FIN-001: General Ledger -- the document that posted this entry",
+   "description": "General Ledger -- the document that posted this entry",
    "reqd": 1
   },
   {
@@ -136,13 +136,13 @@
    "fieldname": "against_voucher_type",
    "fieldtype": "Data",
    "label": "Against Voucher Type",
-   "description": "FR-FIN-003: Accounts Receivable -- the document being settled"
+   "description": "Accounts Receivable -- the document being settled"
   },
   {
    "fieldname": "against_voucher",
    "fieldtype": "Data",
    "label": "Against Voucher",
-   "description": "FR-FIN-003: Accounts Receivable -- the invoice a payment is applied to"
+   "description": "Accounts Receivable -- the invoice a payment is applied to"
   },
   {
    "fieldname": "sec_gl_3",
@@ -153,19 +153,19 @@
    "fieldname": "against_account",
    "fieldtype": "Small Text",
    "label": "Against Account",
-   "description": "FR-FIN-001: General Ledger -- the contra side, for readability"
+   "description": "General Ledger -- the contra side, for readability"
   },
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks",
-   "description": "FR-FIN-001: General Ledger -- narration"
+   "description": "General Ledger -- narration"
   },
   {
    "fieldname": "is_cancelled",
    "fieldtype": "Check",
    "label": "Is Cancelled",
-   "description": "FR-FIN-001: General Ledger -- a reversed entry is flagged, never deleted. CD-002 requires reversal rather than rewriting."
+   "description": "General Ledger -- a reversed entry is flagged, never deleted. CD-002 requires reversal rather than rewriting."
   }
  ],
  "index_web_pages_for_search": 0,

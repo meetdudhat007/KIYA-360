@@ -35,7 +35,7 @@
    "read_only": 1,
    "reqd": 1,
    "search_index": 1,
-   "description": "FR-INV-002: Stock Quantity -- the item that moved."
+   "description": "Stock Quantity -- the item that moved."
   },
   {
    "fieldname": "warehouse",
@@ -47,7 +47,7 @@
    "read_only": 1,
    "reqd": 1,
    "search_index": 1,
-   "description": "FR-INV-002: Stock Quantity -- stock is counted per item per warehouse. A Bin is a place to walk to, not a quantity."
+   "description": "Stock Quantity -- stock is counted per item per warehouse. A Bin is a place to walk to, not a quantity."
   },
   {
    "fieldname": "company",
@@ -56,7 +56,7 @@
    "options": "KNIT 360 Company",
    "read_only": 1,
    "reqd": 1,
-   "description": "FR-INV-002: Stock Quantity -- whose stock this is."
+   "description": "Stock Quantity -- whose stock this is."
   },
   {
    "fieldname": "column_break_1",
@@ -69,7 +69,7 @@
    "label": "Posting Date",
    "read_only": 1,
    "reqd": 1,
-   "description": "FR-INV-002: Stock Quantity -- when the movement happened. Movements are replayed in this order to value an issue."
+   "description": "Stock Quantity -- when the movement happened. Movements are replayed in this order to value an issue."
   },
   {
    "fieldname": "voucher_type",
@@ -77,7 +77,7 @@
    "label": "Voucher Type",
    "read_only": 1,
    "reqd": 1,
-   "description": "FR-INV-002: Stock Quantity -- the kind of document that moved it."
+   "description": "Stock Quantity -- the kind of document that moved it."
   },
   {
    "fieldname": "voucher_no",
@@ -87,7 +87,7 @@
    "read_only": 1,
    "reqd": 1,
    "search_index": 1,
-   "description": "FR-INV-002: Stock Quantity -- the document that moved it. Every movement has one; nothing moves stock on its own."
+   "description": "Stock Quantity -- the document that moved it. Every movement has one; nothing moves stock on its own."
   },
   {
    "fieldname": "section_break_1",
@@ -100,14 +100,14 @@
    "label": "Quantity",
    "read_only": 1,
    "reqd": 1,
-   "description": "FR-INV-002: Stock Quantity -- signed. Positive is received, negative is issued. The stock held is the sum of these."
+   "description": "Stock Quantity -- signed. Positive is received, negative is issued. The stock held is the sum of these."
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate",
    "read_only": 1,
-   "description": "FR-INV-006: Stock Valuation -- what one unit was worth in this movement. On an issue this is worked out by the ledger, not supplied by the document."
+   "description": "Stock Valuation -- what one unit was worth in this movement. On an issue this is worked out by the ledger, not supplied by the document."
   },
   {
    "fieldname": "column_break_2",
@@ -118,21 +118,21 @@
    "fieldtype": "Currency",
    "label": "Value Change",
    "read_only": 1,
-   "description": "FR-INV-006: Stock Valuation -- signed money. The value of the stock held is the sum of these, and it is what the ledger posts."
+   "description": "Stock Valuation -- signed money. The value of the stock held is the sum of these, and it is what the ledger posts."
   },
   {
    "fieldname": "is_cancelled",
    "fieldtype": "Check",
    "label": "Cancelled",
    "read_only": 1,
-   "description": "FR-INV-002: Stock Quantity -- set on both an original and its mirror when a document is reversed, so a query that excludes them sees neither."
+   "description": "Stock Quantity -- set on both an original and its mirror when a document is reversed, so a query that excludes them sees neither."
   },
   {
    "fieldname": "remarks",
    "fieldtype": "Small Text",
    "label": "Remarks",
    "read_only": 1,
-   "description": "FR-INV-002: Stock Quantity -- why this movement happened, where the document does not already say."
+   "description": "Stock Quantity -- why this movement happened, where the document does not already say."
   }
  ],
  "index_web_pages_for_search": 0,

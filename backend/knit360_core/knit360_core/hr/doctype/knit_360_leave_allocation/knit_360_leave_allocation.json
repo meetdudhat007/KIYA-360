@@ -28,7 +28,7 @@
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
-   "description": "FR-HR-001: who is being given leave.",
+   "description": "Who is being given leave.",
    "options": "KNIT 360 Employee",
    "reqd": 1,
    "in_list_view": 1
@@ -37,7 +37,7 @@
    "fieldname": "leave_type",
    "fieldtype": "Link",
    "label": "Leave Type",
-   "description": "FR-HR-003: which leave is being given.",
+   "description": "Which leave is being given.",
    "options": "KNIT 360 Leave Type",
    "reqd": 1,
    "in_list_view": 1
@@ -46,7 +46,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-HR-003: the employing company.",
+   "description": "The employing company.",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -58,7 +58,7 @@
    "fieldname": "leave_period",
    "fieldtype": "Link",
    "label": "Leave Period",
-   "description": "FR-HR-003: the period this allocation belongs to.",
+   "description": "The period this allocation belongs to.",
    "options": "KNIT 360 Leave Period",
    "reqd": 1
   },
@@ -66,14 +66,14 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date",
-   "description": "FR-HR-003: first day the allocation is usable.",
+   "description": "First day the allocation is usable.",
    "reqd": 1
   },
   {
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date",
-   "description": "FR-HR-003: last day the allocation is usable.",
+   "description": "Last day the allocation is usable.",
    "reqd": 1
   },
   {
@@ -84,7 +84,7 @@
    "default": "Draft",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition."
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_lal_1",
@@ -94,14 +94,14 @@
    "fieldname": "new_leaves_allocated",
    "fieldtype": "Float",
    "label": "New Leaves Allocated",
-   "description": "FR-HR-003: days granted for this period.",
+   "description": "Days granted for this period.",
    "reqd": 1
   },
   {
    "fieldname": "carried_forward",
    "fieldtype": "Float",
    "label": "Carried Forward",
-   "description": "FR-HR-003: days brought in from the previous period. Carrying forward is not calculated automatically; this is entered."
+   "description": "Days brought in from the previous period. Carrying forward is not calculated automatically; this is entered."
   },
   {
    "fieldname": "col_lal_2",
@@ -111,7 +111,7 @@
    "fieldname": "total_leaves_allocated",
    "fieldtype": "Float",
    "label": "Total Leaves Allocated",
-   "description": "FR-HR-003: new plus carried forward. Computed, never typed.",
+   "description": "New plus carried forward. Computed, never typed.",
    "read_only": 1
   },
   {
@@ -122,7 +122,7 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-HR-003: why this allocation was made."
+   "description": "Why this allocation was made."
   }
  ],
  "index_web_pages_for_search": 0,

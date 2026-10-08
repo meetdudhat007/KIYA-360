@@ -25,7 +25,7 @@
    "fieldname": "asset",
    "fieldtype": "Link",
    "label": "Installed Asset",
-   "description": "FR-MFS-004 / FR-MFS-007: Installed Asset / Serial No",
+   "description": "Installed Asset / Serial No",
    "options": "KNIT 360 Asset",
    "reqd": 1,
    "in_list_view": 1
@@ -34,20 +34,20 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-MFS-004 / FR-MFS-007: Customer reference",
+   "description": "Customer reference",
    "options": "KNIT 360 Customer"
   },
   {
    "fieldname": "request_timestamp",
    "fieldtype": "Datetime",
    "label": "Request Timestamp",
-   "description": "FR-MFS-004 / FR-MFS-007: Request timestamp"
+   "description": "Request timestamp"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-MFS-004 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -59,19 +59,19 @@
    "fieldname": "fault_symptom_code",
    "fieldtype": "Data",
    "label": "Fault Symptom Code",
-   "description": "FR-MFS-004 / FR-MFS-007: Fault symptom code"
+   "description": "Fault symptom code"
   },
   {
    "fieldname": "priority",
    "fieldtype": "Data",
    "label": "Urgency / Priority",
-   "description": "FR-MFS-004 / FR-MFS-007: Urgency/Priority indicator; enumeration TBD"
+   "description": "Urgency/Priority indicator"
   },
   {
    "fieldname": "contact_details",
    "fieldtype": "Data",
    "label": "Contact Details",
-   "description": "FR-MFS-004 / FR-MFS-007: Contact details"
+   "description": "Contact details"
   },
   {
    "fieldname": "sec_23",
@@ -82,7 +82,7 @@
    "fieldname": "problem_description",
    "fieldtype": "Text",
    "label": "Problem Description",
-   "description": "FR-MFS-004 / FR-MFS-007: Problem description"
+   "description": "Problem description"
   },
   {
    "fieldname": "col_32",
@@ -92,7 +92,7 @@
    "fieldname": "site_access_constraints",
    "fieldtype": "Text",
    "label": "Site Access Constraints",
-   "description": "FR-MFS-004 / FR-MFS-007: Site access constraints"
+   "description": "Site access constraints"
   }
  ],
  "index_web_pages_for_search": 0,

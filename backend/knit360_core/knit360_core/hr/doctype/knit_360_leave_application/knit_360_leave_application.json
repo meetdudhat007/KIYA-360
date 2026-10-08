@@ -30,7 +30,7 @@
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
-   "description": "FR-HR-001: who is applying.",
+   "description": "Who is applying.",
    "options": "KNIT 360 Employee",
    "reqd": 1,
    "in_list_view": 1
@@ -39,7 +39,7 @@
    "fieldname": "leave_type",
    "fieldtype": "Link",
    "label": "Leave Type",
-   "description": "FR-HR-003: which balance is being drawn on.",
+   "description": "Which balance is being drawn on.",
    "options": "KNIT 360 Leave Type",
    "reqd": 1,
    "in_list_view": 1
@@ -48,7 +48,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-HR-003: the employing company.",
+   "description": "The employing company.",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -60,7 +60,7 @@
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date",
-   "description": "FR-HR-003: first day of leave.",
+   "description": "First day of leave.",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -68,7 +68,7 @@
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date",
-   "description": "FR-HR-003: last day of leave.",
+   "description": "Last day of leave.",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -76,7 +76,7 @@
    "fieldname": "half_day",
    "fieldtype": "Check",
    "label": "Half Day",
-   "description": "FR-HR-003: counts the leave as half a day. Only meaningful on a single-day application."
+   "description": "Counts the leave as half a day. Only meaningful on a single-day application."
   },
   {
    "fieldname": "knit360_business_status",
@@ -86,7 +86,7 @@
    "default": "Draft",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition."
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_lap_1",
@@ -96,14 +96,14 @@
    "fieldname": "holiday_list",
    "fieldtype": "Link",
    "label": "Holiday List",
-   "description": "FR-HR-003: the calendar whose days are skipped. Taken from the leave period when left blank.",
+   "description": "The calendar whose days are skipped. Taken from the leave period when left blank.",
    "options": "KNIT 360 Holiday List"
   },
   {
    "fieldname": "total_leave_days",
    "fieldtype": "Float",
    "label": "Total Leave Days",
-   "description": "FR-HR-003: working days between the two dates, after skipping holidays. Computed, never typed.",
+   "description": "Working days between the two dates, after skipping holidays. Computed, never typed.",
    "read_only": 1
   },
   {
@@ -114,14 +114,14 @@
    "fieldname": "leave_balance",
    "fieldtype": "Float",
    "label": "Balance Before This Application",
-   "description": "FR-HR-003: the balance when this application was last saved. A record of what was checked, not a live figure.",
+   "description": "The balance when this application was last saved. A record of what was checked, not a live figure.",
    "read_only": 1
   },
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
-   "description": "FR-HR-003: the date the application was made."
+   "description": "The date the application was made."
   },
   {
    "fieldname": "sec_lap_2",
@@ -131,14 +131,14 @@
    "fieldname": "leave_approver",
    "fieldtype": "Link",
    "label": "Leave Approver",
-   "description": "FR-HR-003: who is to decide. Approval routing is not built; this records the intended approver.",
+   "description": "Who is to decide. Approval routing is not built; this records the intended approver.",
    "options": "User"
   },
   {
    "fieldname": "reason",
    "fieldtype": "Small Text",
    "label": "Reason",
-   "description": "FR-HR-003: why the leave is being taken."
+   "description": "Why the leave is being taken."
   }
  ],
  "index_web_pages_for_search": 0,

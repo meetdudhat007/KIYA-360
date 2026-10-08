@@ -37,7 +37,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-FIN-003: Accounts Receivable -- the party billed",
+   "description": "Accounts Receivable -- the party billed",
    "options": "KNIT 360 Customer",
    "reqd": 1,
    "in_list_view": 1
@@ -46,7 +46,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PADM-1.1.1: the company issuing the invoice",
+   "description": "The company issuing the invoice",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -54,7 +54,7 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
-   "description": "FR-FIN-001: General Ledger -- the date the invoice lands in the books",
+   "description": "General Ledger -- the date the invoice lands in the books",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -62,7 +62,7 @@
    "fieldname": "due_date",
    "fieldtype": "Date",
    "label": "Due Date",
-   "description": "FR-FIN-003: Accounts Receivable -- when payment falls due"
+   "description": "Accounts Receivable -- when payment falls due"
   },
   {
    "fieldname": "col_si_1",
@@ -72,28 +72,28 @@
    "fieldname": "sales_order",
    "fieldtype": "Link",
    "label": "Sales Order",
-   "description": "FR-SALES-003: BRD-DERIVED: the order being billed",
+   "description": "The order being billed",
    "options": "KNIT 360 Sales Order"
   },
   {
    "fieldname": "delivery_note",
    "fieldtype": "Link",
    "label": "Delivery Note",
-   "description": "FR-SALES-005: BRD-DERIVED: the dispatch being billed. DR-C2C requires dispatch before invoice.",
+   "description": "The dispatch being billed. DR-C2C requires dispatch before invoice.",
    "options": "KNIT 360 Delivery Note"
   },
   {
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-PADM-1.4.6: Currency Master",
+   "description": "Currency Master",
    "options": "Currency"
   },
   {
    "fieldname": "knit360_business_status",
    "fieldtype": "Select",
    "label": "Business Status",
-   "description": "FR-FIN-003: CD-002 lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
    "options": "Draft\nPending Approval\nPosted / Unpaid\nPartly Paid\nOverdue\nPaid\nCancelled",
    "default": "Draft",
    "in_list_view": 1,
@@ -109,13 +109,13 @@
    "fieldtype": "Link",
    "label": "Price List",
    "options": "KNIT 360 Price List",
-   "description": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
+   "description": "The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
   },
   {
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-FIN-003: Accounts Receivable -- what is billed",
+   "description": "Accounts Receivable -- what is billed",
    "options": "KNIT 360 Sales Invoice Item",
    "reqd": 1
   },
@@ -128,7 +128,7 @@
    "fieldname": "tax_template",
    "fieldtype": "Link",
    "label": "Tax Template",
-   "description": "FR-TAX-001: the tax treatment applied",
+   "description": "The tax treatment applied",
    "options": "KNIT 360 Tax Template"
   },
   {
@@ -139,7 +139,7 @@
    "fieldname": "total_taxes",
    "fieldtype": "Currency",
    "label": "Total Taxes",
-   "description": "FR-TAX-001: tax total, computed",
+   "description": "Tax total, computed",
    "read_only": 1
   },
   {
@@ -151,14 +151,14 @@
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
-   "description": "FR-FIN-003: Accounts Receivable -- sum of line amounts, computed",
+   "description": "Accounts Receivable -- sum of line amounts, computed",
    "read_only": 1
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
-   "description": "FR-FIN-003: Accounts Receivable -- net plus taxes, computed",
+   "description": "Accounts Receivable -- net plus taxes, computed",
    "read_only": 1,
    "in_list_view": 1
   },
@@ -170,14 +170,14 @@
    "fieldname": "outstanding_amount",
    "fieldtype": "Currency",
    "label": "Outstanding Amount",
-   "description": "FR-FIN-003: Accounts Receivable -- grand total less what has been settled against it",
+   "description": "Accounts Receivable -- grand total less what has been settled against it",
    "read_only": 1
   },
   {
    "fieldname": "debit_to",
    "fieldtype": "Link",
    "label": "Debit To",
-   "description": "FR-FIN-003: the receivable account this invoice debits. Defaults from the company.",
+   "description": "The receivable account this invoice debits. Defaults from the company.",
    "options": "KNIT 360 Account"
   },
   {
@@ -189,7 +189,7 @@
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
-   "description": "FR-FIN-003: Accounts Receivable -- agreed terms"
+   "description": "Accounts Receivable -- agreed terms"
   }
  ],
  "index_web_pages_for_search": 0,

@@ -29,7 +29,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Opportunity Title",
-   "description": "FR-CRM-002 / FR-CRM-006: Opportunity title (DR-C2C-002 Inputs)",
+   "description": "Opportunity title",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -37,7 +37,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-CRM-002 / FR-CRM-006: Customer Master reference (DR-C2C-002 Inputs)",
+   "description": "Customer Master reference",
    "options": "KNIT 360 Customer",
    "reqd": 1
   },
@@ -45,7 +45,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-CRM-002 / FR-CRM-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -53,7 +53,7 @@
    "fieldname": "source_lead",
    "fieldtype": "Link",
    "label": "Source Lead",
-   "description": "FR-CRM-002 / FR-CRM-006: links upstream to Lead if applicable (DR-C2C-002)",
+   "description": "Links upstream to Lead if applicable",
    "options": "KNIT 360 Lead",
    "read_only": 1
   },
@@ -65,20 +65,20 @@
    "fieldname": "expected_closing_date",
    "fieldtype": "Date",
    "label": "Expected Closing Date",
-   "description": "FR-CRM-002 / FR-CRM-006: expected closing date (DR-C2C-002 Inputs); must be on or after creation date"
+   "description": "Expected closing date; must be on or after creation date"
   },
   {
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-CRM-002 / FR-CRM-006: currency must match an active Currency Master (DR-C2C-002)",
+   "description": "Currency must match an active Currency Master",
    "options": "Currency"
   },
   {
    "fieldname": "estimated_deal_value",
    "fieldtype": "Currency",
    "label": "Estimated Deal Value",
-   "description": "FR-CRM-002 / FR-CRM-006: estimated deal value (DR-C2C-002 Inputs); must be positive",
+   "description": "Estimated deal value; must be positive",
    "options": "currency"
   },
   {
@@ -90,13 +90,13 @@
    "fieldname": "sales_stage",
    "fieldtype": "Data",
    "label": "Sales Stage",
-   "description": "FR-CRM-002 / FR-CRM-006: sales stage (DR-C2C-002 Inputs); stage master is tenant-configured and TBD"
+   "description": "Sales stage"
   },
   {
    "fieldname": "probability",
    "fieldtype": "Percent",
    "label": "Win Probability",
-   "description": "FR-CRM-002 / FR-CRM-006: probability percentage (DR-C2C-002 Inputs); default by stage is PROPOSED"
+   "description": "Probability percentage"
   },
   {
    "fieldname": "col2",
@@ -106,7 +106,7 @@
    "fieldname": "knit360_business_status",
    "fieldtype": "Select",
    "label": "Business Status",
-   "description": "FR-CRM-002 / FR-CRM-006: CD-002 lifecycle (PROPOSED, DR-C2C-002). Set only via knit360_core.business_status.engine.transition",
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
    "options": "Open\nIn Negotiation\nProposal Sent\nWon\nLost",
    "default": "Open",
    "read_only": 1,
@@ -117,7 +117,7 @@
    "fieldname": "loss_reason",
    "fieldtype": "Small Text",
    "label": "Loss Reason",
-   "description": "FR-CRM-002 / FR-CRM-006: PROPOSED: DR-C2C-002 prompts for a loss reason code when marked Lost",
+   "description": "DR-C2C-002 prompts for a loss reason code when marked Lost",
    "depends_on": "eval:doc.knit360_business_status=='Lost'"
   },
   {
@@ -129,7 +129,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-CRM-002 / FR-CRM-006: item/service interest list (DR-C2C-002 Inputs)",
+   "description": "Item/service interest list",
    "options": "KNIT 360 Opportunity Item"
   }
  ],

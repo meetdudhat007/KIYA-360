@@ -19,7 +19,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Requisition Title",
-   "description": "FR-PROC-001: BRD-DERIVED: identifying label",
+   "description": "Identifying label",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -27,7 +27,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -39,7 +39,7 @@
    "fieldname": "required_by",
    "fieldtype": "Date",
    "label": "Required By",
-   "description": "FR-PROC-001: delivery deadlines (DR-P2P-003 Inputs)"
+   "description": "Delivery deadlines"
   },
   {
    "fieldname": "sec_5",
@@ -50,7 +50,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-001: requested items/services",
+   "description": "Requested items/services",
    "options": "KNIT 360 Purchase Requisition Item"
   }
  ],

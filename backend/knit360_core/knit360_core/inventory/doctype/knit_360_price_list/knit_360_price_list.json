@@ -19,7 +19,7 @@
    "fieldname": "price_list_name",
    "fieldtype": "Data",
    "label": "Price List Name",
-   "description": "FR-SALES-004: Pricing & Discounts -- a named set of prices",
+   "description": "Pricing & Discounts -- a named set of prices",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -28,7 +28,7 @@
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-PADM-1.4.6: Currency Master -- prices on one list are all in one currency",
+   "description": "Currency Master -- prices on one list are all in one currency",
    "options": "Currency",
    "reqd": 1,
    "in_list_view": 1
@@ -41,7 +41,7 @@
    "fieldname": "applies_to",
    "fieldtype": "Select",
    "label": "Applies To",
-   "description": "FR-SALES-004: Pricing & Discounts -- whether this list prices sales or purchases",
+   "description": "Pricing & Discounts -- whether this list prices sales or purchases",
    "options": "Selling\nBuying",
    "default": "Selling",
    "reqd": 1,
@@ -51,13 +51,13 @@
    "fieldname": "is_default",
    "fieldtype": "Check",
    "label": "Is Default",
-   "description": "FR-SALES-004: BRD-DERIVED: used when a document names no list"
+   "description": "Used when a document names no list"
   },
   {
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled",
-   "description": "FR-SALES-004: BRD-DERIVED: withdrawn from selection"
+   "description": "Withdrawn from selection"
   }
  ],
  "index_web_pages_for_search": 0,

@@ -137,7 +137,7 @@ Ordered by value. Each is a self-contained piece of work.
 | **W13** | Landed cost — freight capitalised into the cost of stock | Medium | `DEC-033` expenses freight, which is a deliberate departure from Ind AS 2 paragraph 11. Correcting it needs a revaluation document that apportions a charge across receipt lines and adjusts layers already costed, including stock already sold. | — |
 | **W14** | Three-way matching enforced | Medium | A bill can name an order and a receipt; nothing refuses one that disagrees with them. The difference posts to an expense where it is visible, which is the safe behaviour but not a control. | **D7** for who may approve a variance |
 
-| **W16** | Move the BRD trace out of the field help text | Medium | Every field's `description` begins with its requirement code, and Frappe renders `description` as help text under the input — nineteen traceability strings on one sales invoice. On a phone the form is mostly developer metadata. The trace would move to a machine-readable map the structural test reads, and the description would keep only the human half it already contains. | — |
+| ~~**W16**~~ | ~~Move the BRD trace out of the field help text~~ | — | **Done 8 October 2026** (`DEC-035`). 717 fields; the trace is now a machine-readable map, and the coverage report is unchanged by the move. | — |
 
 **If you want one thing done next, make it W1.** It needs D4 answered first, and
 D4 is four short questions about how your business handles money coming in.

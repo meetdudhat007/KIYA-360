@@ -23,7 +23,7 @@
    "fieldname": "item_code",
    "fieldtype": "Link",
    "label": "Item",
-   "description": "FR-SALES-004: Pricing & Discounts -- the item being priced",
+   "description": "Pricing & Discounts -- the item being priced",
    "options": "KNIT 360 Item",
    "reqd": 1,
    "in_list_view": 1
@@ -32,7 +32,7 @@
    "fieldname": "price_list",
    "fieldtype": "Link",
    "label": "Price List",
-   "description": "FR-SALES-004: Pricing & Discounts -- the list this price belongs to",
+   "description": "Pricing & Discounts -- the list this price belongs to",
    "options": "KNIT 360 Price List",
    "reqd": 1,
    "in_list_view": 1
@@ -41,7 +41,7 @@
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-PADM-1.4.7: UOM Master -- the unit the rate is per",
+   "description": "UOM Master -- the unit the rate is per",
    "options": "KNIT 360 UOM"
   },
   {
@@ -52,7 +52,7 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate",
-   "description": "FR-SALES-004: Pricing & Discounts -- price per unit",
+   "description": "Pricing & Discounts -- price per unit",
    "reqd": 1,
    "options": "currency",
    "in_list_view": 1
@@ -61,7 +61,7 @@
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-PADM-1.4.6: Currency Master -- copied from the price list",
+   "description": "Currency Master -- copied from the price list",
    "options": "Currency",
    "read_only": 1
   },
@@ -74,7 +74,7 @@
    "fieldname": "valid_from",
    "fieldtype": "Date",
    "label": "Valid From",
-   "description": "FR-SALES-004: Pricing & Discounts -- when this price takes effect"
+   "description": "Pricing & Discounts -- when this price takes effect"
   },
   {
    "fieldname": "col_ip2",
@@ -84,7 +84,7 @@
    "fieldname": "valid_upto",
    "fieldtype": "Date",
    "label": "Valid Upto",
-   "description": "FR-SALES-004: Pricing & Discounts -- when it lapses"
+   "description": "Pricing & Discounts -- when it lapses"
   }
  ],
  "index_web_pages_for_search": 0,

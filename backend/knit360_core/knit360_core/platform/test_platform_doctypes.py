@@ -180,7 +180,16 @@ class TestDoctypeDefinitions(unittest.TestCase):
 			self.assertIn(load(path)["module"], declared, f"{path.name} module not in modules.txt")
 
 	def test_every_field_is_traceable(self):
-		"""Non-layout fields carry the BRD requirement they came from."""
+		"""Non-layout fields record the BRD requirement they came from.
+
+		In `traceability_map.json`, not in the `description` -- Frappe renders
+		a description as help text under the input, and a form showing a
+		requirement code under every field is a form made of developer
+		metadata. DEC-035 moved the trace out; this is what keeps it honest.
+		"""
+		from knit360_core import traceability
+
+		traced = traceability.trace_map()
 		layout = {"Section Break", "Column Break", "Tab Break", "HTML"}
 		#: Modules that implement no BRD requirement, and why. A module is only
 		#: exempt because the capability genuinely appears nowhere in the 238 --
@@ -197,9 +206,11 @@ class TestDoctypeDefinitions(unittest.TestCase):
 			for f in d["fields"]:
 				if f["fieldtype"] in layout:
 					continue
+				trace = traced.get(d["name"], {}).get(f["fieldname"], "")
 				self.assertTrue(
-					f.get("description", "").startswith("FR-"),
-					f"{d['name']}.{f['fieldname']} has no BRD trace in its description",
+					trace.startswith("FR-"),
+					f"{d['name']}.{f['fieldname']} has no entry in "
+					f"traceability_map.json naming the requirement it came from",
 				)
 
 

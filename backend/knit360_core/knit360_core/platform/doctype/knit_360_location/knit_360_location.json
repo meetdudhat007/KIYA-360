@@ -22,7 +22,7 @@
    "fieldname": "location_name",
    "fieldtype": "Data",
    "label": "Location Name",
-   "description": "FR-PADM-1.1.6: location master",
+   "description": "Location master",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -30,7 +30,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PADM-1.1.6: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+   "description": "From the BRD 1.1 worked example hierarchy",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -38,7 +38,7 @@
    "fieldname": "location_type",
    "fieldtype": "Data",
    "label": "Location Type",
-   "description": "FR-PADM-1.1.6: plant/warehouse; enumeration TBD"
+   "description": "Plant/warehouse"
   },
   {
    "fieldname": "col1",
@@ -48,14 +48,14 @@
    "fieldname": "latitude",
    "fieldtype": "Float",
    "label": "Latitude",
-   "description": "FR-PADM-1.1.6: GPS",
+   "description": "GPS",
    "precision": "6"
   },
   {
    "fieldname": "longitude",
    "fieldtype": "Float",
    "label": "Longitude",
-   "description": "FR-PADM-1.1.6: GPS",
+   "description": "GPS",
    "precision": "6"
   },
   {
@@ -66,7 +66,7 @@
    "fieldname": "geo_location",
    "fieldtype": "Geolocation",
    "label": "Geo Location",
-   "description": "FR-PADM-1.1.6: geo location"
+   "description": "Geo location"
   }
  ],
  "index_web_pages_for_search": 0,

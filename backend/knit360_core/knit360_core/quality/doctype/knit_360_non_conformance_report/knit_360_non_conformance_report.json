@@ -22,7 +22,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
-   "description": "FR-QLTY-006: BRD-DERIVED: identifying label",
+   "description": "Identifying label",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -30,14 +30,14 @@
    "fieldname": "quality_inspection",
    "fieldtype": "Link",
    "label": "Source Inspection",
-   "description": "FR-QLTY-006: PROPOSED: QI rejection raises an NCR (doc 31, candidate mapping)",
+   "description": "QI rejection raises an NCR (doc 31, candidate mapping)",
    "options": "KNIT 360 Quality Inspection"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-QLTY-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -48,8 +48,7 @@
   {
    "fieldname": "item_code",
    "fieldtype": "Data",
-   "label": "Item Code",
-   "description": "FR-QLTY-006: BRD-DERIVED; becomes a Link once the Item Master (FR-INV-001) is populated"
+   "label": "Item Code"
   },
   {
    "fieldname": "sec_18",
@@ -60,19 +59,19 @@
    "fieldname": "nonconformance_description",
    "fieldtype": "Text",
    "label": "Non-Conformance Description",
-   "description": "FR-QLTY-006: NCR (FR-QLTY-006)"
+   "description": "NCR"
   },
   {
    "fieldname": "corrective_action",
    "fieldtype": "Text",
    "label": "Corrective Action",
-   "description": "FR-QLTY-006: CAPA (FR-QLTY-006)"
+   "description": "CAPA"
   },
   {
    "fieldname": "preventive_action",
    "fieldtype": "Text",
    "label": "Preventive Action",
-   "description": "FR-QLTY-006: CAPA (FR-QLTY-006)"
+   "description": "CAPA"
   }
  ],
  "index_web_pages_for_search": 0,

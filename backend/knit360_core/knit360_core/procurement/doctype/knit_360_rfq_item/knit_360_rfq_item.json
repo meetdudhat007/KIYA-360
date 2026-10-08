@@ -16,21 +16,21 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-PROC-002: requested items/services; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Requested items/services",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-PROC-002: requested items/services",
+   "description": "Requested items/services",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-PROC-002: quantities",
+   "description": "Quantities",
    "in_list_view": 1
   }
  ],

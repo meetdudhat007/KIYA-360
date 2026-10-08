@@ -26,7 +26,7 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "description": "FR-PROC-005 / FR-WH-001: the Purchase Order these goods were ordered on, where there was one. Not required: opening stock, a customer return and a free sample all arrive without a purchase order, and no client can start using the system without entering opening stock. Matching a receipt against its order is three-way matching, which is `W7` and not built.",
+   "description": "The Purchase Order these goods were ordered on, where there was one. Not required: opening stock, a customer return and a free sample all arrive without a purchase order, and no client can start using the system without entering opening stock. Matching a receipt against its order is three-way matching, which is `W7` and not built.",
    "options": "KNIT 360 Purchase Order",
    "in_list_view": 1
   },
@@ -34,7 +34,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-005 / FR-WH-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -46,13 +46,13 @@
    "fieldname": "challan_number",
    "fieldtype": "Data",
    "label": "Delivery Challan / Packing Slip No",
-   "description": "FR-PROC-005 / FR-WH-001: supplier delivery challan / packing slip number"
+   "description": "Supplier delivery challan / packing slip number"
   },
   {
    "fieldname": "challan_date",
    "fieldtype": "Date",
    "label": "Challan Date",
-   "description": "FR-PROC-005 / FR-WH-001: supplier delivery challan date"
+   "description": "Supplier delivery challan date"
   },
   {
    "fieldname": "knit360_business_status",
@@ -63,7 +63,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-PROC-005 / FR-WH-001: CD-002 'Goods Receipt' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_13",
@@ -74,13 +74,13 @@
    "fieldname": "carrier_name",
    "fieldtype": "Data",
    "label": "Carrier Name",
-   "description": "FR-PROC-005 / FR-WH-001: carrier name"
+   "description": "Carrier name"
   },
   {
    "fieldname": "vehicle_number",
    "fieldtype": "Data",
    "label": "Vehicle Number",
-   "description": "FR-PROC-005 / FR-WH-001: vehicle number"
+   "description": "Vehicle number"
   },
   {
    "fieldname": "col_15",
@@ -90,7 +90,7 @@
    "fieldname": "receiving_warehouse",
    "fieldtype": "Link",
    "label": "Receiving Warehouse / Bay",
-   "description": "FR-PROC-005 / FR-INV-002: where the goods are put away. Stock is counted per item per warehouse.",
+   "description": "Where the goods are put away. Stock is counted per item per warehouse.",
    "options": "KNIT 360 Warehouse",
    "reqd": 1,
    "in_list_view": 1
@@ -104,7 +104,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-005 / FR-WH-001: received item codes, arrived quantities",
+   "description": "Received item codes, arrived quantities",
    "options": "KNIT 360 Goods Receipt Item"
   }
  ],

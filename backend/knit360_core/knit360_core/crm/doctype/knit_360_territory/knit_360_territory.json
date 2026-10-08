@@ -19,7 +19,7 @@
    "fieldname": "territory_name",
    "fieldtype": "Data",
    "label": "Territory Name",
-   "description": "FR-CRM-003: Accounts -- BRD-DERIVED: the sales geography a customer or lead belongs to",
+   "description": "Accounts -- the sales geography a customer or lead belongs to",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -27,7 +27,7 @@
    "fieldname": "parent_territory",
    "fieldtype": "Link",
    "label": "Parent",
-   "description": "FR-CRM-003: BRD-DERIVED: hierarchy parent",
+   "description": "Hierarchy parent",
    "options": "KNIT 360 Territory",
    "ignore_user_permissions": 1
   },
@@ -35,13 +35,13 @@
    "fieldname": "is_group",
    "fieldtype": "Check",
    "label": "Is Group",
-   "description": "FR-CRM-003: BRD-DERIVED: a group node holds children and is not selectable on a document"
+   "description": "A group node holds children and is not selectable on a document"
   },
   {
    "fieldname": "lft",
    "fieldtype": "Int",
    "label": "lft",
-   "description": "FR-CRM-003: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -50,7 +50,7 @@
    "fieldname": "rgt",
    "fieldtype": "Int",
    "label": "rgt",
-   "description": "FR-CRM-003: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -59,7 +59,7 @@
    "fieldname": "old_parent",
    "fieldtype": "Data",
    "label": "Old Parent",
-   "description": "FR-CRM-003: BRD-DERIVED: previous parent, maintained by the framework",
+   "description": "Previous parent, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1

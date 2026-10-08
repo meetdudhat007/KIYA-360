@@ -30,7 +30,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-SALES-002 / FR-SALES-004: Customer reference (DR-C2C-004 Inputs)",
+   "description": "Customer reference",
    "options": "KNIT 360 Customer",
    "reqd": 1,
    "in_list_view": 1
@@ -39,21 +39,21 @@
    "fieldname": "enquiry",
    "fieldtype": "Link",
    "label": "Enquiry",
-   "description": "FR-SALES-002 / FR-SALES-004: Enquiry reference (DR-C2C-004 Inputs)",
+   "description": "Enquiry reference",
    "options": "KNIT 360 Enquiry"
   },
   {
    "fieldname": "opportunity",
    "fieldtype": "Link",
    "label": "Opportunity",
-   "description": "FR-SALES-002 / FR-SALES-004: Opportunity reference (DR-C2C-004 Inputs)",
+   "description": "Opportunity reference",
    "options": "KNIT 360 Opportunity"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-SALES-002 / FR-SALES-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -65,27 +65,27 @@
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-SALES-002 / FR-SALES-004: currency (DR-C2C-004 Inputs)",
+   "description": "Currency",
    "options": "Currency"
   },
   {
    "fieldname": "price_list",
    "fieldtype": "Link",
    "label": "Price List",
-   "description": "FR-SALES-002 / FR-SALES-004: price list (DR-C2C-004 Inputs); price list master is BRD-DERIVED and TBD; now a master (FR-SALES-004)",
+   "description": "Price list",
    "options": "KNIT 360 Price List"
   },
   {
    "fieldname": "valid_till",
    "fieldtype": "Date",
    "label": "Valid Till",
-   "description": "FR-SALES-002 / FR-SALES-004: quotation validity expiry date (DR-C2C-004 Inputs)"
+   "description": "Quotation validity expiry date"
   },
   {
    "fieldname": "knit360_business_status",
    "fieldtype": "Select",
    "label": "Business Status",
-   "description": "FR-SALES-002 / FR-SALES-004: CD-002 lifecycle (PROPOSED, DR-C2C-004). Set only via knit360_core.business_status.engine.transition",
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
    "options": "Draft\nPending Approval\nIssued / Sent\nAccepted\nOrdered\nExpired\nDeclined",
    "default": "Draft",
    "read_only": 1,
@@ -101,7 +101,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+   "description": "Line items",
    "options": "KNIT 360 Quotation Item"
   },
   {
@@ -113,7 +113,7 @@
    "fieldname": "tax_template",
    "fieldtype": "Link",
    "label": "Tax Template",
-   "description": "FR-SALES-004 Rates applied to the net total (FR-SALES-004). A Link, so a template that does not exist is refused.",
+   "description": "Rates applied to the net total. A Link, so a template that does not exist is refused.",
    "options": "KNIT 360 Tax Template"
   },
   {
@@ -121,27 +121,27 @@
    "fieldtype": "Currency",
    "label": "Net Total",
    "read_only": 1,
-   "description": "FR-SALES-004 Sum of the line amounts, before tax."
+   "description": "Sum of the line amounts, before tax."
   },
   {
    "fieldname": "total_taxes",
    "fieldtype": "Currency",
    "label": "Total Taxes",
    "read_only": 1,
-   "description": "FR-SALES-004 The tax template's rates applied to the net total (FR-SALES-004)."
+   "description": "The tax template's rates applied to the net total."
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
    "read_only": 1,
-   "description": "FR-SALES-004 Net total plus tax. What the customer is quoted."
+   "description": "Net total plus tax. What the customer is quoted."
   },
   {
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
-   "description": "FR-SALES-002 / FR-SALES-004: payment terms (DR-C2C-004 Inputs)"
+   "description": "Payment terms"
   }
  ],
  "index_web_pages_for_search": 0,

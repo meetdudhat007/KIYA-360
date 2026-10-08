@@ -30,7 +30,7 @@
    "fieldname": "lead_name",
    "fieldtype": "Data",
    "label": "Prospect Name",
-   "description": "FR-CRM-001: prospect name (DR-C2C-001 Inputs)",
+   "description": "Prospect name",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -38,13 +38,13 @@
    "fieldname": "organization_name",
    "fieldtype": "Data",
    "label": "Organization Name",
-   "description": "FR-CRM-001: organization name (DR-C2C-001 Inputs)"
+   "description": "Organization name"
   },
   {
    "fieldname": "lead_source",
    "fieldtype": "Data",
    "label": "Lead Source",
-   "description": "FR-CRM-001: lead source (DR-C2C-001 Inputs); source master is BRD-DERIVED and TBD"
+   "description": "Lead source"
   },
   {
    "fieldname": "col1",
@@ -54,7 +54,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-CRM-001: BRD-DERIVED: Company and Branch context active (DR-C2C-001 Preconditions)",
+   "description": "Company and Branch context active",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -62,14 +62,14 @@
    "fieldname": "territory",
    "fieldtype": "Link",
    "label": "Assigned Territory",
-   "description": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs); now a master",
+   "description": "Assigned territory",
    "options": "KNIT 360 Territory"
   },
   {
    "fieldname": "knit360_business_status",
    "fieldtype": "Select",
    "label": "Business Status",
-   "description": "FR-CRM-001: CD-002 lifecycle (PROPOSED, DR-C2C-001). Set only via knit360_core.business_status.engine.transition",
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
    "options": "New\nContacted\nQualified\nConverted\nDisqualified\nLost",
    "default": "New",
    "read_only": 1,
@@ -85,14 +85,14 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email",
-   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Email"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
-   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Phone"
   },
   {
@@ -103,7 +103,7 @@
    "fieldname": "address",
    "fieldtype": "Small Text",
    "label": "Address",
-   "description": "FR-CRM-001: contact details (DR-C2C-001 Inputs)"
+   "description": "Contact details"
   },
   {
    "fieldname": "sec2",
@@ -114,7 +114,7 @@
    "fieldname": "estimated_requirement",
    "fieldtype": "Small Text",
    "label": "Estimated Requirement",
-   "description": "FR-CRM-001: estimated requirement (DR-C2C-001 Inputs)"
+   "description": "Estimated requirement"
   },
   {
    "fieldname": "sec3",
@@ -125,7 +125,7 @@
    "fieldname": "converted_customer",
    "fieldtype": "Link",
    "label": "Converted Customer",
-   "description": "FR-CRM-001: conversion creates or links a unified Customer Master (DR-C2C-001)",
+   "description": "Conversion creates or links a unified Customer Master",
    "options": "KNIT 360 Customer",
    "read_only": 1
   },
@@ -133,7 +133,7 @@
    "fieldname": "converted_opportunity",
    "fieldtype": "Link",
    "label": "Converted Opportunity",
-   "description": "FR-CRM-001: conversion generates an Opportunity (DR-C2C-001)",
+   "description": "Conversion generates an Opportunity",
    "options": "KNIT 360 Opportunity",
    "read_only": 1
   }

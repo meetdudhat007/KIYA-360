@@ -24,7 +24,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Sourcing Requirement",
-   "description": "FR-SUPM-002 / FR-PROC-001: sourcing requirement",
+   "description": "Sourcing requirement",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -32,7 +32,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-SUPM-002 / FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -44,13 +44,13 @@
    "fieldname": "commodity_categories",
    "fieldtype": "Small Text",
    "label": "Target Item / Commodity Categories",
-   "description": "FR-SUPM-002 / FR-PROC-001: target item/commodity categories"
+   "description": "Target item/commodity categories"
   },
   {
    "fieldname": "estimated_annual_spend",
    "fieldtype": "Currency",
    "label": "Estimated Annual Spend",
-   "description": "FR-SUPM-002 / FR-PROC-001: estimated annual spend"
+   "description": "Estimated annual spend"
   },
   {
    "fieldname": "knit360_business_status",
@@ -61,7 +61,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-SUPM-002 / FR-PROC-001: CD-002 'Sourcing Project' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_3",
@@ -72,7 +72,7 @@
    "fieldname": "technical_capability_criteria",
    "fieldtype": "Text",
    "label": "Technical Capability Criteria",
-   "description": "FR-SUPM-002 / FR-PROC-001: technical capability criteria"
+   "description": "Technical capability criteria"
   },
   {
    "fieldname": "col_5",
@@ -82,13 +82,13 @@
    "fieldname": "quality_certification_requirements",
    "fieldtype": "Text",
    "label": "Quality Certification Requirements",
-   "description": "FR-SUPM-002 / FR-PROC-001: quality certification requirements"
+   "description": "Quality certification requirements"
   },
   {
    "fieldname": "geographical_constraints",
    "fieldtype": "Small Text",
    "label": "Geographical Constraints",
-   "description": "FR-SUPM-002 / FR-PROC-001: geographical constraints"
+   "description": "Geographical constraints"
   }
  ],
  "index_web_pages_for_search": 0,

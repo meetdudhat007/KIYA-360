@@ -16,21 +16,21 @@
    "fieldname": "parameter",
    "fieldtype": "Data",
    "label": "Parameter",
-   "description": "FR-QLTY-002: observed test parameter readings",
+   "description": "Observed test parameter readings",
    "in_list_view": 1
   },
   {
    "fieldname": "specification",
    "fieldtype": "Data",
    "label": "Specification",
-   "description": "FR-QLTY-002: inspection template",
+   "description": "Inspection template",
    "in_list_view": 1
   },
   {
    "fieldname": "reading",
    "fieldtype": "Data",
    "label": "Reading",
-   "description": "FR-QLTY-002: observed test parameter readings",
+   "description": "Observed test parameter readings",
    "in_list_view": 1
   }
  ],

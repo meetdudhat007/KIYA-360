@@ -22,34 +22,34 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-FIN-003: Accounts Receivable -- what is being billed",
+   "description": "Accounts Receivable -- what is being billed",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-FIN-003: Accounts Receivable -- line description"
+   "description": "Accounts Receivable -- line description"
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-FIN-003: Accounts Receivable -- billed quantity",
+   "description": "Accounts Receivable -- billed quantity",
    "in_list_view": 1
   },
   {
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
-   "description": "FR-PADM-1.4.7: UOM Master; the master itself is not yet built; now a master",
+   "description": "UOM Master; the master itself is not yet built",
    "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate",
-   "description": "FR-FIN-003: Accounts Receivable -- unit price",
+   "description": "Accounts Receivable -- unit price",
    "in_list_view": 1
   },
   {
@@ -57,13 +57,13 @@
    "fieldtype": "Currency",
    "label": "Price List Rate",
    "read_only": 1,
-   "description": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible."
+   "description": "What the Item Price master holds for this item on this document's price list and date. Read by the price list, never typed. Kept even where the rate charged differs, so the difference is visible."
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
-   "description": "FR-FIN-003: Accounts Receivable -- qty x rate, computed",
+   "description": "Accounts Receivable -- qty x rate, computed",
    "read_only": 1,
    "in_list_view": 1
   },
@@ -71,14 +71,14 @@
    "fieldname": "income_account",
    "fieldtype": "Link",
    "label": "Income Account",
-   "description": "FR-FIN-001 / FR-FIN-003: the revenue account this line credits. Defaults from the company.",
+   "description": "The revenue account this line credits. Defaults from the company.",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "description": "FR-FIN-006: Cost Accounting -- attribution",
+   "description": "Cost Accounting -- attribution",
    "options": "KNIT 360 Cost Center"
   }
  ],

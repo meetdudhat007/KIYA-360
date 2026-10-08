@@ -30,7 +30,7 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: item code (FR-PADM-1.4 Item Master)",
+   "description": "Item code",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -38,14 +38,13 @@
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
-   "label": "Item Name",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: BRD-DERIVED"
+   "label": "Item Name"
   },
   {
    "fieldname": "item_group",
    "fieldtype": "Link",
    "label": "Category",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: category (FR-PADM-1.4 Item Master); category master is TBD; now a master, so two spellings cannot mean two groups",
+   "description": "Category, so two spellings cannot mean two groups",
    "options": "KNIT 360 Item Group"
   },
   {
@@ -56,26 +55,26 @@
    "fieldname": "stock_uom",
    "fieldtype": "Link",
    "label": "Stock UOM",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; now a master; 'Nos' and 'nos' were previously different units",
+   "description": "UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; 'Nos' and 'nos' were previously different units",
    "options": "KNIT 360 UOM"
   },
   {
    "fieldname": "hsn_sac_code",
    "fieldtype": "Data",
    "label": "HSN / SAC Code",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: HSN/SAC (FR-PADM-1.4 Item Master); BRD example 8514"
+   "description": "HSN/SAC; BRD example 8514"
   },
   {
    "fieldname": "is_batch_tracked",
    "fieldtype": "Check",
    "label": "Batch Tracked",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)"
+   "description": "Batch / Serial Tracking"
   },
   {
    "fieldname": "is_serial_tracked",
    "fieldtype": "Check",
    "label": "Serial Tracked",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)"
+   "description": "Batch / Serial Tracking"
   },
   {
    "fieldname": "sec_15",
@@ -86,7 +85,7 @@
    "fieldname": "safety_stock",
    "fieldtype": "Float",
    "label": "Safety Stock",
-   "description": "FR-INV-001 / FR-PADM-1.4.3: safety stock thresholds (DR-C2C-008 Inputs)"
+   "description": "Safety stock thresholds"
   },
   {
    "fieldname": "col_17",
@@ -96,7 +95,7 @@
    "fieldname": "valuation_method",
    "fieldtype": "Select",
    "label": "Valuation Method",
-   "description": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies.",
+   "description": "Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies.",
    "options": "\nFIFO\nMoving Average",
    "default": "FIFO"
   },
@@ -104,34 +103,34 @@
    "fieldname": "brand",
    "fieldtype": "Link",
    "label": "Brand",
-   "description": "FR-INV-001: Item Master -- BRD-DERIVED: brand the item is sold under",
+   "description": "Item Master -- brand the item is sold under",
    "options": "KNIT 360 Brand"
   },
   {
    "fieldname": "item_description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-INV-001: Item Master -- BRD-DERIVED: default description copied onto document lines"
+   "description": "Item Master -- default description copied onto document lines"
   },
   {
    "fieldname": "is_sales_item",
    "fieldtype": "Check",
    "label": "Is Sales Item",
-   "description": "FR-INV-001: BRD-DERIVED: may appear on a quotation or order",
+   "description": "May appear on a quotation or order",
    "default": "1"
   },
   {
    "fieldname": "is_purchase_item",
    "fieldtype": "Check",
    "label": "Is Purchase Item",
-   "description": "FR-INV-001: BRD-DERIVED: may appear on a purchase order",
+   "description": "May appear on a purchase order",
    "default": "1"
   },
   {
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled",
-   "description": "FR-INV-001: BRD-DERIVED: withdrawn from selection without losing history"
+   "description": "Withdrawn from selection without losing history"
   }
  ],
  "index_web_pages_for_search": 0,

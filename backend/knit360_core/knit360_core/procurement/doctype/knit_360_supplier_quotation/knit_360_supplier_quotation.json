@@ -29,7 +29,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "description": "FR-PROC-003: supplier reference",
+   "description": "Supplier reference",
    "options": "KNIT 360 Supplier",
    "reqd": 1,
    "in_list_view": 1
@@ -38,14 +38,14 @@
    "fieldname": "rfq",
    "fieldtype": "Link",
    "label": "Against RFQ",
-   "description": "FR-PROC-003: linked RFQ/RFP reference",
+   "description": "Linked RFQ/RFP reference",
    "options": "KNIT 360 Request for Quotation"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -57,20 +57,20 @@
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-PROC-003: currency",
+   "description": "Currency",
    "options": "Currency"
   },
   {
    "fieldname": "valid_till",
    "fieldtype": "Date",
    "label": "Valid Till",
-   "description": "FR-PROC-003: quote validity date (valid_till)"
+   "description": "Quote validity date (valid_till)"
   },
   {
    "fieldname": "technical_score",
    "fieldtype": "Float",
    "label": "Technical Score",
-   "description": "FR-PROC-003: technical scores"
+   "description": "Technical scores"
   },
   {
    "fieldname": "knit360_business_status",
@@ -81,7 +81,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-PROC-003: CD-002 'Supplier Quotation' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_9",
@@ -92,7 +92,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-003: item rates, quantity price breaks",
+   "description": "Item rates, quantity price breaks",
    "options": "KNIT 360 Supplier Quotation Item"
   },
   {
@@ -104,21 +104,21 @@
    "fieldname": "taxes",
    "fieldtype": "Small Text",
    "label": "Taxes",
-   "description": "FR-PROC-003: taxes"
+   "description": "Taxes"
   },
   {
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
    "read_only": 1,
-   "description": "FR-PROC-003 Sum of the line amounts, before tax."
+   "description": "Sum of the line amounts, before tax."
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
    "read_only": 1,
-   "description": "FR-PROC-003 Net total. Comparable across suppliers for the same RFQ."
+   "description": "Net total. Comparable across suppliers for the same RFQ."
   },
   {
    "fieldname": "col_11",
@@ -128,7 +128,7 @@
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
-   "description": "FR-PROC-003: payment terms"
+   "description": "Payment terms"
   }
  ],
  "index_web_pages_for_search": 0,

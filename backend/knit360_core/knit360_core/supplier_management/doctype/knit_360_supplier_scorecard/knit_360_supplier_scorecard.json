@@ -25,7 +25,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "description": "FR-SUPM-003 / FR-SUPM-005: supplier under evaluation",
+   "description": "Supplier under evaluation",
    "options": "KNIT 360 Supplier",
    "reqd": 1,
    "in_list_view": 1
@@ -34,13 +34,13 @@
    "fieldname": "period_start",
    "fieldtype": "Date",
    "label": "Period Start",
-   "description": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period"
+   "description": "Scorecard period"
   },
   {
    "fieldname": "period_end",
    "fieldtype": "Date",
    "label": "Period End",
-   "description": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period"
+   "description": "Scorecard period"
   },
   {
    "fieldname": "col_6",
@@ -55,7 +55,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-SUPM-003 / FR-SUPM-005: CD-002 'Supplier Scorecard' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_4",
@@ -66,13 +66,13 @@
    "fieldname": "on_time_delivery_rate",
    "fieldtype": "Percent",
    "label": "On-Time Delivery Rate",
-   "description": "FR-SUPM-003 / FR-SUPM-005: PO promised delivery dates vs actual receipt dates"
+   "description": "PO promised delivery dates vs actual receipt dates"
   },
   {
    "fieldname": "acceptance_rate",
    "fieldtype": "Percent",
    "label": "Acceptance Rate",
-   "description": "FR-SUPM-003 / FR-SUPM-005: received quantities vs accepted quantities"
+   "description": "Received quantities vs accepted quantities"
   },
   {
    "fieldname": "col_7",
@@ -82,19 +82,19 @@
    "fieldname": "quality_rejection_ppm",
    "fieldtype": "Float",
    "label": "Quality Rejection PPM",
-   "description": "FR-SUPM-003 / FR-SUPM-005: quality rejection ppm"
+   "description": "Quality rejection ppm"
   },
   {
    "fieldname": "price_variance",
    "fieldtype": "Percent",
    "label": "Invoice Price Variance",
-   "description": "FR-SUPM-003 / FR-SUPM-005: invoice price variances"
+   "description": "Invoice price variances"
   },
   {
    "fieldname": "response_turnaround_hours",
    "fieldtype": "Float",
    "label": "Response Turnaround (hours)",
-   "description": "FR-SUPM-003 / FR-SUPM-005: supplier response turnaround times"
+   "description": "Supplier response turnaround times"
   }
  ],
  "index_web_pages_for_search": 0,

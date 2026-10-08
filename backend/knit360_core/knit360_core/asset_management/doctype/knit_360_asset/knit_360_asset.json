@@ -29,7 +29,7 @@
    "fieldname": "asset_name",
    "fieldtype": "Data",
    "label": "Asset Name / Model",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: asset name/model",
+   "description": "Asset name/model",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -37,25 +37,25 @@
    "fieldname": "asset_identifier",
    "fieldtype": "Data",
    "label": "Asset / Machine Identifier",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Asset/Machine identifier"
+   "description": "Asset/Machine identifier"
   },
   {
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Master",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Item Master link; becomes a Link once the Item Master (FR-INV-001) is populated"
+   "description": "Item Master link"
   },
   {
    "fieldname": "serial_number",
    "fieldtype": "Data",
    "label": "Serial Number",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Serial Number"
+   "description": "Serial Number"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -67,27 +67,27 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Customer link",
+   "description": "Customer link",
    "options": "KNIT 360 Customer"
   },
   {
    "fieldname": "parent_asset",
    "fieldtype": "Link",
    "label": "Parent Equipment",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: parent equipment link (for sub-assemblies)",
+   "description": "Parent equipment link (for sub-assemblies)",
    "options": "KNIT 360 Asset"
   },
   {
    "fieldname": "iot_identifier",
    "fieldtype": "Data",
    "label": "MAC / IoT Identifier",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: MAC address / IoT identifier, optional"
+   "description": "MAC address / IoT identifier, optional"
   },
   {
    "fieldname": "commissioning_date",
    "fieldtype": "Date",
    "label": "Commissioning Date",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: commissioning date"
+   "description": "Commissioning date"
   },
   {
    "fieldname": "knit360_business_status",
@@ -98,7 +98,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: CD-002 'Asset' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_21",
@@ -109,7 +109,7 @@
    "fieldname": "site_address",
    "fieldtype": "Small Text",
    "label": "Installation Site Address",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: Installation site address"
+   "description": "Installation site address"
   },
   {
    "fieldname": "col_28",
@@ -119,13 +119,13 @@
    "fieldname": "site_contact_person",
    "fieldtype": "Data",
    "label": "Site Contact Person",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: contact person"
+   "description": "Contact person"
   },
   {
    "fieldname": "operating_parameters",
    "fieldtype": "Text",
    "label": "Operating Parameters",
-   "description": "FR-AST-001 / FR-AST-002 / FR-AST-003: operating parameters"
+   "description": "Operating parameters"
   }
  ],
  "index_web_pages_for_search": 0,

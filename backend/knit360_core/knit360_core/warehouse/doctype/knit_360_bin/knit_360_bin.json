@@ -19,7 +19,7 @@
    "fieldname": "bin_code",
    "fieldtype": "Data",
    "label": "Bin Code",
-   "description": "FR-WH-002: target physical storage bins",
+   "description": "Target physical storage bins",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -28,7 +28,7 @@
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "label": "Warehouse",
-   "description": "FR-WH-002: warehouse hierarchy (FR-WH-001)",
+   "description": "Warehouse hierarchy",
    "options": "KNIT 360 Warehouse",
    "reqd": 1
   },
@@ -40,19 +40,19 @@
    "fieldname": "aisle",
    "fieldtype": "Data",
    "label": "Aisle",
-   "description": "FR-WH-002: target physical storage bins (aisle)"
+   "description": "Target physical storage bins (aisle)"
   },
   {
    "fieldname": "rack",
    "fieldtype": "Data",
    "label": "Rack",
-   "description": "FR-WH-002: target physical storage bins (rack)"
+   "description": "Target physical storage bins (rack)"
   },
   {
    "fieldname": "shelf",
    "fieldtype": "Data",
    "label": "Shelf",
-   "description": "FR-WH-002: target physical storage bins (shelf)"
+   "description": "Target physical storage bins (shelf)"
   }
  ],
  "index_web_pages_for_search": 0,

@@ -21,7 +21,7 @@
    "fieldname": "account",
    "fieldtype": "Link",
    "label": "Account",
-   "description": "FR-FIN-001: General Ledger -- account for this line",
+   "description": "General Ledger -- account for this line",
    "options": "KNIT 360 Account",
    "reqd": 1,
    "in_list_view": 1
@@ -30,46 +30,46 @@
    "fieldname": "debit",
    "fieldtype": "Currency",
    "label": "Debit",
-   "description": "FR-FIN-001: General Ledger -- debit amount",
+   "description": "General Ledger -- debit amount",
    "in_list_view": 1
   },
   {
    "fieldname": "credit",
    "fieldtype": "Currency",
    "label": "Credit",
-   "description": "FR-FIN-001: General Ledger -- credit amount",
+   "description": "General Ledger -- credit amount",
    "in_list_view": 1
   },
   {
    "fieldname": "party_type",
    "fieldtype": "Data",
    "label": "Party Type",
-   "description": "FR-FIN-002 / FR-FIN-003: subsidiary ledger selector"
+   "description": "Subsidiary ledger selector"
   },
   {
    "fieldname": "party",
    "fieldtype": "Data",
    "label": "Party",
-   "description": "FR-FIN-002 / FR-FIN-003: the party this line is against"
+   "description": "The party this line is against"
   },
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
    "label": "Cost Center",
-   "description": "FR-FIN-006: Cost Accounting -- attribution",
+   "description": "Cost Accounting -- attribution",
    "options": "KNIT 360 Cost Center"
   },
   {
    "fieldname": "reference_type",
    "fieldtype": "Data",
    "label": "Reference Type",
-   "description": "FR-FIN-003: the document type this line settles"
+   "description": "The document type this line settles"
   },
   {
    "fieldname": "reference_name",
    "fieldtype": "Data",
    "label": "Reference Name",
-   "description": "FR-FIN-003: the document this line settles"
+   "description": "The document this line settles"
   }
  ],
  "index_web_pages_for_search": 0,

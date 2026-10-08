@@ -15,7 +15,7 @@
    "fieldname": "template_name",
    "fieldtype": "Data",
    "label": "Template Name",
-   "description": "FR-FIN-003: Accounts Receivable -- named set of terms",
+   "description": "Accounts Receivable -- named set of terms",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -24,7 +24,7 @@
    "fieldname": "terms",
    "fieldtype": "Table",
    "label": "Terms",
-   "description": "FR-FIN-003: Accounts Receivable -- the staged terms",
+   "description": "Accounts Receivable -- the staged terms",
    "options": "KNIT 360 Payment Terms Template Row",
    "reqd": 1
   }

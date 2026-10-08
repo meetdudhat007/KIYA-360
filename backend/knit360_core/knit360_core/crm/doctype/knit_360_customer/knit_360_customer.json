@@ -26,7 +26,7 @@
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "label": "Customer Name",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: unified Customer Master (DR-C2C-001)",
+   "description": "Unified Customer Master",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -35,15 +35,14 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
   {
    "fieldname": "customer_type",
    "fieldtype": "Data",
-   "label": "Customer Type",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED; enumeration TBD"
+   "label": "Customer Type"
   },
   {
    "fieldname": "col1",
@@ -53,14 +52,14 @@
    "fieldname": "default_currency",
    "fieldtype": "Link",
    "label": "Default Currency",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: currency must match an active Currency Master (DR-C2C-002)",
+   "description": "Currency must match an active Currency Master",
    "options": "Currency"
   },
   {
    "fieldname": "territory",
    "fieldtype": "Link",
    "label": "Territory",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: assigned territory (DR-C2C-001 Inputs); territory master is BRD-DERIVED and TBD; now a master",
+   "description": "Assigned territory",
    "options": "KNIT 360 Territory"
   },
   {
@@ -72,14 +71,14 @@
    "fieldname": "email",
    "fieldtype": "Data",
    "label": "Email",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Email"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+   "description": "Contact details",
    "options": "Phone"
   },
   {
@@ -90,20 +89,20 @@
    "fieldname": "address",
    "fieldtype": "Small Text",
    "label": "Address",
-   "description": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)"
+   "description": "Contact details"
   },
   {
    "fieldname": "customer_group",
    "fieldtype": "Link",
    "label": "Customer Group",
-   "description": "FR-PADM-1.4.1: Customer Master -- segmentation",
+   "description": "Customer Master -- segmentation",
    "options": "KNIT 360 Customer Group"
   },
   {
    "fieldname": "default_price_list",
    "fieldtype": "Link",
    "label": "Default Price List",
-   "description": "FR-SALES-004: Pricing & Discounts -- the list used for this customer",
+   "description": "Pricing & Discounts -- the list used for this customer",
    "options": "KNIT 360 Price List"
   }
  ],

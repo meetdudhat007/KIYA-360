@@ -27,7 +27,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
-   "description": "FR-PROC-002: BRD-DERIVED: identifying label",
+   "description": "Identifying label",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -35,14 +35,14 @@
    "fieldname": "requisition",
    "fieldtype": "Link",
    "label": "Purchase Requisition",
-   "description": "FR-PROC-002: requisition reference, optional",
+   "description": "Requisition reference, optional",
    "options": "KNIT 360 Purchase Requisition"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -54,13 +54,13 @@
    "fieldname": "bid_closing_date",
    "fieldtype": "Date",
    "label": "Bid Closing Date",
-   "description": "FR-PROC-002: bid submission deadline (bid_closing_date)"
+   "description": "Bid submission deadline (bid_closing_date)"
   },
   {
    "fieldname": "delivery_deadline",
    "fieldtype": "Date",
    "label": "Delivery Deadline",
-   "description": "FR-PROC-002: delivery deadlines"
+   "description": "Delivery deadlines"
   },
   {
    "fieldname": "knit360_business_status",
@@ -71,7 +71,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-PROC-002: CD-002 'Request for Quotation' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_6",
@@ -82,7 +82,7 @@
    "fieldname": "suppliers",
    "fieldtype": "Table",
    "label": "Suppliers",
-   "description": "FR-PROC-002: target supplier list",
+   "description": "Target supplier list",
    "options": "KNIT 360 RFQ Supplier"
   },
   {
@@ -94,7 +94,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-002: requested items/services, quantities",
+   "description": "Requested items/services, quantities",
    "options": "KNIT 360 RFQ Item"
   },
   {
@@ -106,13 +106,13 @@
    "fieldname": "technical_drawings_boq",
    "fieldtype": "Text",
    "label": "Technical Drawings / BOQ",
-   "description": "FR-PROC-002: technical drawings/BOQ"
+   "description": "Technical drawings/BOQ"
   },
   {
    "fieldname": "terms_and_conditions",
    "fieldtype": "Text",
    "label": "Terms and Conditions",
-   "description": "FR-PROC-002: terms and conditions"
+   "description": "Terms and conditions"
   }
  ],
  "index_web_pages_for_search": 0,

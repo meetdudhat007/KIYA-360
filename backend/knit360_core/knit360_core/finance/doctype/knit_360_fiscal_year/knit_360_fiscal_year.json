@@ -18,7 +18,7 @@
    "fieldname": "year_name",
    "fieldtype": "Data",
    "label": "Year Name",
-   "description": "FR-FIN-007: Financial Reporting -- the period a report covers",
+   "description": "Financial Reporting -- the period a report covers",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -27,7 +27,7 @@
    "fieldname": "year_start_date",
    "fieldtype": "Date",
    "label": "Year Start Date",
-   "description": "FR-FIN-007: Financial Reporting -- period start",
+   "description": "Financial Reporting -- period start",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -39,7 +39,7 @@
    "fieldname": "year_end_date",
    "fieldtype": "Date",
    "label": "Year End Date",
-   "description": "FR-FIN-007: Financial Reporting -- period end",
+   "description": "Financial Reporting -- period end",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -47,7 +47,7 @@
    "fieldname": "is_closed",
    "fieldtype": "Check",
    "label": "Is Closed",
-   "description": "FR-FIN-007: BRD-DERIVED: a closed year takes no further postings"
+   "description": "A closed year takes no further postings"
   }
  ],
  "index_web_pages_for_search": 0,

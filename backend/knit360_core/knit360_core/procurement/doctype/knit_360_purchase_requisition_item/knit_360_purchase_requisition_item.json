@@ -17,28 +17,27 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-PROC-001: requested items; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Requested items",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-PROC-001: BRD-DERIVED",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Quantity",
-   "description": "FR-PROC-001: quantities",
+   "description": "Quantities",
    "in_list_view": 1
   },
   {
    "fieldname": "required_by",
    "fieldtype": "Date",
    "label": "Required By",
-   "description": "FR-PROC-001: delivery deadlines",
+   "description": "Delivery deadlines",
    "in_list_view": 1
   }
  ],

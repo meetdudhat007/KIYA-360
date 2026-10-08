@@ -21,7 +21,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Plan Title",
-   "description": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED: identifying label",
+   "description": "Identifying label",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -29,14 +29,14 @@
    "fieldname": "sales_order",
    "fieldtype": "Link",
    "label": "Against Sales Order",
-   "description": "FR-MRP-002 / FR-MRP-004: Sales Order shortage lines",
+   "description": "Sales Order shortage lines",
    "options": "KNIT 360 Sales Order"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -48,14 +48,13 @@
    "fieldname": "bom",
    "fieldtype": "Link",
    "label": "BOM",
-   "description": "FR-MRP-002 / FR-MRP-004: Bill of Materials (BOM)",
+   "description": "Bill of Materials (BOM)",
    "options": "KNIT 360 BOM"
   },
   {
    "fieldname": "plan_date",
    "fieldtype": "Date",
-   "label": "Plan Date",
-   "description": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED"
+   "label": "Plan Date"
   },
   {
    "fieldname": "sec_20",
@@ -66,7 +65,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Requirements",
-   "description": "FR-MRP-002 / FR-MRP-004: material requirements explosion",
+   "description": "Material requirements explosion",
    "options": "KNIT 360 Material Plan Item"
   }
  ],

@@ -31,7 +31,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "description": "FR-PROC-004: supplier reference",
+   "description": "Supplier reference",
    "options": "KNIT 360 Supplier",
    "reqd": 1,
    "in_list_view": 1
@@ -40,14 +40,14 @@
    "fieldname": "supplier_quotation",
    "fieldtype": "Link",
    "label": "Supplier Quotation",
-   "description": "FR-PROC-004: Supplier Quotation reference",
+   "description": "Supplier Quotation reference",
    "options": "KNIT 360 Supplier Quotation"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -59,13 +59,13 @@
    "fieldname": "order_date",
    "fieldtype": "Date",
    "label": "Order Date",
-   "description": "FR-PROC-004: order date"
+   "description": "Order date"
   },
   {
    "fieldname": "ship_to_warehouse",
    "fieldtype": "Link",
    "label": "Ship To Warehouse",
-   "description": "FR-PROC-004: ship-to warehouse location",
+   "description": "Ship-to warehouse location",
    "options": "KNIT 360 Warehouse"
   },
   {
@@ -77,7 +77,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-PROC-004: CD-002 'Purchase Order' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_11",
@@ -89,13 +89,13 @@
    "fieldtype": "Link",
    "label": "Price List",
    "options": "KNIT 360 Price List",
-   "description": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
+   "description": "The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business."
   },
   {
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-004: line items",
+   "description": "Line items",
    "options": "KNIT 360 Purchase Order Item"
   },
   {
@@ -107,7 +107,7 @@
    "fieldname": "tax_template",
    "fieldtype": "Link",
    "label": "Tax Template",
-   "description": "FR-PROC-004: tax template",
+   "description": "Tax template",
    "options": "KNIT 360 Tax Template"
   },
   {
@@ -115,27 +115,27 @@
    "fieldtype": "Currency",
    "label": "Net Total",
    "read_only": 1,
-   "description": "FR-PROC-004 Sum of the line amounts, before tax."
+   "description": "Sum of the line amounts, before tax."
   },
   {
    "fieldname": "total_taxes",
    "fieldtype": "Currency",
    "label": "Total Taxes",
    "read_only": 1,
-   "description": "FR-PROC-004 The tax template's rates applied to the net total."
+   "description": "The tax template's rates applied to the net total."
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
    "read_only": 1,
-   "description": "FR-PROC-004 Net total plus tax. What the supplier is committed to."
+   "description": "Net total plus tax. What the supplier is committed to."
   },
   {
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
-   "description": "FR-PROC-004: payment terms"
+   "description": "Payment terms"
   },
   {
    "fieldname": "col_13",
@@ -145,7 +145,7 @@
    "fieldname": "incoterms",
    "fieldtype": "Data",
    "label": "Incoterms",
-   "description": "FR-PROC-004: incoterms"
+   "description": "Incoterms"
   }
  ],
  "index_web_pages_for_search": 0,

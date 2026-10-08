@@ -42,7 +42,7 @@
    "fieldname": "company_name",
    "fieldtype": "Data",
    "label": "Company Name",
-   "description": "FR-PADM-1.1.1: company details",
+   "description": "Company details",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -51,13 +51,13 @@
    "fieldname": "business_type",
    "fieldtype": "Data",
    "label": "Business Type",
-   "description": "FR-PADM-1.1.1: business type; enumeration TBD"
+   "description": "Business type"
   },
   {
    "fieldname": "legal_entity",
    "fieldtype": "Data",
    "label": "Legal Entity",
-   "description": "FR-PADM-1.1.1: legal entity; enumeration TBD"
+   "description": "Legal entity"
   },
   {
    "fieldname": "col1",
@@ -67,7 +67,7 @@
    "fieldname": "default_currency",
    "fieldtype": "Link",
    "label": "Default Currency",
-   "description": "FR-PADM-1.1.1: currency",
+   "description": "Currency",
    "options": "Currency",
    "reqd": 1
   },
@@ -75,13 +75,13 @@
    "fieldname": "tax_registration_number",
    "fieldtype": "Data",
    "label": "Tax Registration Number",
-   "description": "FR-PADM-1.1.1: tax registration"
+   "description": "Tax registration"
   },
   {
    "fieldname": "country",
    "fieldtype": "Link",
    "label": "Country",
-   "description": "FR-PADM-1.1.1: BRD-DERIVED from company details",
+   "description": "From company details",
    "options": "Country"
   },
   {
@@ -93,19 +93,19 @@
    "fieldname": "fiscal_year_start_date",
    "fieldtype": "Date",
    "label": "Fiscal Year Start Date",
-   "description": "FR-PADM-1.1.1: fiscal year"
+   "description": "Fiscal year"
   },
   {
    "fieldname": "fiscal_year_end_date",
    "fieldtype": "Date",
    "label": "Fiscal Year End Date",
-   "description": "FR-PADM-1.1.1: fiscal year"
+   "description": "Fiscal year"
   },
   {
    "fieldname": "abbreviation",
    "fieldtype": "Data",
    "label": "Abbreviation",
-   "description": "FR-PADM-1.1.1: BRD-DERIVED: short code appended to account and cost centre names, so two companies can both own an account called 'Debtors'."
+   "description": "Short code appended to account and cost centre names, so two companies can both own an account called 'Debtors'."
   },
   {
    "fieldname": "sec_defaults",
@@ -116,21 +116,21 @@
    "fieldname": "default_receivable_account",
    "fieldtype": "Link",
    "label": "Default Receivable Account",
-   "description": "FR-FIN-003: Accounts Receivable -- the account a customer invoice debits",
+   "description": "Accounts Receivable -- the account a customer invoice debits",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_payable_account",
    "fieldtype": "Link",
    "label": "Default Payable Account",
-   "description": "FR-FIN-002: Accounts Payable -- the account a supplier invoice credits",
+   "description": "Accounts Payable -- the account a supplier invoice credits",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_income_account",
    "fieldtype": "Link",
    "label": "Default Income Account",
-   "description": "FR-FIN-003: Accounts Receivable -- the revenue account an invoice line credits",
+   "description": "Accounts Receivable -- the revenue account an invoice line credits",
    "options": "KNIT 360 Account"
   },
   {
@@ -141,83 +141,83 @@
    "fieldname": "default_expense_account",
    "fieldtype": "Link",
    "label": "Default Expense Account",
-   "description": "FR-FIN-002: Accounts Payable -- the expense account a supplier invoice line debits",
+   "description": "Accounts Payable -- the expense account a supplier invoice line debits",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_cash_account",
    "fieldtype": "Link",
    "label": "Default Cash Account",
-   "description": "FR-FIN-004: Cash & Bank -- the account cash payments settle through",
+   "description": "Cash & Bank -- the account cash payments settle through",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_bank_account",
    "fieldtype": "Link",
    "label": "Default Bank Account",
-   "description": "FR-FIN-004: Cash & Bank -- the account bank payments settle through",
+   "description": "Cash & Bank -- the account bank payments settle through",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "round_off_account",
    "fieldtype": "Link",
    "label": "Round Off Account",
-   "description": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
+   "description": "General Ledger -- where rounding differences are absorbed so an entry still balances",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "write_off_tolerance",
    "fieldtype": "Currency",
    "label": "Write Off Tolerance",
-   "description": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
+   "description": "The largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
   },
   {
    "fieldname": "default_stock_account",
    "fieldtype": "Link",
    "label": "Default Stock Account",
    "options": "KNIT 360 Account",
-   "description": "FR-INV-006: where the value of stock on hand is held. An asset."
+   "description": "Where the value of stock on hand is held. An asset."
   },
   {
    "fieldname": "default_freight_account",
    "fieldtype": "Link",
    "label": "Default Freight Account",
    "options": "KNIT 360 Account",
-   "description": "FR-FIN-001 / FR-PROC-006 Where freight and ancillary charges on a supplier's bill are posted. A direct expense, not part of the cost of the stock -- see OQ-025 and DEC-033 for why, and for what that costs."
+   "description": "Where freight and ancillary charges on a supplier's bill are posted. A direct expense, not part of the cost of the stock -- see OQ-025 and DEC-033 for why, and for what that costs."
   },
   {
    "fieldname": "default_cogs_account",
    "fieldtype": "Link",
    "label": "Default Cost of Goods Sold Account",
    "options": "KNIT 360 Account",
-   "description": "FR-INV-006: where the cost of stock that has been sold is charged."
+   "description": "Where the cost of stock that has been sold is charged."
   },
   {
    "fieldname": "stock_received_but_not_billed",
    "fieldtype": "Link",
    "label": "Stock Received But Not Billed",
    "options": "KNIT 360 Account",
-   "description": "FR-INV-006: holds the value of goods received whose supplier bill has not arrived. A liability -- the goods are ours and we owe for them."
+   "description": "Holds the value of goods received whose supplier bill has not arrived. A liability -- the goods are ours and we owe for them."
   },
   {
    "fieldname": "default_output_tax_account",
    "fieldtype": "Link",
    "label": "Default Output Tax Account",
-   "description": "FR-TAX-001: where tax charged to a customer is held until it is paid over. A liability, not income.",
+   "description": "Where tax charged to a customer is held until it is paid over. A liability, not income.",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_input_tax_account",
    "fieldtype": "Link",
    "label": "Default Input Tax Account",
-   "description": "FR-TAX-001: where tax paid to a supplier is held until it is recovered.",
+   "description": "Where tax paid to a supplier is held until it is recovered.",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "default_cost_center",
    "fieldtype": "Link",
    "label": "Default Cost Center",
-   "description": "FR-FIN-006: Cost Accounting -- attribution used when a document names none",
+   "description": "Cost Accounting -- attribution used when a document names none",
    "options": "KNIT 360 Cost Center"
   }
  ],

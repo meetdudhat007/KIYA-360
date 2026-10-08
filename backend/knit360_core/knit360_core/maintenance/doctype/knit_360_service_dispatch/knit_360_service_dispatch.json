@@ -23,7 +23,7 @@
    "fieldname": "service_request",
    "fieldtype": "Link",
    "label": "Service Request",
-   "description": "FR-MFS-007 / FR-MFS-001: Service Request reference",
+   "description": "Service Request reference",
    "options": "KNIT 360 Service Request",
    "reqd": 1,
    "in_list_view": 1
@@ -32,14 +32,14 @@
    "fieldname": "assigned_technician",
    "fieldtype": "Link",
    "label": "Assigned Technician",
-   "description": "FR-MFS-007 / FR-MFS-001: Assigned technician identifier",
+   "description": "Assigned technician identifier",
    "options": "User"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-MFS-007 / FR-MFS-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -51,13 +51,13 @@
    "fieldname": "scheduled_datetime",
    "fieldtype": "Datetime",
    "label": "Scheduled Appointment",
-   "description": "FR-MFS-007 / FR-MFS-001: Scheduled appointment date/time slot"
+   "description": "Scheduled appointment date/time slot"
   },
   {
    "fieldname": "required_competencies",
    "fieldtype": "Small Text",
    "label": "Required Competencies",
-   "description": "FR-MFS-007 / FR-MFS-001: Required technical competencies"
+   "description": "Required technical competencies"
   },
   {
    "fieldname": "knit360_business_status",
@@ -68,7 +68,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-MFS-007 / FR-MFS-001: CD-002 'Service Dispatch' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_24",
@@ -79,14 +79,14 @@
    "fieldname": "site_latitude",
    "fieldtype": "Float",
    "label": "Site Latitude",
-   "description": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates",
+   "description": "Customer site location/GPS coordinates",
    "precision": "6"
   },
   {
    "fieldname": "site_longitude",
    "fieldtype": "Float",
    "label": "Site Longitude",
-   "description": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates",
+   "description": "Customer site location/GPS coordinates",
    "precision": "6"
   }
  ],

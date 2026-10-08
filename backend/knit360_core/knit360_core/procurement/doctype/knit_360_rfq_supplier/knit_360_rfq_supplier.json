@@ -15,7 +15,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "description": "FR-PROC-002: target supplier list",
+   "description": "Target supplier list",
    "options": "KNIT 360 Supplier",
    "in_list_view": 1
   },
@@ -23,7 +23,7 @@
    "fieldname": "responded",
    "fieldtype": "Check",
    "label": "Responded",
-   "description": "FR-PROC-002: BRD-DERIVED: bid tracking",
+   "description": "Bid tracking",
    "in_list_view": 1
   }
  ],

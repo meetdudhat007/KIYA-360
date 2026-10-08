@@ -22,14 +22,14 @@
    "fieldname": "leave_type_name",
    "fieldtype": "Data",
    "label": "Leave Type",
-   "description": "FR-HR-003: e.g. Casual Leave, Sick Leave.",
+   "description": "E.g. Casual Leave, Sick Leave.",
    "reqd": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-HR-003: what this leave is for."
+   "description": "What this leave is for."
   },
   {
    "fieldname": "col_lt_1",
@@ -39,26 +39,26 @@
    "fieldname": "is_paid_leave",
    "fieldtype": "Check",
    "label": "Paid Leave",
-   "description": "FR-HR-003: whether days taken are paid. Unpaid leave still consumes a balance but is treated differently by payroll, which is not built.",
+   "description": "Whether days taken are paid. Unpaid leave still consumes a balance but is treated differently by payroll, which is not built.",
    "default": "1"
   },
   {
    "fieldname": "is_carry_forward",
    "fieldtype": "Check",
    "label": "Carry Forward",
-   "description": "FR-HR-003: whether an unused balance may be carried into the next leave period."
+   "description": "Whether an unused balance may be carried into the next leave period."
   },
   {
    "fieldname": "allow_negative_balance",
    "fieldtype": "Check",
    "label": "Allow Negative Balance",
-   "description": "FR-HR-003: whether an application may exceed the balance. Off by default, so an over-application is refused rather than silently allowed."
+   "description": "Whether an application may exceed the balance. Off by default, so an over-application is refused rather than silently allowed."
   },
   {
    "fieldname": "include_holidays_in_leave",
    "fieldtype": "Check",
    "label": "Count Holidays As Leave",
-   "description": "FR-HR-003: when set, holidays falling inside a leave period are counted as leave days. When clear they are skipped."
+   "description": "When set, holidays falling inside a leave period are counted as leave days. When clear they are skipped."
   },
   {
    "fieldname": "sec_lt_1",
@@ -68,7 +68,7 @@
    "fieldname": "max_leaves_allowed",
    "fieldtype": "Float",
    "label": "Maximum Leaves Per Period",
-   "description": "FR-HR-003: an upper bound on what may be allocated in one leave period. Zero means no limit is enforced."
+   "description": "An upper bound on what may be allocated in one leave period. Zero means no limit is enforced."
   }
  ],
  "index_web_pages_for_search": 0,

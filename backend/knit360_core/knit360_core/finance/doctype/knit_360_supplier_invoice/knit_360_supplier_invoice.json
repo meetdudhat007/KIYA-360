@@ -34,7 +34,7 @@
    "fieldname": "supplier",
    "fieldtype": "Link",
    "label": "Supplier",
-   "description": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED from the PO reference",
+   "description": "From the PO reference",
    "options": "KNIT 360 Supplier",
    "reqd": 1,
    "in_list_view": 1
@@ -43,19 +43,19 @@
    "fieldname": "bill_no",
    "fieldtype": "Data",
    "label": "Vendor Invoice Number",
-   "description": "FR-PROC-006 / FR-FIN-002: Vendor invoice number"
+   "description": "Vendor invoice number"
   },
   {
    "fieldname": "bill_date",
    "fieldtype": "Date",
    "label": "Vendor Invoice Date",
-   "description": "FR-PROC-006 / FR-FIN-002: Vendor invoice date"
+   "description": "Vendor invoice date"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -67,21 +67,21 @@
    "fieldname": "purchase_order",
    "fieldtype": "Link",
    "label": "Purchase Order",
-   "description": "FR-PROC-006 / FR-FIN-002: PO reference (3-way match)",
+   "description": "PO reference (3-way match)",
    "options": "KNIT 360 Purchase Order"
   },
   {
    "fieldname": "goods_receipt",
    "fieldtype": "Link",
    "label": "Goods Receipt",
-   "description": "FR-PROC-006 / FR-FIN-002: Goods Receipt reference (3-way match)",
+   "description": "Goods Receipt reference (3-way match)",
    "options": "KNIT 360 Goods Receipt"
   },
   {
    "fieldname": "currency",
    "fieldtype": "Link",
    "label": "Currency",
-   "description": "FR-PROC-006 / FR-FIN-002: currency",
+   "description": "Currency",
    "options": "Currency"
   },
   {
@@ -93,7 +93,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-PROC-006 / FR-FIN-002: CD-002 'Supplier Invoice' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_28",
@@ -104,7 +104,7 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "description": "FR-PROC-006 / FR-FIN-002: vendor billed quantities, unit rates",
+   "description": "Vendor billed quantities, unit rates",
    "options": "KNIT 360 Supplier Invoice Item"
   },
   {
@@ -116,13 +116,13 @@
    "fieldname": "freight_and_ancillary",
    "fieldtype": "Currency",
    "label": "Freight / Ancillary Charges",
-   "description": "FR-PROC-006 / FR-FIN-002: freight/ancillary charges"
+   "description": "Freight/ancillary charges"
   },
   {
    "fieldname": "tax_template",
    "fieldtype": "Link",
    "label": "Tax Template",
-   "description": "FR-PROC-006 / FR-FIN-002: statutory tax amounts",
+   "description": "Statutory tax amounts",
    "options": "KNIT 360 Tax Template"
   },
   {
@@ -133,20 +133,20 @@
    "fieldname": "statutory_tax_amount",
    "fieldtype": "Currency",
    "label": "Statutory Tax Amount",
-   "description": "FR-PROC-006 / FR-FIN-002: statutory tax amounts"
+   "description": "Statutory tax amounts"
   },
   {
    "fieldname": "net_total",
    "fieldtype": "Currency",
    "label": "Net Total",
-   "description": "FR-FIN-002: Accounts Payable -- sum of line amounts, computed",
+   "description": "Accounts Payable -- sum of line amounts, computed",
    "read_only": 1
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
    "label": "Grand Total",
-   "description": "FR-FIN-002: Accounts Payable -- net total plus freight and statutory tax. The amount payable to the supplier, computed.",
+   "description": "Accounts Payable -- net total plus freight and statutory tax. The amount payable to the supplier, computed.",
    "read_only": 1,
    "in_list_view": 1
   },
@@ -156,20 +156,20 @@
    "label": "Credit To",
    "options": "KNIT 360 Account",
    "read_only": 1,
-   "description": "FR-FIN-002 The payable account this bill credits. Resolved from the company's Default Payable Account when the bill is saved, so a payment can land exactly where the bill put the debt."
+   "description": "The payable account this bill credits. Resolved from the company's Default Payable Account when the bill is saved, so a payment can land exactly where the bill put the debt."
   },
   {
    "fieldname": "outstanding_amount",
    "fieldtype": "Currency",
    "label": "Outstanding Amount",
    "read_only": 1,
-   "description": "FR-FIN-004 What is still owed on this bill. A cache of the ledger figure derived by knit360_core.finance.settlement, refreshed whenever a payment settles against it."
+   "description": "What is still owed on this bill. A cache of the ledger figure derived by what has been settled, refreshed whenever a payment settles against it."
   },
   {
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
-   "description": "FR-PROC-006 / FR-FIN-002: payment terms"
+   "description": "Payment terms"
   }
  ],
  "index_web_pages_for_search": 0,

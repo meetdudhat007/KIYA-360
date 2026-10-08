@@ -17,7 +17,7 @@
    "fieldname": "mode_name",
    "fieldtype": "Data",
    "label": "Mode Name",
-   "description": "FR-FIN-004: Cash & Bank -- how money moves",
+   "description": "Cash & Bank -- how money moves",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -26,7 +26,7 @@
    "fieldname": "payment_type",
    "fieldtype": "Select",
    "label": "Payment Type",
-   "description": "FR-FIN-004: Cash & Bank -- instrument class",
+   "description": "Cash & Bank -- instrument class",
    "options": "Cash\nBank\nGeneral",
    "default": "Bank",
    "in_list_view": 1
@@ -35,14 +35,14 @@
    "fieldname": "default_account",
    "fieldtype": "Link",
    "label": "Default Account",
-   "description": "FR-FIN-004: Cash & Bank -- the cash or bank account this mode settles through",
+   "description": "Cash & Bank -- the cash or bank account this mode settles through",
    "options": "KNIT 360 Account"
   },
   {
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled",
-   "description": "FR-FIN-004: BRD-DERIVED: withdrawn from selection"
+   "description": "Withdrawn from selection"
   }
  ],
  "index_web_pages_for_search": 0,

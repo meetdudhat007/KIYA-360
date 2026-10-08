@@ -21,7 +21,7 @@
    "fieldname": "goods_receipt",
    "fieldtype": "Link",
    "label": "Goods Receipt",
-   "description": "FR-WH-003 / FR-INV-002: Goods Receipt reference",
+   "description": "Goods Receipt reference",
    "options": "KNIT 360 Goods Receipt",
    "reqd": 1,
    "in_list_view": 1
@@ -30,14 +30,14 @@
    "fieldname": "quality_inspection",
    "fieldtype": "Link",
    "label": "Quality Inspection",
-   "description": "FR-WH-003 / FR-INV-002: Quality Inspection reference",
+   "description": "Quality Inspection reference",
    "options": "KNIT 360 Quality Inspection"
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-WH-003 / FR-INV-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -49,19 +49,19 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-WH-003 / FR-INV-002: item codes; becomes a Link once the Item Master (FR-INV-001) is populated"
+   "description": "Item codes"
   },
   {
    "fieldname": "accepted_qty",
    "fieldtype": "Float",
    "label": "Accepted Quantity",
-   "description": "FR-WH-003 / FR-INV-002: accepted quantities"
+   "description": "Accepted quantities"
   },
   {
    "fieldname": "target_bin",
    "fieldtype": "Link",
    "label": "Target Bin",
-   "description": "FR-WH-003 / FR-INV-002: target physical storage bins",
+   "description": "Target physical storage bins",
    "options": "KNIT 360 Bin"
   },
   {
@@ -73,7 +73,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-WH-003 / FR-INV-002: CD-002 'Putaway Task' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   }
  ],
  "index_web_pages_for_search": 0,

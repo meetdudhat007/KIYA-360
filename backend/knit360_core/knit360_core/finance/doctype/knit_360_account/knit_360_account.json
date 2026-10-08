@@ -30,7 +30,7 @@
    "fieldname": "account_name",
    "fieldtype": "Data",
    "label": "Account Name",
-   "description": "FR-FIN-001: General Ledger -- account name",
+   "description": "General Ledger -- account name",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -38,14 +38,14 @@
    "fieldname": "account_number",
    "fieldtype": "Data",
    "label": "Account Number",
-   "description": "FR-FIN-001: General Ledger -- account code",
+   "description": "General Ledger -- account code",
    "in_list_view": 1
   },
   {
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-PADM-1.1.1: a chart of accounts belongs to one company",
+   "description": "A chart of accounts belongs to one company",
    "options": "KNIT 360 Company",
    "reqd": 1,
    "in_list_view": 1
@@ -58,7 +58,7 @@
    "fieldname": "root_type",
    "fieldtype": "Select",
    "label": "Root Type",
-   "description": "FR-FIN-001: General Ledger -- the five account roots. Determines whether a debit increases or decreases the balance.",
+   "description": "General Ledger -- the five account roots. Determines whether a debit increases or decreases the balance.",
    "options": "Asset\nLiability\nIncome\nExpense\nEquity",
    "in_list_view": 1
   },
@@ -66,14 +66,14 @@
    "fieldname": "account_type",
    "fieldtype": "Select",
    "label": "Account Type",
-   "description": "FR-FIN-001: General Ledger -- what the account is used for. Drives which accounts a posting rule may select.",
+   "description": "General Ledger -- what the account is used for. Drives which accounts a posting rule may select.",
    "options": "\nAccumulated Depreciation\nBank\nCash\nCost of Goods Sold\nDepreciation\nEquity\nExpense Account\nFixed Asset\nIncome Account\nPayable\nReceivable\nRound Off\nStock\nStock Received But Not Billed\nTax\nWork In Progress"
   },
   {
    "fieldname": "account_currency",
    "fieldtype": "Link",
    "label": "Account Currency",
-   "description": "FR-PADM-1.4.6: Currency Master",
+   "description": "Currency Master",
    "options": "Currency"
   },
   {
@@ -85,7 +85,7 @@
    "fieldname": "parent_account",
    "fieldtype": "Link",
    "label": "Parent",
-   "description": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
+   "description": "Hierarchy parent",
    "options": "KNIT 360 Account",
    "ignore_user_permissions": 1
   },
@@ -93,13 +93,13 @@
    "fieldname": "is_group",
    "fieldtype": "Check",
    "label": "Is Group",
-   "description": "FR-FIN-001: BRD-DERIVED: a group node holds children and takes no postings"
+   "description": "A group node holds children and takes no postings"
   },
   {
    "fieldname": "lft",
    "fieldtype": "Int",
    "label": "lft",
-   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -108,7 +108,7 @@
    "fieldname": "rgt",
    "fieldtype": "Int",
    "label": "rgt",
-   "description": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+   "description": "Nested-set bound, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -117,7 +117,7 @@
    "fieldname": "old_parent",
    "fieldtype": "Data",
    "label": "Old Parent",
-   "description": "FR-FIN-001: BRD-DERIVED: previous parent, maintained by the framework",
+   "description": "Previous parent, maintained by the framework",
    "hidden": 1,
    "read_only": 1,
    "no_copy": 1
@@ -131,7 +131,7 @@
    "fieldname": "balance_must_be",
    "fieldtype": "Select",
    "label": "Balance Must Be",
-   "description": "FR-FIN-001: General Ledger -- expected sign. A receivable holding a credit balance is usually an error.",
+   "description": "General Ledger -- expected sign. A receivable holding a credit balance is usually an error.",
    "options": "\nDebit\nCredit"
   },
   {
@@ -142,7 +142,7 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled",
-   "description": "FR-FIN-001: BRD-DERIVED: a disabled account takes no new postings"
+   "description": "A disabled account takes no new postings"
   }
  ],
  "index_web_pages_for_search": 0,

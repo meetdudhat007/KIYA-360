@@ -28,7 +28,7 @@
    "fieldname": "payment_direction",
    "fieldtype": "Select",
    "label": "Direction",
-   "description": "FR-FIN-002 / FR-FIN-004: Receive settles a customer's invoice (DR-A2S-010); Pay settles a supplier's bill (DR-P2P-011).",
+   "description": "Receive settles a customer's invoice; Pay settles a supplier's bill.",
    "options": "Receive\nPay",
    "default": "Receive",
    "reqd": 1,
@@ -41,13 +41,13 @@
    "options": "KNIT 360 Customer\nKNIT 360 Supplier",
    "default": "KNIT 360 Customer",
    "reqd": 1,
-   "description": "FR-FIN-002 / FR-FIN-004: whether this settles with a customer or a supplier."
+   "description": "Whether this settles with a customer or a supplier."
   },
   {
    "fieldname": "party",
    "fieldtype": "Dynamic Link",
    "label": "Party",
-   "description": "FR-FIN-002 / FR-FIN-004: who paid or was paid. A real reference, so a payment cannot name a party that does not exist.",
+   "description": "Who paid or was paid. A real reference, so a payment cannot name a party that does not exist.",
    "reqd": 1,
    "in_list_view": 1,
    "options": "party_type"
@@ -56,7 +56,7 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "description": "FR-FIN-002 / FR-FIN-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+   "description": "Company context",
    "options": "KNIT 360 Company",
    "reqd": 1
   },
@@ -68,14 +68,14 @@
    "fieldname": "payment_date",
    "fieldtype": "Date",
    "label": "Payment Date",
-   "description": "FR-FIN-002 / FR-FIN-004: payment date",
+   "description": "Payment date",
    "reqd": 1
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
-   "description": "FR-FIN-002 / FR-FIN-004: disbursement amount / remittance amount",
+   "description": "Disbursement amount / remittance amount",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -83,14 +83,14 @@
    "fieldname": "payment_mode",
    "fieldtype": "Link",
    "label": "Payment Mode",
-   "description": "FR-FIN-002 / FR-FIN-004: how the money moved (NEFT, RTGS, cheque, cash).",
+   "description": "How the money moved (NEFT, RTGS, cheque, cash).",
    "options": "KNIT 360 Mode of Payment"
   },
   {
    "fieldname": "bank_account",
    "fieldtype": "Link",
    "label": "Bank Account",
-   "description": "FR-FIN-002 / FR-FIN-004: the bank or cash account the money moved through. Debited on a receipt, credited on a payment.",
+   "description": "The bank or cash account the money moved through. Debited on a receipt, credited on a payment.",
    "options": "KNIT 360 Account",
    "reqd": 1
   },
@@ -103,7 +103,7 @@
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1,
-   "description": "FR-FIN-002 / FR-FIN-004: CD-002 'Payment Entry' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition"
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
   },
   {
    "fieldname": "sec_30",
@@ -114,7 +114,7 @@
    "fieldname": "allocations",
    "fieldtype": "Table",
    "label": "Allocations",
-   "description": "FR-FIN-002 / FR-FIN-004: invoice allocation schedule",
+   "description": "Invoice allocation schedule",
    "options": "KNIT 360 Payment Allocation"
   },
   {
@@ -122,20 +122,20 @@
    "fieldtype": "Currency",
    "label": "Allocated",
    "read_only": 1,
-   "description": "FR-FIN-002 / FR-FIN-004: the part of this payment matched to documents, computed."
+   "description": "The part of this payment matched to documents, computed."
   },
   {
    "fieldname": "unallocated_amount",
    "fieldtype": "Currency",
    "label": "Unallocated (held for the party)",
    "read_only": 1,
-   "description": "FR-FIN-002 / FR-FIN-004: the part not matched to any document. It is an advance held for the party, not income, and can be applied to a later invoice. Computed."
+   "description": "The part not matched to any document. It is an advance held for the party, not income, and can be applied to a later invoice. Computed."
   },
   {
    "fieldname": "early_payment_discount",
    "fieldtype": "Currency",
    "label": "Early Payment Discount",
-   "description": "FR-FIN-002 / FR-FIN-004: early payment discounts"
+   "description": "Early payment discounts"
   }
  ],
  "index_web_pages_for_search": 0,

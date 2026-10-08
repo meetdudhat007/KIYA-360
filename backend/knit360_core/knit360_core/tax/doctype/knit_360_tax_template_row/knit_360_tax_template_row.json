@@ -16,21 +16,21 @@
    "fieldname": "tax_component",
    "fieldtype": "Data",
    "label": "Component",
-   "description": "FR-TAX-001: claimed tax rates (DR-P2P-010 Inputs)",
+   "description": "Claimed tax rates",
    "in_list_view": 1
   },
   {
    "fieldname": "rate",
    "fieldtype": "Percent",
    "label": "Rate",
-   "description": "FR-TAX-001: claimed tax rates",
+   "description": "Claimed tax rates",
    "in_list_view": 1
   },
   {
    "fieldname": "tax_account",
    "fieldtype": "Link",
    "label": "Posts To",
-   "description": "FR-TAX-001: the account this component posts to. Left empty, the company's default output or input tax account is used.",
+   "description": "The account this component posts to. Left empty, the company's default output or input tax account is used.",
    "options": "KNIT 360 Account"
   }
  ],

@@ -17,7 +17,7 @@
    "fieldname": "reference_doctype",
    "fieldtype": "Link",
    "label": "Against Document Type",
-   "description": "FR-FIN-002: which kind of document this part of the payment settles.",
+   "description": "Which kind of document this part of the payment settles.",
    "in_list_view": 1,
    "options": "DocType",
    "reqd": 1
@@ -26,7 +26,7 @@
    "fieldname": "reference_name",
    "fieldtype": "Dynamic Link",
    "label": "Against Document",
-   "description": "FR-FIN-002: the document this settles. A real reference, so an allocation cannot point at an invoice that was never raised.",
+   "description": "The document this settles. A real reference, so an allocation cannot point at an invoice that was never raised.",
    "in_list_view": 1,
    "options": "reference_doctype",
    "reqd": 1
@@ -37,13 +37,13 @@
    "label": "Outstanding",
    "read_only": 1,
    "in_list_view": 1,
-   "description": "FR-FIN-002: what that document still owed when this was saved, read from the ledger. Shown so an allocation is not typed blind."
+   "description": "What that document still owed when this was saved, read from the ledger. Shown so an allocation is not typed blind."
   },
   {
    "fieldname": "allocated_amount",
    "fieldtype": "Currency",
    "label": "Allocated Amount",
-   "description": "FR-FIN-002: invoice allocation schedule",
+   "description": "Invoice allocation schedule",
    "in_list_view": 1,
    "reqd": 1
   }

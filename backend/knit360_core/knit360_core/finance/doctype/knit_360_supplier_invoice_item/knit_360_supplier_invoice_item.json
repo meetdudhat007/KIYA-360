@@ -17,28 +17,28 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "description": "FR-PROC-006 / FR-FIN-002: vendor billed quantities; becomes a Link once the Item Master (FR-INV-001) is populated",
+   "description": "Vendor billed quantities",
    "in_list_view": 1
   },
   {
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Billed Qty",
-   "description": "FR-PROC-006 / FR-FIN-002: vendor billed quantities",
+   "description": "Vendor billed quantities",
    "in_list_view": 1
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Unit Rate",
-   "description": "FR-PROC-006 / FR-FIN-002: unit rates",
+   "description": "Unit rates",
    "in_list_view": 1
   },
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
    "label": "Amount",
-   "description": "FR-PROC-006 / FR-FIN-002: billed qty times unit rate, computed",
+   "description": "Billed qty times unit rate, computed",
    "read_only": 1
   }
  ],

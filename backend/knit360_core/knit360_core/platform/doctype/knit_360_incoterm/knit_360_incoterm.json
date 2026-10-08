@@ -16,7 +16,7 @@
    "fieldname": "code",
    "fieldtype": "Data",
    "label": "Code",
-   "description": "FR-SALES-005: BRD-DERIVED: the three-letter Incoterms code used on the document",
+   "description": "The three-letter Incoterms code used on the document",
    "reqd": 1,
    "unique": 1,
    "in_list_view": 1
@@ -25,14 +25,14 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
-   "description": "FR-SALES-005: BRD-DERIVED: what the code stands for",
+   "description": "What the code stands for",
    "in_list_view": 1
   },
   {
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description",
-   "description": "FR-SALES-005: BRD-DERIVED: where risk and cost pass to the buyer"
+   "description": "Where risk and cost pass to the buyer"
   }
  ],
  "index_web_pages_for_search": 0,

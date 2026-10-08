@@ -1,0 +1,905 @@
+{
+ "KNIT 360 Account": {
+  "account_currency": "FR-PADM-1.4.6: Currency Master",
+  "account_name": "FR-FIN-001: General Ledger -- account name",
+  "account_number": "FR-FIN-001: General Ledger -- account code",
+  "account_type": "FR-FIN-001: General Ledger -- what the account is used for. Drives which accounts a posting rule may select.",
+  "balance_must_be": "FR-FIN-001: General Ledger -- expected sign. A receivable holding a credit balance is usually an error.",
+  "company": "FR-PADM-1.1.1: a chart of accounts belongs to one company",
+  "disabled": "FR-FIN-001: BRD-DERIVED: a disabled account takes no new postings",
+  "is_group": "FR-FIN-001: BRD-DERIVED: a group node holds children and takes no postings",
+  "lft": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-FIN-001: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_account": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "root_type": "FR-FIN-001: General Ledger -- the five account roots. Determines whether a debit increases or decreases the balance."
+ },
+ "KNIT 360 Asset": {
+  "asset_identifier": "FR-AST-001 / FR-AST-002 / FR-AST-003: Asset/Machine identifier",
+  "asset_name": "FR-AST-001 / FR-AST-002 / FR-AST-003: asset name/model",
+  "commissioning_date": "FR-AST-001 / FR-AST-002 / FR-AST-003: commissioning date",
+  "company": "FR-AST-001 / FR-AST-002 / FR-AST-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "customer": "FR-AST-001 / FR-AST-002 / FR-AST-003: Customer link",
+  "iot_identifier": "FR-AST-001 / FR-AST-002 / FR-AST-003: MAC address / IoT identifier, optional",
+  "item_code": "FR-AST-001 / FR-AST-002 / FR-AST-003: Item Master link; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "knit360_business_status": "FR-AST-001 / FR-AST-002 / FR-AST-003: CD-002 'Asset' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "operating_parameters": "FR-AST-001 / FR-AST-002 / FR-AST-003: operating parameters",
+  "parent_asset": "FR-AST-001 / FR-AST-002 / FR-AST-003: parent equipment link (for sub-assemblies)",
+  "serial_number": "FR-AST-001 / FR-AST-002 / FR-AST-003: Serial Number",
+  "site_address": "FR-AST-001 / FR-AST-002 / FR-AST-003: Installation site address",
+  "site_contact_person": "FR-AST-001 / FR-AST-002 / FR-AST-003: contact person"
+ },
+ "KNIT 360 BOM": {
+  "company": "FR-MFG-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "is_active": "FR-MFG-001: BRD-DERIVED: current version flag",
+  "item_code": "FR-MFG-001: Bill of Materials (DR-C2C-008 Inputs); becomes a Link once the Item Master (FR-INV-001) is populated",
+  "items": "FR-MFG-001: Bill of Materials",
+  "quantity": "FR-MFG-001: BRD-DERIVED: BOM yield",
+  "version": "FR-MFG-001: BOM Management versioning (FR-MFG-001); revision locking is OQ-017"
+ },
+ "KNIT 360 BOM Item": {
+  "item_code": "FR-MFG-001: Bill of Materials components; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty": "FR-MFG-001: BRD-DERIVED: component quantity",
+  "uom": "FR-MFG-001: BRD-DERIVED"
+ },
+ "KNIT 360 Bin": {
+  "aisle": "FR-WH-002: target physical storage bins (aisle)",
+  "bin_code": "FR-WH-002: target physical storage bins",
+  "rack": "FR-WH-002: target physical storage bins (rack)",
+  "shelf": "FR-WH-002: target physical storage bins (shelf)",
+  "warehouse": "FR-WH-002: warehouse hierarchy (FR-WH-001)"
+ },
+ "KNIT 360 Branch": {
+  "address": "FR-PADM-1.1.2: address",
+  "branch_name": "FR-PADM-1.1.2: branch details",
+  "company": "FR-PADM-1.1.2: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+  "contact": "FR-PADM-1.1.2: contact",
+  "operating_hours_end": "FR-PADM-1.1.2: operating hours",
+  "operating_hours_start": "FR-PADM-1.1.2: operating hours",
+  "time_zone": "FR-PADM-1.1.2: time zone; valid values TBD"
+ },
+ "KNIT 360 Brand": {
+  "brand_name": "FR-INV-001: Item Master -- BRD-DERIVED: manufacturer or marque",
+  "description": "FR-INV-001: BRD-DERIVED: notes on the brand"
+ },
+ "KNIT 360 Business Unit": {
+  "business_unit_name": "FR-PADM-1.1.3: unit master",
+  "company": "FR-PADM-1.1.3: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+  "cost_center": "FR-PADM-1.1.3: cost center; becomes a Link once MOD-17 Finance masters exist",
+  "product_line": "FR-PADM-1.1.3: product line",
+  "profit_center": "FR-PADM-1.1.3: profit center; becomes a Link once MOD-17 Finance masters exist"
+ },
+ "KNIT 360 Company": {
+  "abbreviation": "FR-PADM-1.1.1: BRD-DERIVED: short code appended to account and cost centre names, so two companies can both own an account called 'Debtors'.",
+  "business_type": "FR-PADM-1.1.1: business type; enumeration TBD",
+  "company_name": "FR-PADM-1.1.1: company details",
+  "country": "FR-PADM-1.1.1: BRD-DERIVED from company details",
+  "default_bank_account": "FR-FIN-004: Cash & Bank -- the account bank payments settle through",
+  "default_cash_account": "FR-FIN-004: Cash & Bank -- the account cash payments settle through",
+  "default_cogs_account": "FR-INV-006: where the cost of stock that has been sold is charged.",
+  "default_cost_center": "FR-FIN-006: Cost Accounting -- attribution used when a document names none",
+  "default_currency": "FR-PADM-1.1.1: currency",
+  "default_expense_account": "FR-FIN-002: Accounts Payable -- the expense account a supplier invoice line debits",
+  "default_freight_account": "FR-FIN-001 / FR-PROC-006 Where freight and ancillary charges on a supplier's bill are posted. A direct expense, not part of the cost of the stock -- see OQ-025 and DEC-033 for why, and for what that costs.",
+  "default_income_account": "FR-FIN-003: Accounts Receivable -- the revenue account an invoice line credits",
+  "default_input_tax_account": "FR-TAX-001: where tax paid to a supplier is held until it is recovered.",
+  "default_output_tax_account": "FR-TAX-001: where tax charged to a customer is held until it is paid over. A liability, not income.",
+  "default_payable_account": "FR-FIN-002: Accounts Payable -- the account a supplier invoice credits",
+  "default_receivable_account": "FR-FIN-003: Accounts Receivable -- the account a customer invoice debits",
+  "default_stock_account": "FR-INV-006: where the value of stock on hand is held. An asset.",
+  "fiscal_year_end_date": "FR-PADM-1.1.1: fiscal year",
+  "fiscal_year_start_date": "FR-PADM-1.1.1: fiscal year",
+  "legal_entity": "FR-PADM-1.1.1: legal entity; enumeration TBD",
+  "round_off_account": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
+  "stock_received_but_not_billed": "FR-INV-006: holds the value of goods received whose supplier bill has not arrived. A liability -- the goods are ours and we owe for them.",
+  "tax_registration_number": "FR-PADM-1.1.1: tax registration",
+  "write_off_tolerance": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
+ },
+ "KNIT 360 Contact": {
+  "contact_name": "FR-CRM-004: Contacts (FR-CRM-004)",
+  "customer": "FR-CRM-004: BRD-DERIVED: contacts belong to the unified Customer Master",
+  "designation": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes",
+  "email": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
+  "is_primary": "FR-CRM-004: PROPOSED: DR-C2C-001 requires a primary contact channel before conversion",
+  "phone": "FR-CRM-004: contact details (DR-C2C-001 Inputs)"
+ },
+ "KNIT 360 Cost Center": {
+  "company": "FR-PADM-1.1.1: a cost centre belongs to one company",
+  "cost_center_name": "FR-FIN-006: Cost Accounting -- cost centre name",
+  "cost_center_number": "FR-FIN-006: Cost Accounting -- cost centre code",
+  "disabled": "FR-FIN-006: BRD-DERIVED: a disabled cost centre takes no new postings",
+  "is_group": "FR-FIN-001: BRD-DERIVED: a group node holds children and takes no postings",
+  "lft": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-FIN-001: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_cost_center": "FR-FIN-001: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-FIN-001: BRD-DERIVED: nested-set bound, maintained by the framework"
+ },
+ "KNIT 360 Customer": {
+  "address": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+  "company": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "customer_group": "FR-PADM-1.4.1: Customer Master -- segmentation",
+  "customer_name": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: unified Customer Master (DR-C2C-001)",
+  "customer_type": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: BRD-DERIVED; enumeration TBD",
+  "default_currency": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: currency must match an active Currency Master (DR-C2C-002)",
+  "default_price_list": "FR-SALES-004: Pricing & Discounts -- the list used for this customer",
+  "email": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+  "phone": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: contact details (DR-C2C-001 Inputs)",
+  "territory": "FR-CRM-003 / FR-CRM-004 / FR-PADM-1.4.1: assigned territory (DR-C2C-001 Inputs); territory master is BRD-DERIVED and TBD; now a master"
+ },
+ "KNIT 360 Customer Group": {
+  "customer_group_name": "FR-PADM-1.4.1: Customer Master -- BRD-DERIVED: how customers are segmented",
+  "default_price_list": "FR-SALES-004: Pricing & Discounts -- the list used for this group unless the customer overrides it",
+  "is_group": "FR-PADM-1.4.1: BRD-DERIVED: a group node holds children and is not selectable on a document",
+  "lft": "FR-PADM-1.4.1: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-PADM-1.4.1: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_customer_group": "FR-PADM-1.4.1: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-PADM-1.4.1: BRD-DERIVED: nested-set bound, maintained by the framework"
+ },
+ "KNIT 360 Delivery Note": {
+  "carrier_details": "FR-SALES-005: carrier details (DR-C2C-012 Inputs)",
+  "company": "FR-SALES-005: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "delivery_note_date": "FR-SALES-005: delivery note date (DR-C2C-012 Inputs)",
+  "driver_details": "FR-SALES-005: driver details (DR-C2C-012 Inputs)",
+  "items": "FR-SALES-005: BRD-DERIVED from the Sales Order reference",
+  "knit360_business_status": "FR-SALES-005: CD-002 lifecycle (PROPOSED, DR-C2C-012). Set only via knit360_core.business_status.engine.transition",
+  "packing_slip_id": "FR-SALES-005: Packing Slip ID (DR-C2C-012 Inputs)",
+  "sales_order": "FR-SALES-005: the Sales Order these goods were sold on, where there was one. Not required: a free replacement, a sample and a return to a supplier all leave the warehouse without one, and stock has to be able to move for each of them.",
+  "ship_to_address": "FR-SALES-005: ship-to address (DR-C2C-012 Inputs)",
+  "source_warehouse": "FR-SALES-005 / FR-INV-002: the warehouse the goods leave. Stock is counted per item per warehouse, so a dispatch that does not say where from cannot reduce anything.",
+  "tracking_number": "FR-SALES-005: tracking number (DR-C2C-012 Inputs)",
+  "vehicle_number": "FR-SALES-005: vehicle number (DR-C2C-012 Inputs)"
+ },
+ "KNIT 360 Delivery Note Item": {
+  "description": "FR-SALES-005: BRD-DERIVED",
+  "item_code": "FR-SALES-005 / FR-INV-002: a real item. Stock cannot be issued for something that does not exist, and a typed code would let it be.",
+  "qty": "FR-SALES-005: BRD-DERIVED: dispatched quantity",
+  "stock_value": "FR-INV-006: quantity times cost -- what left the warehouse in money.",
+  "valuation_rate": "FR-INV-006: what these units cost us, worked out by the stock ledger when they left. Not a selling price, and not typed."
+ },
+ "KNIT 360 Department": {
+  "company": "FR-PADM-1.1.4: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+  "cost_center": "FR-PADM-1.1.4: cost center; becomes a Link once MOD-17 Finance masters exist",
+  "department_name": "FR-PADM-1.1.4: department master",
+  "head": "FR-PADM-1.1.4: head; links to User until the Employee master (FR-PADM-1.4) exists",
+  "reporting_line": "FR-PADM-1.1.4: reporting line"
+ },
+ "KNIT 360 Designation": {
+  "description": "FR-PADM-1.4.4: BRD-DERIVED: what the role covers",
+  "designation_name": "FR-PADM-1.4.4: Employee Master -- job title"
+ },
+ "KNIT 360 Division": {
+  "business_area": "FR-PADM-1.1.5: business area",
+  "company": "FR-PADM-1.1.5: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+  "division_name": "FR-PADM-1.1.5: division master",
+  "kpi": "FR-PADM-1.1.5: KPI; structure TBD, the BRD gives no measure definition",
+  "strategy": "FR-PADM-1.1.5: strategy"
+ },
+ "KNIT 360 Employee": {
+  "branch": "FR-PADM-1.1.2: Branch Master",
+  "company": "FR-PADM-1.1.1: the company that employs them",
+  "date_of_joining": "FR-PADM-1.4.4: Employee Master -- start date",
+  "date_of_leaving": "FR-PADM-1.4.4: Employee Master -- end date, when they have left",
+  "department": "FR-PADM-1.1.4: Department Master",
+  "designation": "FR-PADM-1.4.4: Employee Master -- job title",
+  "email": "FR-PADM-1.4.4: Employee Master -- contact",
+  "employee_name": "FR-PADM-1.4.4: Employee Master -- full name",
+  "employee_number": "FR-PADM-1.4.4: Employee Master -- payroll or staff number",
+  "is_active": "FR-PADM-1.4.4: BRD-DERIVED: currently employed",
+  "phone": "FR-PADM-1.4.4: Employee Master -- contact",
+  "user": "FR-PADM-1.2.1: User Management -- the login this person signs in with, when they have one"
+ },
+ "KNIT 360 Enquiry": {
+  "company": "FR-SALES-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "customer": "FR-SALES-001: Customer reference (DR-C2C-003 Inputs)",
+  "customer_target_price": "FR-SALES-001: customer target price, optional (DR-C2C-003 Inputs)",
+  "delivery_location": "FR-SALES-001: delivery location (DR-C2C-003 Inputs)",
+  "items": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+  "knit360_business_status": "FR-SALES-001: CD-002 lifecycle (PROPOSED, DR-C2C-003). Set only via knit360_core.business_status.engine.transition",
+  "opportunity": "FR-SALES-001: Opportunity reference, optional (DR-C2C-003 Inputs)",
+  "receipt_date": "FR-SALES-001: enquiry receipt date (DR-C2C-003 Inputs)",
+  "response_deadline": "FR-SALES-001: requested response deadline (DR-C2C-003 Inputs)",
+  "technical_specifications": "FR-SALES-001: technical specifications (DR-C2C-003 Inputs)",
+  "title": "FR-SALES-001: BRD-DERIVED: identifying label"
+ },
+ "KNIT 360 Enquiry Item": {
+  "description": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+  "item_code": "FR-SALES-001: item list (DR-C2C-003 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+  "qty": "FR-SALES-001: item list (DR-C2C-003 Inputs)",
+  "uom": "FR-SALES-001: BRD-DERIVED; becomes a Link once the UOM Master (FR-PADM-1.4.7) exists; now a master"
+ },
+ "KNIT 360 Field Work Order": {
+  "actual_labor_hours": "FR-MFS-002 / FR-MFS-007: Actual labor hours",
+  "asset": "FR-MFS-002 / FR-MFS-007: Asset identifier",
+  "assigned_technician": "FR-MFS-002 / FR-MFS-007: Assigned technician",
+  "company": "FR-MFS-002 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "customer_signature": "FR-MFS-002 / FR-MFS-007: Customer signature",
+  "findings": "FR-MFS-002 / FR-MFS-007: Findings/Action notes",
+  "planned_end": "FR-MFS-002 / FR-MFS-007: Planned work end",
+  "planned_start": "FR-MFS-002 / FR-MFS-007: Planned work start",
+  "service_request": "FR-MFS-002 / FR-MFS-007: Service Request reference",
+  "sop": "FR-MFS-002 / FR-MFS-007: Standard operating procedures (SOP)",
+  "travel_hours": "FR-MFS-002 / FR-MFS-007: Travel hours",
+  "warranty_entitlement": "FR-MFS-002 / FR-MFS-007: Warranty entitlement flag (DR-A2S-006 Inputs)"
+ },
+ "KNIT 360 Fiscal Year": {
+  "is_closed": "FR-FIN-007: BRD-DERIVED: a closed year takes no further postings",
+  "year_end_date": "FR-FIN-007: Financial Reporting -- period end",
+  "year_name": "FR-FIN-007: Financial Reporting -- the period a report covers",
+  "year_start_date": "FR-FIN-007: Financial Reporting -- period start"
+ },
+ "KNIT 360 GL Entry": {
+  "account": "FR-FIN-001: General Ledger -- the account debited or credited",
+  "against_account": "FR-FIN-001: General Ledger -- the contra side, for readability",
+  "against_voucher": "FR-FIN-003: Accounts Receivable -- the invoice a payment is applied to",
+  "against_voucher_type": "FR-FIN-003: Accounts Receivable -- the document being settled",
+  "company": "FR-PADM-1.1.1: the company whose books this entry belongs to",
+  "cost_center": "FR-FIN-006: Cost Accounting -- attribution",
+  "credit": "FR-FIN-001: General Ledger -- credit amount",
+  "debit": "FR-FIN-001: General Ledger -- debit amount",
+  "fiscal_year": "FR-FIN-007: Financial Reporting -- the period this entry falls in",
+  "is_cancelled": "FR-FIN-001: General Ledger -- a reversed entry is flagged, never deleted. CD-002 requires reversal rather than rewriting.",
+  "party": "FR-FIN-002 / FR-FIN-003: the customer or supplier this entry is against",
+  "party_type": "FR-FIN-002 / FR-FIN-003: which subsidiary ledger -- customer or supplier",
+  "posting_date": "FR-FIN-001: General Ledger -- the date the entry lands in the books",
+  "remarks": "FR-FIN-001: General Ledger -- narration",
+  "voucher_no": "FR-FIN-001: General Ledger -- the document that posted this entry",
+  "voucher_type": "FR-FIN-001: General Ledger -- the doctype that posted this entry"
+ },
+ "KNIT 360 Goods Receipt": {
+  "carrier_name": "FR-PROC-005 / FR-WH-001: carrier name",
+  "challan_date": "FR-PROC-005 / FR-WH-001: supplier delivery challan date",
+  "challan_number": "FR-PROC-005 / FR-WH-001: supplier delivery challan / packing slip number",
+  "company": "FR-PROC-005 / FR-WH-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "items": "FR-PROC-005 / FR-WH-001: received item codes, arrived quantities",
+  "knit360_business_status": "FR-PROC-005 / FR-WH-001: CD-002 'Goods Receipt' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "purchase_order": "FR-PROC-005 / FR-WH-001: the Purchase Order these goods were ordered on, where there was one. Not required: opening stock, a customer return and a free sample all arrive without a purchase order, and no client can start using the system without entering opening stock. Matching a receipt against its order is three-way matching, which is `W7` and not built.",
+  "receiving_warehouse": "FR-PROC-005 / FR-INV-002: where the goods are put away. Stock is counted per item per warehouse.",
+  "vehicle_number": "FR-PROC-005 / FR-WH-001: vehicle number"
+ },
+ "KNIT 360 Goods Receipt Item": {
+  "accepted_qty": "FR-PROC-005 / FR-INV-002: arrived less rejected at arrival. This, not the quantity on the lorry, is what enters stock.",
+  "batch_no": "FR-PROC-005: batch/lot numbers (DR-P2P-008 Inputs)",
+  "expiry_date": "FR-PROC-005: manufacturer expiry dates (DR-P2P-008 Inputs)",
+  "item_code": "FR-PROC-005 / FR-INV-002: a real item, so what arrives can be valued.",
+  "qty_arrived": "FR-PROC-005: arrived quantities",
+  "qty_rejected_on_arrival": "FR-PROC-005: rejected on arrival (damaged packaging)",
+  "rate": "FR-INV-006: what one unit cost. This is the figure every later issue of this stock is costed from, so stock received at nil is refused rather than valued at nothing."
+ },
+ "KNIT 360 Holiday": {
+  "description": "FR-HR-003: why the day is a holiday.",
+  "holiday_date": "FR-HR-003: a single non-working day.",
+  "is_weekly_off": "FR-HR-003: set when the row came from a recurring weekly rest day rather than a named holiday."
+ },
+ "KNIT 360 Holiday List": {
+  "company": "FR-HR-003: the company this calendar belongs to.",
+  "from_date": "FR-HR-003: first day the calendar covers.",
+  "holiday_list_name": "FR-HR-003: names the calendar, e.g. the year and the location it applies to.",
+  "holidays": "FR-HR-003: the days themselves.",
+  "to_date": "FR-HR-003: last day the calendar covers.",
+  "total_holidays": "FR-HR-003: count of rows below. Computed, never typed."
+ },
+ "KNIT 360 Incoterm": {
+  "code": "FR-SALES-005: BRD-DERIVED: the three-letter Incoterms code used on the document",
+  "description": "FR-SALES-005: BRD-DERIVED: where risk and cost pass to the buyer",
+  "title": "FR-SALES-005: BRD-DERIVED: what the code stands for"
+ },
+ "KNIT 360 Inspection Parameter": {
+  "parameter": "FR-QLTY-001: inspection template parameters",
+  "specification": "FR-QLTY-001: observed test parameter readings"
+ },
+ "KNIT 360 Inspection Reading": {
+  "parameter": "FR-QLTY-002: observed test parameter readings",
+  "reading": "FR-QLTY-002: observed test parameter readings",
+  "specification": "FR-QLTY-002: inspection template"
+ },
+ "KNIT 360 Inspection Template": {
+  "item_code": "FR-QLTY-001: Item Master (DR-P2P-007 Inputs); becomes a Link once the Item Master (FR-INV-001) is populated",
+  "parameters": "FR-QLTY-001: inspection template parameters",
+  "template_name": "FR-QLTY-001: inspection template (DR-P2P-007 Inputs)"
+ },
+ "KNIT 360 Item": {
+  "brand": "FR-INV-001: Item Master -- BRD-DERIVED: brand the item is sold under",
+  "disabled": "FR-INV-001: BRD-DERIVED: withdrawn from selection without losing history",
+  "hsn_sac_code": "FR-INV-001 / FR-PADM-1.4.3: HSN/SAC (FR-PADM-1.4 Item Master); BRD example 8514",
+  "is_batch_tracked": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)",
+  "is_purchase_item": "FR-INV-001: BRD-DERIVED: may appear on a purchase order",
+  "is_sales_item": "FR-INV-001: BRD-DERIVED: may appear on a quotation or order",
+  "is_serial_tracked": "FR-INV-001 / FR-PADM-1.4.3: Batch / Serial Tracking (FR-INV-003)",
+  "item_code": "FR-INV-001 / FR-PADM-1.4.3: item code (FR-PADM-1.4 Item Master)",
+  "item_description": "FR-INV-001: Item Master -- BRD-DERIVED: default description copied onto document lines",
+  "item_group": "FR-INV-001 / FR-PADM-1.4.3: category (FR-PADM-1.4 Item Master); category master is TBD; now a master, so two spellings cannot mean two groups",
+  "item_name": "FR-INV-001 / FR-PADM-1.4.3: BRD-DERIVED",
+  "safety_stock": "FR-INV-001 / FR-PADM-1.4.3: safety stock thresholds (DR-C2C-008 Inputs)",
+  "stock_uom": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; now a master; 'Nos' and 'nos' were previously different units",
+  "valuation_method": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies."
+ },
+ "KNIT 360 Item Group": {
+  "description": "FR-INV-001: BRD-DERIVED: what belongs in this group",
+  "is_group": "FR-INV-001: BRD-DERIVED: a group node holds children and is not selectable on a document",
+  "item_group_name": "FR-INV-001: Item Master -- classification of items",
+  "lft": "FR-INV-001: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-INV-001: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_item_group": "FR-INV-001: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-INV-001: BRD-DERIVED: nested-set bound, maintained by the framework"
+ },
+ "KNIT 360 Item Price": {
+  "currency": "FR-PADM-1.4.6: Currency Master -- copied from the price list",
+  "item_code": "FR-SALES-004: Pricing & Discounts -- the item being priced",
+  "price_list": "FR-SALES-004: Pricing & Discounts -- the list this price belongs to",
+  "rate": "FR-SALES-004: Pricing & Discounts -- price per unit",
+  "uom": "FR-PADM-1.4.7: UOM Master -- the unit the rate is per",
+  "valid_from": "FR-SALES-004: Pricing & Discounts -- when this price takes effect",
+  "valid_upto": "FR-SALES-004: Pricing & Discounts -- when it lapses"
+ },
+ "KNIT 360 Journal Entry": {
+  "accounts": "FR-FIN-001: General Ledger -- the lines of the entry",
+  "company": "FR-PADM-1.1.1: the company whose books this affects",
+  "entry_type": "FR-FIN-001 / FR-FIN-004: what kind of entry this is. Cash and Bank entries are the FR-FIN-004 treasury cases.",
+  "knit360_business_status": "FR-FIN-001: CD-002 lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "posting_date": "FR-FIN-001: General Ledger -- the date the entry lands in the books",
+  "reference_date": "FR-FIN-004: Cash & Bank -- date on the instrument",
+  "reference_number": "FR-FIN-004: Cash & Bank -- cheque or transfer reference",
+  "total_credit": "FR-FIN-001: General Ledger -- sum of credits, computed",
+  "total_debit": "FR-FIN-001: General Ledger -- sum of debits, computed",
+  "user_remark": "FR-FIN-001: General Ledger -- narration"
+ },
+ "KNIT 360 Journal Entry Account": {
+  "account": "FR-FIN-001: General Ledger -- account for this line",
+  "cost_center": "FR-FIN-006: Cost Accounting -- attribution",
+  "credit": "FR-FIN-001: General Ledger -- credit amount",
+  "debit": "FR-FIN-001: General Ledger -- debit amount",
+  "party": "FR-FIN-002 / FR-FIN-003: the party this line is against",
+  "party_type": "FR-FIN-002 / FR-FIN-003: subsidiary ledger selector",
+  "reference_name": "FR-FIN-003: the document this line settles",
+  "reference_type": "FR-FIN-003: the document type this line settles"
+ },
+ "KNIT 360 Lead": {
+  "address": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+  "company": "FR-CRM-001: BRD-DERIVED: Company and Branch context active (DR-C2C-001 Preconditions)",
+  "converted_customer": "FR-CRM-001: conversion creates or links a unified Customer Master (DR-C2C-001)",
+  "converted_opportunity": "FR-CRM-001: conversion generates an Opportunity (DR-C2C-001)",
+  "email": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+  "estimated_requirement": "FR-CRM-001: estimated requirement (DR-C2C-001 Inputs)",
+  "knit360_business_status": "FR-CRM-001: CD-002 lifecycle (PROPOSED, DR-C2C-001). Set only via knit360_core.business_status.engine.transition",
+  "lead_name": "FR-CRM-001: prospect name (DR-C2C-001 Inputs)",
+  "lead_source": "FR-CRM-001: lead source (DR-C2C-001 Inputs); source master is BRD-DERIVED and TBD",
+  "organization_name": "FR-CRM-001: organization name (DR-C2C-001 Inputs)",
+  "phone": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+  "territory": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs); now a master"
+ },
+ "KNIT 360 Leave Allocation": {
+  "carried_forward": "FR-HR-003: days brought in from the previous period. Carrying forward is not calculated automatically; this is entered.",
+  "company": "FR-HR-003: the employing company.",
+  "description": "FR-HR-003: why this allocation was made.",
+  "employee": "FR-HR-001: who is being given leave.",
+  "from_date": "FR-HR-003: first day the allocation is usable.",
+  "knit360_business_status": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition.",
+  "leave_period": "FR-HR-003: the period this allocation belongs to.",
+  "leave_type": "FR-HR-003: which leave is being given.",
+  "new_leaves_allocated": "FR-HR-003: days granted for this period.",
+  "to_date": "FR-HR-003: last day the allocation is usable.",
+  "total_leaves_allocated": "FR-HR-003: new plus carried forward. Computed, never typed."
+ },
+ "KNIT 360 Leave Application": {
+  "company": "FR-HR-003: the employing company.",
+  "employee": "FR-HR-001: who is applying.",
+  "from_date": "FR-HR-003: first day of leave.",
+  "half_day": "FR-HR-003: counts the leave as half a day. Only meaningful on a single-day application.",
+  "holiday_list": "FR-HR-003: the calendar whose days are skipped. Taken from the leave period when left blank.",
+  "knit360_business_status": "FR-HR-003: CD-002 lifecycle. Set only via knit360_core.business_status.engine.transition.",
+  "leave_approver": "FR-HR-003: who is to decide. Approval routing is not built; this records the intended approver.",
+  "leave_balance": "FR-HR-003: the balance when this application was last saved. A record of what was checked, not a live figure.",
+  "leave_type": "FR-HR-003: which balance is being drawn on.",
+  "posting_date": "FR-HR-003: the date the application was made.",
+  "reason": "FR-HR-003: why the leave is being taken.",
+  "to_date": "FR-HR-003: last day of leave.",
+  "total_leave_days": "FR-HR-003: working days between the two dates, after skipping holidays. Computed, never typed."
+ },
+ "KNIT 360 Leave Ledger Entry": {
+  "company": "FR-HR-003: the company the balance belongs to.",
+  "employee": "FR-HR-001: whose balance this entry moves.",
+  "from_date": "FR-HR-003: first day covered, for an application.",
+  "is_cancelled": "FR-HR-003: set on both the original and its reversal when a voucher is cancelled. Nothing is ever deleted.",
+  "leave_period": "FR-HR-003: the period the entry falls in.",
+  "leave_type": "FR-HR-003: which balance it moves.",
+  "leaves": "FR-HR-003: days, signed. Positive grants balance, negative consumes it. The balance is the sum of these and is never stored anywhere.",
+  "posting_date": "FR-HR-003: the date the entry takes effect.",
+  "remarks": "FR-HR-003: why the entry exists.",
+  "to_date": "FR-HR-003: last day covered, for an application.",
+  "voucher_no": "FR-HR-003: the document that caused this entry.",
+  "voucher_type": "FR-HR-003: the doctype that caused this entry."
+ },
+ "KNIT 360 Leave Period": {
+  "company": "FR-HR-003: the company the period applies to.",
+  "from_date": "FR-HR-003: first day of the period.",
+  "holiday_list": "FR-HR-003: the calendar leave in this period is counted against. Assigning different calendars to individual employees is not built; an application may name its own list instead.",
+  "is_active": "FR-HR-003: an inactive period takes no new allocations.",
+  "period_name": "FR-HR-003: names the period, usually a year.",
+  "to_date": "FR-HR-003: last day of the period."
+ },
+ "KNIT 360 Leave Type": {
+  "allow_negative_balance": "FR-HR-003: whether an application may exceed the balance. Off by default, so an over-application is refused rather than silently allowed.",
+  "description": "FR-HR-003: what this leave is for.",
+  "include_holidays_in_leave": "FR-HR-003: when set, holidays falling inside a leave period are counted as leave days. When clear they are skipped.",
+  "is_carry_forward": "FR-HR-003: whether an unused balance may be carried into the next leave period.",
+  "is_paid_leave": "FR-HR-003: whether days taken are paid. Unpaid leave still consumes a balance but is treated differently by payroll, which is not built.",
+  "leave_type_name": "FR-HR-003: e.g. Casual Leave, Sick Leave.",
+  "max_leaves_allowed": "FR-HR-003: an upper bound on what may be allocated in one leave period. Zero means no limit is enforced."
+ },
+ "KNIT 360 Location": {
+  "company": "FR-PADM-1.1.6: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
+  "geo_location": "FR-PADM-1.1.6: geo location",
+  "latitude": "FR-PADM-1.1.6: GPS",
+  "location_name": "FR-PADM-1.1.6: location master",
+  "location_type": "FR-PADM-1.1.6: plant/warehouse; enumeration TBD",
+  "longitude": "FR-PADM-1.1.6: GPS"
+ },
+ "KNIT 360 Maintenance Schedule": {
+  "asset": "FR-MFS-003 / FR-MFS-004: Asset reference",
+  "company": "FR-MFS-003 / FR-MFS-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "service_contract": "FR-MFS-003 / FR-MFS-004: Service contract linkage",
+  "tasks": "FR-MFS-003 / FR-MFS-004: Maintenance tasks/checklists",
+  "trigger_type": "FR-MFS-003 / FR-MFS-004: Trigger rules (calendar interval, operating hours, run cycles)",
+  "trigger_value": "FR-MFS-003 / FR-MFS-004: Trigger rules"
+ },
+ "KNIT 360 Material Plan": {
+  "bom": "FR-MRP-002 / FR-MRP-004: Bill of Materials (BOM)",
+  "company": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "items": "FR-MRP-002 / FR-MRP-004: material requirements explosion",
+  "plan_date": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED",
+  "sales_order": "FR-MRP-002 / FR-MRP-004: Sales Order shortage lines",
+  "title": "FR-MRP-002 / FR-MRP-004: BRD-DERIVED: identifying label"
+ },
+ "KNIT 360 Material Plan Item": {
+  "item_code": "FR-MRP-002: material requirements; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "on_hand_qty": "FR-MRP-002: on-hand stock",
+  "required_by": "FR-MRP-002: required delivery dates",
+  "required_qty": "FR-MRP-002: Sales Order shortage lines",
+  "shortage_qty": "FR-MRP-002: Sales Order shortage lines"
+ },
+ "KNIT 360 Mode of Payment": {
+  "default_account": "FR-FIN-004: Cash & Bank -- the cash or bank account this mode settles through",
+  "disabled": "FR-FIN-004: BRD-DERIVED: withdrawn from selection",
+  "mode_name": "FR-FIN-004: Cash & Bank -- how money moves",
+  "payment_type": "FR-FIN-004: Cash & Bank -- instrument class"
+ },
+ "KNIT 360 Non Conformance Report": {
+  "company": "FR-QLTY-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "corrective_action": "FR-QLTY-006: CAPA (FR-QLTY-006)",
+  "item_code": "FR-QLTY-006: BRD-DERIVED; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "nonconformance_description": "FR-QLTY-006: NCR (FR-QLTY-006)",
+  "preventive_action": "FR-QLTY-006: CAPA (FR-QLTY-006)",
+  "quality_inspection": "FR-QLTY-006: PROPOSED: QI rejection raises an NCR (doc 31, candidate mapping)",
+  "title": "FR-QLTY-006: BRD-DERIVED: identifying label"
+ },
+ "KNIT 360 Opportunity": {
+  "company": "FR-CRM-002 / FR-CRM-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "currency": "FR-CRM-002 / FR-CRM-006: currency must match an active Currency Master (DR-C2C-002)",
+  "customer": "FR-CRM-002 / FR-CRM-006: Customer Master reference (DR-C2C-002 Inputs)",
+  "estimated_deal_value": "FR-CRM-002 / FR-CRM-006: estimated deal value (DR-C2C-002 Inputs); must be positive",
+  "expected_closing_date": "FR-CRM-002 / FR-CRM-006: expected closing date (DR-C2C-002 Inputs); must be on or after creation date",
+  "items": "FR-CRM-002 / FR-CRM-006: item/service interest list (DR-C2C-002 Inputs)",
+  "knit360_business_status": "FR-CRM-002 / FR-CRM-006: CD-002 lifecycle (PROPOSED, DR-C2C-002). Set only via knit360_core.business_status.engine.transition",
+  "loss_reason": "FR-CRM-002 / FR-CRM-006: PROPOSED: DR-C2C-002 prompts for a loss reason code when marked Lost",
+  "probability": "FR-CRM-002 / FR-CRM-006: probability percentage (DR-C2C-002 Inputs); default by stage is PROPOSED",
+  "sales_stage": "FR-CRM-002 / FR-CRM-006: sales stage (DR-C2C-002 Inputs); stage master is tenant-configured and TBD",
+  "source_lead": "FR-CRM-002 / FR-CRM-006: links upstream to Lead if applicable (DR-C2C-002)",
+  "title": "FR-CRM-002 / FR-CRM-006: Opportunity title (DR-C2C-002 Inputs)"
+ },
+ "KNIT 360 Opportunity Item": {
+  "description": "FR-CRM-002: BRD-DERIVED",
+  "item_code": "FR-CRM-002: item/service interest list (DR-C2C-002 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+  "qty": "FR-CRM-002: BRD-DERIVED"
+ },
+ "KNIT 360 Payment Allocation": {
+  "allocated_amount": "FR-FIN-002: invoice allocation schedule",
+  "outstanding_amount": "FR-FIN-002: what that document still owed when this was saved, read from the ledger. Shown so an allocation is not typed blind.",
+  "reference_doctype": "FR-FIN-002: which kind of document this part of the payment settles.",
+  "reference_name": "FR-FIN-002: the document this settles. A real reference, so an allocation cannot point at an invoice that was never raised."
+ },
+ "KNIT 360 Payment Entry": {
+  "allocated_total": "FR-FIN-002 / FR-FIN-004: the part of this payment matched to documents, computed.",
+  "allocations": "FR-FIN-002 / FR-FIN-004: invoice allocation schedule",
+  "amount": "FR-FIN-002 / FR-FIN-004: disbursement amount / remittance amount",
+  "bank_account": "FR-FIN-002 / FR-FIN-004: the bank or cash account the money moved through. Debited on a receipt, credited on a payment.",
+  "company": "FR-FIN-002 / FR-FIN-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "early_payment_discount": "FR-FIN-002 / FR-FIN-004: early payment discounts",
+  "knit360_business_status": "FR-FIN-002 / FR-FIN-004: CD-002 'Payment Entry' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "party": "FR-FIN-002 / FR-FIN-004: who paid or was paid. A real reference, so a payment cannot name a party that does not exist.",
+  "party_type": "FR-FIN-002 / FR-FIN-004: whether this settles with a customer or a supplier.",
+  "payment_date": "FR-FIN-002 / FR-FIN-004: payment date",
+  "payment_direction": "FR-FIN-002 / FR-FIN-004: Receive settles a customer's invoice (DR-A2S-010); Pay settles a supplier's bill (DR-P2P-011).",
+  "payment_mode": "FR-FIN-002 / FR-FIN-004: how the money moved (NEFT, RTGS, cheque, cash).",
+  "unallocated_amount": "FR-FIN-002 / FR-FIN-004: the part not matched to any document. It is an advance held for the party, not income, and can be applied to a later invoice. Computed."
+ },
+ "KNIT 360 Payment Term": {
+  "credit_days": "FR-FIN-003: Accounts Receivable -- days until due",
+  "description": "FR-FIN-003: Accounts Receivable -- the term as written to the customer",
+  "invoice_portion": "FR-FIN-003: Accounts Receivable -- share of the invoice due under this term, for staged terms",
+  "term_name": "FR-FIN-003: Accounts Receivable -- named credit term"
+ },
+ "KNIT 360 Payment Terms Template": {
+  "template_name": "FR-FIN-003: Accounts Receivable -- named set of terms",
+  "terms": "FR-FIN-003: Accounts Receivable -- the staged terms"
+ },
+ "KNIT 360 Payment Terms Template Row": {
+  "credit_days": "FR-FIN-003: Accounts Receivable -- days until due",
+  "invoice_portion": "FR-FIN-003: Accounts Receivable -- share due under this term",
+  "payment_term": "FR-FIN-003: Accounts Receivable -- the term applied"
+ },
+ "KNIT 360 Price List": {
+  "applies_to": "FR-SALES-004: Pricing & Discounts -- whether this list prices sales or purchases",
+  "currency": "FR-PADM-1.4.6: Currency Master -- prices on one list are all in one currency",
+  "disabled": "FR-SALES-004: BRD-DERIVED: withdrawn from selection",
+  "is_default": "FR-SALES-004: BRD-DERIVED: used when a document names no list",
+  "price_list_name": "FR-SALES-004: Pricing & Discounts -- a named set of prices"
+ },
+ "KNIT 360 Purchase Order": {
+  "company": "FR-PROC-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "grand_total": "FR-PROC-004 Net total plus tax. What the supplier is committed to.",
+  "incoterms": "FR-PROC-004: incoterms",
+  "items": "FR-PROC-004: line items",
+  "knit360_business_status": "FR-PROC-004: CD-002 'Purchase Order' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-PROC-004 Sum of the line amounts, before tax.",
+  "order_date": "FR-PROC-004: order date",
+  "payment_terms": "FR-PROC-004: payment terms",
+  "price_list": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business.",
+  "ship_to_warehouse": "FR-PROC-004: ship-to warehouse location",
+  "supplier": "FR-PROC-004: supplier reference",
+  "supplier_quotation": "FR-PROC-004: Supplier Quotation reference",
+  "tax_template": "FR-PROC-004: tax template",
+  "total_taxes": "FR-PROC-004 The tax template's rates applied to the net total."
+ },
+ "KNIT 360 Purchase Order Item": {
+  "amount": "FR-PROC-004 qty x rate less the line discount. Computed by knit360_core.pricing.totals.",
+  "description": "FR-PROC-004: line items (descriptions)",
+  "discount_percentage": "FR-PROC-004: line items (discounts)",
+  "item_code": "FR-PROC-004: line items (codes); becomes a Link once the Item Master (FR-INV-001) is populated",
+  "price_list_rate": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible.",
+  "qty": "FR-PROC-004: line items (quantities)",
+  "rate": "FR-PROC-004: line items (agreed rates)",
+  "schedule_date": "FR-PROC-004: delivery schedule per item",
+  "uom": "FR-PROC-004: line items (UOM)"
+ },
+ "KNIT 360 Purchase Requisition": {
+  "company": "FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "items": "FR-PROC-001: requested items/services",
+  "required_by": "FR-PROC-001: delivery deadlines (DR-P2P-003 Inputs)",
+  "title": "FR-PROC-001: BRD-DERIVED: identifying label"
+ },
+ "KNIT 360 Purchase Requisition Item": {
+  "description": "FR-PROC-001: BRD-DERIVED",
+  "item_code": "FR-PROC-001: requested items; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty": "FR-PROC-001: quantities",
+  "required_by": "FR-PROC-001: delivery deadlines"
+ },
+ "KNIT 360 Putaway Task": {
+  "accepted_qty": "FR-WH-003 / FR-INV-002: accepted quantities",
+  "company": "FR-WH-003 / FR-INV-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "goods_receipt": "FR-WH-003 / FR-INV-002: Goods Receipt reference",
+  "item_code": "FR-WH-003 / FR-INV-002: item codes; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "knit360_business_status": "FR-WH-003 / FR-INV-002: CD-002 'Putaway Task' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "quality_inspection": "FR-WH-003 / FR-INV-002: Quality Inspection reference",
+  "target_bin": "FR-WH-003 / FR-INV-002: target physical storage bins"
+ },
+ "KNIT 360 Quality Inspection": {
+  "batch_no": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: lot/batch number",
+  "company": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "inspection_template": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: inspection template",
+  "inspection_type": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Incoming / In-Process / Final (FR-QLTY-002..004); enumeration TBD",
+  "item_code": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Item Master; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "knit360_business_status": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: CD-002 'Quality Inspection' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "purchase_order": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Purchase Order reference",
+  "readings": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: observed test parameter readings",
+  "reference_name": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: Reference Goods Receipt ID",
+  "sample_size": "FR-QLTY-001 / FR-QLTY-002 / FR-QLTY-006: sample size"
+ },
+ "KNIT 360 Quotation": {
+  "company": "FR-SALES-002 / FR-SALES-004: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "currency": "FR-SALES-002 / FR-SALES-004: currency (DR-C2C-004 Inputs)",
+  "customer": "FR-SALES-002 / FR-SALES-004: Customer reference (DR-C2C-004 Inputs)",
+  "enquiry": "FR-SALES-002 / FR-SALES-004: Enquiry reference (DR-C2C-004 Inputs)",
+  "grand_total": "FR-SALES-004 Net total plus tax. What the customer is quoted.",
+  "items": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+  "knit360_business_status": "FR-SALES-002 / FR-SALES-004: CD-002 lifecycle (PROPOSED, DR-C2C-004). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-SALES-004 Sum of the line amounts, before tax.",
+  "opportunity": "FR-SALES-002 / FR-SALES-004: Opportunity reference (DR-C2C-004 Inputs)",
+  "payment_terms": "FR-SALES-002 / FR-SALES-004: payment terms (DR-C2C-004 Inputs)",
+  "price_list": "FR-SALES-002 / FR-SALES-004: price list (DR-C2C-004 Inputs); price list master is BRD-DERIVED and TBD; now a master (FR-SALES-004)",
+  "tax_template": "FR-SALES-004 Rates applied to the net total (FR-SALES-004). A Link, so a template that does not exist is refused.",
+  "total_taxes": "FR-SALES-004 The tax template's rates applied to the net total (FR-SALES-004).",
+  "valid_till": "FR-SALES-002 / FR-SALES-004: quotation validity expiry date (DR-C2C-004 Inputs)"
+ },
+ "KNIT 360 Quotation Item": {
+  "amount": "FR-SALES-004 qty x unit rate less the line discount. Computed by knit360_core.pricing.totals, never typed.",
+  "description": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+  "discount_percentage": "FR-SALES-002 / FR-SALES-004: line items: discount percentage (DR-C2C-004 Inputs); FR-SALES-004",
+  "item_code": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+  "price_list_rate": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible.",
+  "qty": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+  "unit_rate": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs)",
+  "uom": "FR-SALES-002 / FR-SALES-004: line items (DR-C2C-004 Inputs); now a master"
+ },
+ "KNIT 360 RFQ Item": {
+  "description": "FR-PROC-002: requested items/services",
+  "item_code": "FR-PROC-002: requested items/services; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty": "FR-PROC-002: quantities"
+ },
+ "KNIT 360 RFQ Supplier": {
+  "responded": "FR-PROC-002: BRD-DERIVED: bid tracking",
+  "supplier": "FR-PROC-002: target supplier list"
+ },
+ "KNIT 360 Request for Quotation": {
+  "bid_closing_date": "FR-PROC-002: bid submission deadline (bid_closing_date)",
+  "company": "FR-PROC-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "delivery_deadline": "FR-PROC-002: delivery deadlines",
+  "items": "FR-PROC-002: requested items/services, quantities",
+  "knit360_business_status": "FR-PROC-002: CD-002 'Request for Quotation' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "requisition": "FR-PROC-002: requisition reference, optional",
+  "suppliers": "FR-PROC-002: target supplier list",
+  "technical_drawings_boq": "FR-PROC-002: technical drawings/BOQ",
+  "terms_and_conditions": "FR-PROC-002: terms and conditions",
+  "title": "FR-PROC-002: BRD-DERIVED: identifying label"
+ },
+ "KNIT 360 Sales Invoice": {
+  "company": "FR-PADM-1.1.1: the company issuing the invoice",
+  "currency": "FR-PADM-1.4.6: Currency Master",
+  "customer": "FR-FIN-003: Accounts Receivable -- the party billed",
+  "debit_to": "FR-FIN-003: the receivable account this invoice debits. Defaults from the company.",
+  "delivery_note": "FR-SALES-005: BRD-DERIVED: the dispatch being billed. DR-C2C requires dispatch before invoice.",
+  "due_date": "FR-FIN-003: Accounts Receivable -- when payment falls due",
+  "grand_total": "FR-FIN-003: Accounts Receivable -- net plus taxes, computed",
+  "items": "FR-FIN-003: Accounts Receivable -- what is billed",
+  "knit360_business_status": "FR-FIN-003: CD-002 lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-FIN-003: Accounts Receivable -- sum of line amounts, computed",
+  "outstanding_amount": "FR-FIN-003: Accounts Receivable -- grand total less what has been settled against it",
+  "payment_terms": "FR-FIN-003: Accounts Receivable -- agreed terms",
+  "posting_date": "FR-FIN-001: General Ledger -- the date the invoice lands in the books",
+  "price_list": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business.",
+  "sales_order": "FR-SALES-003: BRD-DERIVED: the order being billed",
+  "tax_template": "FR-TAX-001: the tax treatment applied",
+  "total_taxes": "FR-TAX-001: tax total, computed"
+ },
+ "KNIT 360 Sales Invoice Item": {
+  "amount": "FR-FIN-003: Accounts Receivable -- qty x rate, computed",
+  "cost_center": "FR-FIN-006: Cost Accounting -- attribution",
+  "description": "FR-FIN-003: Accounts Receivable -- line description",
+  "income_account": "FR-FIN-001 / FR-FIN-003: the revenue account this line credits. Defaults from the company.",
+  "item_code": "FR-FIN-003: Accounts Receivable -- what is being billed",
+  "price_list_rate": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible.",
+  "qty": "FR-FIN-003: Accounts Receivable -- billed quantity",
+  "rate": "FR-FIN-003: Accounts Receivable -- unit price",
+  "uom": "FR-PADM-1.4.7: UOM Master; the master itself is not yet built; now a master"
+ },
+ "KNIT 360 Sales Order": {
+  "billing_address": "FR-SALES-003: billing address (DR-C2C-005 Inputs)",
+  "company": "FR-SALES-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "currency": "FR-SALES-003 The currency the order is priced in. Matches the quotation it came from.",
+  "customer": "FR-SALES-003: Customer reference (DR-C2C-005 Inputs)",
+  "customer_po_date": "FR-SALES-003: Customer PO date (DR-C2C-005 Inputs)",
+  "customer_po_number": "FR-SALES-003: Customer PO number (DR-C2C-005 Inputs)",
+  "grand_total": "FR-SALES-003 Net total plus tax. The value of the order.",
+  "items": "FR-SALES-003: ordered items (DR-C2C-005 Inputs)",
+  "knit360_business_status": "FR-SALES-003: CD-002 lifecycle (PROPOSED, DR-C2C-005). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-SALES-003 Sum of the line amounts, before tax.",
+  "payment_terms": "FR-SALES-003: payment terms (DR-C2C-005 Inputs)",
+  "price_list": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business.",
+  "quotation": "FR-SALES-003: linked Quotation ID, if applicable (DR-C2C-005 Inputs)",
+  "shipping_address": "FR-SALES-003: shipping address (DR-C2C-005 Inputs)",
+  "tax_gstin_context": "FR-SALES-003: tax GSTIN context (DR-C2C-005 Inputs); MOD-18 owns the tax engine",
+  "tax_template": "FR-SALES-003 Rates applied to the net total (FR-SALES-004).",
+  "total_taxes": "FR-SALES-003 The tax template's rates applied to the net total."
+ },
+ "KNIT 360 Sales Order Item": {
+  "amount": "FR-SALES-003 qty x rate. Computed by knit360_core.pricing.totals.",
+  "delivery_date": "FR-SALES-003: delivery dates per line (DR-C2C-005 Inputs)",
+  "description": "FR-SALES-003: ordered items (DR-C2C-005 Inputs)",
+  "item_code": "FR-SALES-003: ordered items (DR-C2C-005 Inputs); becomes a Link once the Item Master (FR-PADM-1.4.3) exists",
+  "price_list_rate": "FR-SALES-004 What the Item Price master holds for this item on this document's price list and date. Read by knit360_core.pricing.price_list, never typed. Kept even where the rate charged differs, so the difference is visible.",
+  "qty": "FR-SALES-003: quantities (DR-C2C-005 Inputs)",
+  "rate": "FR-SALES-003: agreed rates (DR-C2C-005 Inputs)",
+  "uom": "FR-SALES-003: BRD-DERIVED; now a master"
+ },
+ "KNIT 360 Service Contract": {
+  "asset": "FR-AST-003 / FR-MFS-006: Asset reference",
+  "company": "FR-AST-003 / FR-MFS-006: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "contract_type": "FR-AST-003 / FR-MFS-006: Contract type (Standard Warranty, Extended Warranty, AMC, CMC)",
+  "end_date": "FR-AST-003 / FR-MFS-006: End date",
+  "exclusions": "FR-AST-003 / FR-MFS-006: Exclusions",
+  "knit360_business_status": "FR-AST-003 / FR-MFS-006: CD-002 'Service Contract' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "labor_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (labor covered)",
+  "parts_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (parts covered)",
+  "sla_tier": "FR-AST-003 / FR-MFS-006: SLA tier, optional",
+  "start_date": "FR-AST-003 / FR-MFS-006: Start date",
+  "travel_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (travel covered)"
+ },
+ "KNIT 360 Service Dispatch": {
+  "assigned_technician": "FR-MFS-007 / FR-MFS-001: Assigned technician identifier",
+  "company": "FR-MFS-007 / FR-MFS-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "knit360_business_status": "FR-MFS-007 / FR-MFS-001: CD-002 'Service Dispatch' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "required_competencies": "FR-MFS-007 / FR-MFS-001: Required technical competencies",
+  "scheduled_datetime": "FR-MFS-007 / FR-MFS-001: Scheduled appointment date/time slot",
+  "service_request": "FR-MFS-007 / FR-MFS-001: Service Request reference",
+  "site_latitude": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates",
+  "site_longitude": "FR-MFS-007 / FR-MFS-001: Customer site location/GPS coordinates"
+ },
+ "KNIT 360 Service Request": {
+  "asset": "FR-MFS-004 / FR-MFS-007: Installed Asset / Serial No",
+  "company": "FR-MFS-004 / FR-MFS-007: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "contact_details": "FR-MFS-004 / FR-MFS-007: Contact details",
+  "customer": "FR-MFS-004 / FR-MFS-007: Customer reference",
+  "fault_symptom_code": "FR-MFS-004 / FR-MFS-007: Fault symptom code",
+  "priority": "FR-MFS-004 / FR-MFS-007: Urgency/Priority indicator; enumeration TBD",
+  "problem_description": "FR-MFS-004 / FR-MFS-007: Problem description",
+  "request_timestamp": "FR-MFS-004 / FR-MFS-007: Request timestamp",
+  "site_access_constraints": "FR-MFS-004 / FR-MFS-007: Site access constraints"
+ },
+ "KNIT 360 Sourcing Project": {
+  "commodity_categories": "FR-SUPM-002 / FR-PROC-001: target item/commodity categories",
+  "company": "FR-SUPM-002 / FR-PROC-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "estimated_annual_spend": "FR-SUPM-002 / FR-PROC-001: estimated annual spend",
+  "geographical_constraints": "FR-SUPM-002 / FR-PROC-001: geographical constraints",
+  "knit360_business_status": "FR-SUPM-002 / FR-PROC-001: CD-002 'Sourcing Project' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "quality_certification_requirements": "FR-SUPM-002 / FR-PROC-001: quality certification requirements",
+  "technical_capability_criteria": "FR-SUPM-002 / FR-PROC-001: technical capability criteria",
+  "title": "FR-SUPM-002 / FR-PROC-001: sourcing requirement"
+ },
+ "KNIT 360 Stock Ledger Entry": {
+  "actual_qty": "FR-INV-002: Stock Quantity -- signed. Positive is received, negative is issued. The stock held is the sum of these.",
+  "company": "FR-INV-002: Stock Quantity -- whose stock this is.",
+  "is_cancelled": "FR-INV-002: Stock Quantity -- set on both an original and its mirror when a document is reversed, so a query that excludes them sees neither.",
+  "item_code": "FR-INV-002: Stock Quantity -- the item that moved.",
+  "posting_date": "FR-INV-002: Stock Quantity -- when the movement happened. Movements are replayed in this order to value an issue.",
+  "rate": "FR-INV-006: Stock Valuation -- what one unit was worth in this movement. On an issue this is worked out by the ledger, not supplied by the document.",
+  "remarks": "FR-INV-002: Stock Quantity -- why this movement happened, where the document does not already say.",
+  "value_change": "FR-INV-006: Stock Valuation -- signed money. The value of the stock held is the sum of these, and it is what the ledger posts.",
+  "voucher_no": "FR-INV-002: Stock Quantity -- the document that moved it. Every movement has one; nothing moves stock on its own.",
+  "voucher_type": "FR-INV-002: Stock Quantity -- the kind of document that moved it.",
+  "warehouse": "FR-INV-002: Stock Quantity -- stock is counted per item per warehouse. A Bin is a place to walk to, not a quantity."
+ },
+ "KNIT 360 Stock Reservation": {
+  "batch_no": "FR-INV-002: batch number, if batch-managed",
+  "company": "FR-INV-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "item_code": "FR-INV-002: line item; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "reserved_qty": "FR-INV-002: reserved quantity",
+  "sales_order": "FR-INV-002: Sales Order reference",
+  "serial_numbers": "FR-INV-002: serial numbers, if serialized",
+  "warehouse": "FR-INV-002: warehouse"
+ },
+ "KNIT 360 Supplier": {
+  "bank_account_number": "FR-SUPM-001 / FR-SUPM-002: bank account details",
+  "bank_iban": "FR-SUPM-001 / FR-SUPM-002: bank account details (IBAN)",
+  "bank_ifsc": "FR-SUPM-001 / FR-SUPM-002: bank account details (IFSC)",
+  "bank_swift": "FR-SUPM-001 / FR-SUPM-002: bank account details (SWIFT)",
+  "company": "FR-SUPM-001 / FR-SUPM-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "contact_email": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)",
+  "contact_person": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)",
+  "contact_phone": "FR-SUPM-001 / FR-SUPM-002: contact persons (name, phone, email)",
+  "corporate_address": "FR-SUPM-001 / FR-SUPM-002: corporate address",
+  "default_currency": "FR-SUPM-001 / FR-SUPM-002: default currency",
+  "knit360_business_status": "FR-SUPM-001 / FR-SUPM-002: CD-002 'Supplier' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "payment_terms": "FR-SUPM-001 / FR-SUPM-002: standard payment terms",
+  "supplier_classification": "FR-SUPM-001 / FR-SUPM-002: supplier classification category (FR-SUPM-002); enumeration TBD",
+  "supplier_group": "FR-SUPM-002: Supplier Classification -- grouping",
+  "supplier_name": "FR-SUPM-001 / FR-SUPM-002: legal vendor name",
+  "tax_registration_number": "FR-SUPM-001 / FR-SUPM-002: tax registration number (GSTIN / PAN / VAT / Tax ID)",
+  "trade_name": "FR-SUPM-001 / FR-SUPM-002: trade name"
+ },
+ "KNIT 360 Supplier Group": {
+  "is_group": "FR-SUPM-002: BRD-DERIVED: a group node holds children and is not selectable on a document",
+  "lft": "FR-SUPM-002: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-SUPM-002: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_supplier_group": "FR-SUPM-002: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-SUPM-002: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "supplier_group_name": "FR-SUPM-002: Supplier Classification -- how suppliers are grouped"
+ },
+ "KNIT 360 Supplier Invoice": {
+  "bill_date": "FR-PROC-006 / FR-FIN-002: Vendor invoice date",
+  "bill_no": "FR-PROC-006 / FR-FIN-002: Vendor invoice number",
+  "company": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "credit_to": "FR-FIN-002 The payable account this bill credits. Resolved from the company's Default Payable Account when the bill is saved, so a payment can land exactly where the bill put the debt.",
+  "currency": "FR-PROC-006 / FR-FIN-002: currency",
+  "freight_and_ancillary": "FR-PROC-006 / FR-FIN-002: freight/ancillary charges",
+  "goods_receipt": "FR-PROC-006 / FR-FIN-002: Goods Receipt reference (3-way match)",
+  "grand_total": "FR-FIN-002: Accounts Payable -- net total plus freight and statutory tax. The amount payable to the supplier, computed.",
+  "items": "FR-PROC-006 / FR-FIN-002: vendor billed quantities, unit rates",
+  "knit360_business_status": "FR-PROC-006 / FR-FIN-002: CD-002 'Supplier Invoice' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-FIN-002: Accounts Payable -- sum of line amounts, computed",
+  "outstanding_amount": "FR-FIN-004 What is still owed on this bill. A cache of the ledger figure derived by knit360_core.finance.settlement, refreshed whenever a payment settles against it.",
+  "payment_terms": "FR-PROC-006 / FR-FIN-002: payment terms",
+  "purchase_order": "FR-PROC-006 / FR-FIN-002: PO reference (3-way match)",
+  "statutory_tax_amount": "FR-PROC-006 / FR-FIN-002: statutory tax amounts",
+  "supplier": "FR-PROC-006 / FR-FIN-002: BRD-DERIVED from the PO reference",
+  "tax_template": "FR-PROC-006 / FR-FIN-002: statutory tax amounts"
+ },
+ "KNIT 360 Supplier Invoice Item": {
+  "amount": "FR-PROC-006 / FR-FIN-002: billed qty times unit rate, computed",
+  "item_code": "FR-PROC-006 / FR-FIN-002: vendor billed quantities; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty": "FR-PROC-006 / FR-FIN-002: vendor billed quantities",
+  "rate": "FR-PROC-006 / FR-FIN-002: unit rates"
+ },
+ "KNIT 360 Supplier Quotation": {
+  "company": "FR-PROC-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "currency": "FR-PROC-003: currency",
+  "grand_total": "FR-PROC-003 Net total. Comparable across suppliers for the same RFQ.",
+  "items": "FR-PROC-003: item rates, quantity price breaks",
+  "knit360_business_status": "FR-PROC-003: CD-002 'Supplier Quotation' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "net_total": "FR-PROC-003 Sum of the line amounts, before tax.",
+  "payment_terms": "FR-PROC-003: payment terms",
+  "rfq": "FR-PROC-003: linked RFQ/RFP reference",
+  "supplier": "FR-PROC-003: supplier reference",
+  "taxes": "FR-PROC-003: taxes",
+  "technical_score": "FR-PROC-003: technical scores",
+  "valid_till": "FR-PROC-003: quote validity date (valid_till)"
+ },
+ "KNIT 360 Supplier Quotation Item": {
+  "amount": "FR-PROC-003 qty x rate. Computed by knit360_core.pricing.totals.",
+  "item_code": "FR-PROC-003: item rates; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "lead_time_days": "FR-PROC-003: lead times",
+  "qty": "FR-PROC-003: quantity price breaks",
+  "rate": "FR-PROC-003: item rates"
+ },
+ "KNIT 360 Supplier Scorecard": {
+  "acceptance_rate": "FR-SUPM-003 / FR-SUPM-005: received quantities vs accepted quantities",
+  "knit360_business_status": "FR-SUPM-003 / FR-SUPM-005: CD-002 'Supplier Scorecard' lifecycle (PROPOSED). Set only via knit360_core.business_status.engine.transition",
+  "on_time_delivery_rate": "FR-SUPM-003 / FR-SUPM-005: PO promised delivery dates vs actual receipt dates",
+  "period_end": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period",
+  "period_start": "FR-SUPM-003 / FR-SUPM-005: BRD-DERIVED: scorecard period",
+  "price_variance": "FR-SUPM-003 / FR-SUPM-005: invoice price variances",
+  "quality_rejection_ppm": "FR-SUPM-003 / FR-SUPM-005: quality rejection ppm",
+  "response_turnaround_hours": "FR-SUPM-003 / FR-SUPM-005: supplier response turnaround times",
+  "supplier": "FR-SUPM-003 / FR-SUPM-005: supplier under evaluation"
+ },
+ "KNIT 360 Tax Template": {
+  "company": "FR-TAX-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "place_of_supply": "FR-TAX-001: Place of supply (DR-P2P-010 Inputs)",
+  "taxes": "FR-TAX-001: claimed tax rates",
+  "template_name": "FR-TAX-001: tax template (DR-C2C-004 Inputs)"
+ },
+ "KNIT 360 Tax Template Row": {
+  "rate": "FR-TAX-001: claimed tax rates",
+  "tax_account": "FR-TAX-001: the account this component posts to. Left empty, the company's default output or input tax account is used.",
+  "tax_component": "FR-TAX-001: claimed tax rates (DR-P2P-010 Inputs)"
+ },
+ "KNIT 360 Terms and Conditions": {
+  "applies_to": "FR-SALES-002: BRD-DERIVED: which side of the business these terms belong to",
+  "disabled": "FR-SALES-002: BRD-DERIVED: withdrawn from selection",
+  "terms": "FR-SALES-002: BRD-DERIVED: the wording printed on the document",
+  "title": "FR-SALES-002: BRD-DERIVED: named set of terms reused across documents"
+ },
+ "KNIT 360 Territory": {
+  "is_group": "FR-CRM-003: BRD-DERIVED: a group node holds children and is not selectable on a document",
+  "lft": "FR-CRM-003: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "old_parent": "FR-CRM-003: BRD-DERIVED: previous parent, maintained by the framework",
+  "parent_territory": "FR-CRM-003: BRD-DERIVED: hierarchy parent",
+  "rgt": "FR-CRM-003: BRD-DERIVED: nested-set bound, maintained by the framework",
+  "territory_name": "FR-CRM-003: Accounts -- BRD-DERIVED: the sales geography a customer or lead belongs to"
+ },
+ "KNIT 360 UOM": {
+  "category": "FR-PADM-1.4.7: BRD-DERIVED: what the unit measures. Conversion is only meaningful within one category.",
+  "disabled": "FR-PADM-1.4.7: BRD-DERIVED: withdrawn from selection without losing history",
+  "must_be_whole_number": "FR-PADM-1.4.7: BRD-DERIVED: half a box is not a quantity. Quantities in this unit are rejected if fractional.",
+  "symbol": "FR-PADM-1.4.7: BRD-DERIVED: short form shown in grids",
+  "uom_name": "FR-PADM-1.4.7: UOM Master -- the unit as written on documents"
+ },
+ "KNIT 360 UOM Conversion": {
+  "factor": "FR-PADM-1.4.7: UOM Master -- how many of the 'to' unit make one 'from' unit",
+  "from_uom": "FR-PADM-1.4.7: UOM Master -- the unit being converted from",
+  "to_uom": "FR-PADM-1.4.7: UOM Master -- the unit being converted to"
+ },
+ "KNIT 360 Warehouse": {
+  "company": "FR-WH-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "location": "FR-WH-001: BRD-DERIVED: plant/warehouse (FR-PADM-1.1.6)",
+  "parent_warehouse": "FR-WH-001: warehouse hierarchy (FR-WH-001)",
+  "warehouse_name": "FR-WH-001: Warehouse Setup (FR-WH-001)"
+ },
+ "KNIT 360 Work Order": {
+  "assigned_workstations": "FR-MFG-003: assigned workstations",
+  "bom": "FR-MFG-003: BOM reference",
+  "company": "FR-MFG-003: BRD-DERIVED: company context (FR-PADM-1.1.1)",
+  "production_item": "FR-MFG-003: target item; becomes a Link once the Item Master (FR-INV-001) is populated",
+  "qty_to_produce": "FR-MFG-003: quantity to produce",
+  "routing_sequence": "FR-MFG-003: routing sequence (FR-MFG-002)",
+  "sales_order": "FR-MFG-003: BRD-DERIVED: C2C linkage (DEP-001)"
+ }
+}
