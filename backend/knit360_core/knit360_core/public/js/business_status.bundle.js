@@ -37,6 +37,8 @@ knit360.business_status = {
 		// Cheap local check first, so forms without a lifecycle cost no request.
 		if (!frm.meta || !frm.meta.fields.some((f) => f.fieldname === this.FIELD)) return;
 
+		this.disown_framework_buttons(frm);
+
 		// Actions first, so the statuses they claim are known before the plain
 		// status buttons are drawn.
 		frappe.call({
@@ -56,6 +58,24 @@ knit360.business_status = {
 		// document are another. Converting a lead and raising a quotation
 		// existed only on /knit360 until now, so a Desk user could qualify a
 		// lead and then had nowhere to take it.
+	},
+
+	// Frappe's own docstatus buttons are traps on a governed doctype.
+	//
+	// toolbar.js puts "Cancel" in the secondary slot for any submitted
+	// document and "Submit" in the primary slot for a saved draft, and both
+	// call savecancel()/savesubmit() directly. On a KNIT 360 doctype the
+	// lifecycle guard refuses exactly that -- "cannot be cancelled directly"
+	// -- so the most prominent button on the form is one that always fails.
+	// It is worse on a phone, where Frappe collapses our own buttons into the
+	// "..." menu and leaves only the failing one in view.
+	//
+	// So the secondary slot is cleared, and the primary is given to the
+	// ordinary next step of the lifecycle instead. A dirty form keeps Frappe's
+	// Save: an unsaved change must be saved before anything else happens.
+	disown_framework_buttons(frm) {
+		if (frm.is_dirty()) return;
+		frm.page.clear_secondary_action();
 	},
 
 	//: Which seam method each action calls, and where it lands. The server
@@ -131,14 +151,19 @@ knit360.business_status = {
 		}
 
 		const claimed = this.claimed[frm.doc.name] || {};
+		const forward = steps.find((step) => step.is_forward && !claimed[step.status]);
+
 		steps.forEach((step) => {
 			if (claimed[step.status]) return;
-			frm.add_custom_button(__(step.status), () => this.confirm(frm, step));
-			if (step.is_forward) {
-				// The ordinary next step is the one most people want, so it is
-				// the one that looks like the action.
-				frm.change_custom_button_type(__(step.status), null, "primary");
+			// The ordinary next step takes the primary slot rather than
+			// joining the others. On a wide screen it reads the same; on a
+			// phone it is the difference between one tap and three, because
+			// Frappe collapses custom buttons into a menu below 768px.
+			if (step === forward && !frm.is_dirty()) {
+				frm.page.set_primary_action(__(step.status), () => this.confirm(frm, step));
+				return;
 			}
+			frm.add_custom_button(__(step.status), () => this.confirm(frm, step));
 		});
 	},
 
