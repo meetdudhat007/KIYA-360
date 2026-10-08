@@ -765,23 +765,44 @@ def hr():
 
 
 #: (supplier, bill number, [(item, qty, rate)], freight, statutory tax)
+#: (supplier, bill number, lines, freight, tax, the item whose receipt this
+#: bill settles -- or None for a bill that never passed through stock).
 SUPPLIER_BILLS = [
 	("Precision Semiconductors Pvt Ltd", "PSPL/2026/4471",
-	 [("CM-IGBT-01", 20, 7400), ("CM-CAP-01", 10, 3100)], 2400, 31014),
+	 [("CM-IGBT-01", 40, 7200)], 2400, 51840, "CM-IGBT-01"),
 	("Hanover Komponenten GmbH", "HK-INV-90233",
-	 [("RM-CU-01", 150, 820)], 18500, 0),
+	 [("RM-CU-01", 150, 820)], 18500, 0, None),
 ]
 
 
-def buying():
-	"""Supplier bills, so the buying side has something to show -- DEC-020.
+def _receipt_for(item_code):
+	"""The earliest demonstration receipt that brought this item in.
 
-	These total but do not post to the ledger: Procure-to-Pay posting is `W7`
-	and is not built. The demonstration script says so rather than letting
-	anyone infer otherwise from a document that looks finished.
+	A bill that names its receipt is the one worth showing: the receipt put a
+	figure into Stock Received But Not Billed and this bill is what clears it.
+	"""
+	if not item_code:
+		return None
+	rows = frappe.db.sql(
+		"""SELECT parent FROM `tabKNIT 360 Goods Receipt Item` item
+		   JOIN `tabKNIT 360 Goods Receipt` receipt ON receipt.name = item.parent
+		   WHERE item.item_code = %s AND receipt.company = %s AND receipt.docstatus = 1
+		   ORDER BY receipt.creation ASC LIMIT 1""",
+		(item_code, COMPANY),
+	)
+	return rows[0][0] if rows else None
+
+
+def buying():
+	"""Supplier bills that reach the books -- DEC-020 and DEC-033.
+
+	The first bill names the goods receipt it settles, so the demonstration can
+	show Stock Received But Not Billed opened by the receipt and closed by the
+	bill. The second names none: freight on an import that was expensed, which
+	is what DEC-033 decided and what a client's accountant will ask about.
 	"""
 	made = {"Supplier Invoice": 0}
-	for supplier, bill_no, lines, freight, tax in SUPPLIER_BILLS:
+	for supplier, bill_no, lines, freight, tax, settles in SUPPLIER_BILLS:
 		if frappe.db.exists("KNIT 360 Supplier Invoice", {"bill_no": bill_no}):
 			continue
 		invoice = frappe.get_doc(
@@ -792,6 +813,7 @@ def buying():
 				"bill_no": bill_no,
 				"bill_date": add_days(nowdate(), -12),
 				"currency": CURRENCY,
+				"goods_receipt": _receipt_for(settles),
 				"freight_and_ancillary": freight,
 				"statutory_tax_amount": tax,
 				"payment_terms": "30 days from the date of the bill",
@@ -800,8 +822,14 @@ def buying():
 				],
 			}
 		).insert(ignore_permissions=True)
+		reached = _walk_to("KNIT 360 Supplier Invoice", invoice.name, "Matched & Approved")
+		if reached != "Matched & Approved":
+			frappe.throw(f"{invoice.name} stopped at {reached!r}; no payable was created.")
+		invoice.reload()
 		made["Supplier Invoice"] += 1
-		made.setdefault("totals", []).append(f"{invoice.name} {invoice.grand_total:,.2f}")
+		made.setdefault("payable", []).append(
+			f"{invoice.name} {invoice.grand_total:,.2f} owing {invoice.outstanding_amount:,.2f}"
+		)
 	frappe.db.commit()
 	return made
 
@@ -899,8 +927,8 @@ def seed():
 	report["pipeline"] = pipeline()
 	report["settlements"] = settlements()
 	report["hr"] = hr()
-	report["buying"] = buying()
 	report["stock"] = stock()
+	report["buying"] = buying()
 
 	trial = ledger.trial_balance(COMPANY)
 	report["trial_balance"] = {
@@ -919,8 +947,8 @@ def seed():
 	print(f"pipeline           {report['pipeline']}")
 	print(f"settlements        {report['settlements']}")
 	print(f"hr                 {report['hr']}")
-	print(f"buying             {report['buying']}")
 	print(f"stock              {report['stock']}")
+	print(f"buying             {report['buying']}")
 	print(f"trial balance      {report['trial_balance']}")
 	print("\nThis is sample data. Edit it or delete it; none of it is a requirement.")
 	return report

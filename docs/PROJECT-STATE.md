@@ -172,8 +172,8 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | BRD modules with record types | **15 of 28** |
 | Lifecycle definitions (`CD-002`) | 25 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
-| Automated checks | **165** — 49 structural, 116 runtime |
-| Last full run | 49/49 and 116/116, 8 October 2026, site `knit360.localhost` |
+| Automated checks | **178** — 49 structural, 129 runtime |
+| Last full run | 49/49 and 129/129, 8 October 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
 | BRD requirement coverage (live report) | **69 of 238 — 12 proven, 57 modelled, 169 not started** |
@@ -195,9 +195,13 @@ group accounts, disabled accounts and closed fiscal years.
 
 ### Not working
 
-- **Nothing clears Stock Received But Not Billed.** A goods receipt credits it
-  and only the supplier's bill can clear it, which is `W7` and is not built, so
-  the balance accumulates visibly.
+- **Stock is not revalued for freight.** Freight on a supplier's bill is
+  expensed (`DEC-033`), which understates closing stock by the freight on goods
+  still unsold. A landed-cost revaluation would fix it and is `W13`.
+- **Three-way matching is not enforced.** A bill can name a purchase order and
+  a goods receipt, and the figures are posted as billed; nothing refuses a bill
+  that disagrees with the order. The difference is visible as an expense rather
+  than blocked.
 - **Stock is never written down to net realisable value.** Ind AS 2 paragraph
   28 requires it; `OQ-026` is open and nothing writes stock down.
 - **No designed print formats and no letterhead.** Printing and PDF work via
@@ -214,7 +218,7 @@ group accounts, disabled accounts and closed fiscal years.
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 116 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 129 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

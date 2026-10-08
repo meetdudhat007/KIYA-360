@@ -3003,6 +3003,338 @@ def o_list_rate_is_read_only():
 	return f"{len(carriers)} line tables record the list rate, none of them editable"
 
 
+# --- P. procure to pay --------------------------------------------------
+#
+# DEC-033. A goods receipt credits Stock Received But Not Billed because the
+# goods are ours and we owe for them; only the supplier's bill can say how
+# much, so only the bill can clear it. These checks prove the account nets to
+# nil per receipt, that a price difference is visible rather than absorbed,
+# that recoverable tax lands in an asset, and that an order -- which is a
+# commitment, not a transaction -- posts nothing at all.
+
+
+def a_bill(net, supplier=None, receipt=None, freight=0, tax=0, target="Matched & Approved"):
+	"""A supplier's bill, driven to a submitted state."""
+	bill = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Supplier Invoice",
+			"company": company(),
+			"supplier": supplier or a_supplier(),
+			"bill_no": f"ACC-BILL-{frappe.generate_hash(length=6)}",
+			"bill_date": nowdate(),
+			"goods_receipt": receipt,
+			"freight_and_ancillary": freight,
+			"statutory_tax_amount": tax,
+			"items": [{"item_code": "Acceptance billed goods", "qty": 1, "rate": net}],
+		}
+	).insert(ignore_permissions=True)
+	if target:
+		engine.transition("KNIT 360 Supplier Invoice", bill.name, target)
+	bill.reload()
+	return bill
+
+
+def account_balance(leaf):
+	"""The net debit on one leaf account of the acceptance company."""
+	name = account(leaf)
+	row = frappe.db.sql(
+		"""SELECT COALESCE(SUM(debit), 0) - COALESCE(SUM(credit), 0) AS net
+		   FROM `tabKNIT 360 GL Entry`
+		   WHERE account = %s AND is_cancelled = 0""",
+		(name,),
+		as_dict=True,
+	)[0]
+	return flt(row.net)
+
+
+@check("P. Procure to Pay", "A supplier's bill creates the payable")
+def p_bill_creates_payable():
+	before = account_balance("Creditors")
+	bill = a_bill(5000)
+	after = account_balance("Creditors")
+	expect(
+		abs((before - after) - 5000) < 0.005,
+		f"Creditors moved by {before - after}, expected a 5000 credit",
+	)
+	expect(
+		flt(bill.outstanding_amount) == 5000,
+		f"the bill shows {bill.outstanding_amount} outstanding, expected 5000",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: Creditors credited 5,000 and the bill owes 5,000"
+
+
+@check("P. Procure to Pay", "The bill clears what the receipt could not value")
+def p_bill_clears_received_not_billed():
+	"""The point of the whole account: a receipt opens it, a bill closes it."""
+	item = an_item("Acceptance Billed Coil")
+	before = account_balance("Stock Received But Not Billed")
+	receipt = a_receipt(item, 10, 300)
+	opened = account_balance("Stock Received But Not Billed") - before
+	expect(
+		abs(opened + 3000) < 0.005,
+		f"the receipt moved Stock Received But Not Billed by {opened}, expected -3000",
+	)
+
+	bill = a_bill(3000, receipt=receipt.name)
+	closed = account_balance("Stock Received But Not Billed") - before
+	expect(
+		abs(closed) < 0.005,
+		f"after billing, {closed} of this receipt is still awaiting a bill",
+	)
+	frappe.db.commit()
+	return f"{receipt.name} opened 3,000, {bill.name} cleared it to nil"
+
+
+@check("P. Procure to Pay", "A bill above the receipt shows the difference")
+def p_price_difference_is_visible():
+	item = an_item("Acceptance Dearer Coil")
+	awaiting = account_balance("Stock Received But Not Billed")
+	receipt = a_receipt(item, 10, 300)
+	before = account_balance("Administrative Expenses")
+	bill = a_bill(3250, receipt=receipt.name)
+
+	expect(
+		abs(account_balance("Stock Received But Not Billed") - awaiting) < 0.005,
+		"the receipt's value was not fully cleared",
+	)
+	moved = account_balance("Administrative Expenses") - before
+	expect(
+		abs(moved - 250) < 0.005,
+		f"the 250 difference went somewhere else: expenses moved by {moved}",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: billed 3,250 against 3,000 received, 250 visible as expense"
+
+
+@check("P. Procure to Pay", "A bill below the receipt shows the difference too")
+def p_price_difference_the_other_way():
+	item = an_item("Acceptance Cheaper Coil")
+	receipt = a_receipt(item, 10, 300)
+	before = account_balance("Administrative Expenses")
+	bill = a_bill(2800, receipt=receipt.name)
+	moved = account_balance("Administrative Expenses") - before
+	expect(
+		abs(moved + 200) < 0.005,
+		f"the 200 credit difference went somewhere else: expenses moved by {moved}",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: billed 2,800 against 3,000 received, 200 credited back"
+
+
+@check("P. Procure to Pay", "A bill with no receipt is an expense outright")
+def p_service_bill_is_expense():
+	"""A subscription, a repair, a consultant: nothing passed through stock."""
+	before = account_balance("Administrative Expenses")
+	awaiting = account_balance("Stock Received But Not Billed")
+	bill = a_bill(1800)
+	moved = account_balance("Administrative Expenses") - before
+	expect(abs(moved - 1800) < 0.005, f"expenses moved by {moved}, expected 1800")
+	expect(
+		abs(account_balance("Stock Received But Not Billed") - awaiting) < 0.005,
+		"a bill with no receipt touched the stock liability",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: 1,800 expensed, the stock liability untouched"
+
+
+@check("P. Procure to Pay", "Tax the supplier billed is recoverable, so it is an asset")
+def p_input_tax_is_an_asset():
+	"""DEC-021. Tax paid to a supplier is money the tax authority owes back."""
+	before = account_balance("Input Tax Credit")
+	bill = a_bill(10000, tax=1800)
+	moved = account_balance("Input Tax Credit") - before
+	expect(abs(moved - 1800) < 0.005, f"Input Tax Credit moved by {moved}, expected 1800")
+
+	root = frappe.db.get_value(
+		"KNIT 360 Account",
+		{"company": COMPANY, "account_name": "Input Tax Credit", "is_group": 0},
+		"root_type",
+	)
+	expect(root == "Asset", f"Input Tax Credit is an {root} account, not an Asset")
+	frappe.db.commit()
+	return f"{bill.name}: 1,800 of tax debited to an Asset, not buried in expense"
+
+
+@check("P. Procure to Pay", "Freight is expensed, and says so")
+def p_freight_is_expensed():
+	"""DEC-033, and a deliberate departure from Ind AS 2 paragraph 11.
+
+	Capitalising freight needs a landed-cost revaluation of stock the FIFO
+	layers have already costed and partly sold. Until that exists, writing
+	the figure into stock value would make the stock ledger and the accounts
+	disagree -- and they agree today, with a check that proves it.
+	"""
+	before = account_balance("Freight and Forwarding")
+	in_stock = account_balance("Stock In Hand")
+	bill = a_bill(4000, freight=600)
+	moved = account_balance("Freight and Forwarding") - before
+	expect(abs(moved - 600) < 0.005, f"Freight and Forwarding moved by {moved}, expected 600")
+	expect(
+		abs(account_balance("Stock In Hand") - in_stock) < 0.005,
+		"freight was capitalised into stock, which no stock movement would explain",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: 600 of freight expensed, stock value unchanged"
+
+
+@check("P. Procure to Pay", "The whole bill is payable, tax and freight included")
+def p_payable_is_the_whole_bill():
+	"""DEC-020. The amount payable is the amount that leaves the bank."""
+	before = account_balance("Creditors")
+	bill = a_bill(10000, freight=500, tax=1890)
+	credited = before - account_balance("Creditors")
+	expect(
+		abs(credited - 12390) < 0.005,
+		f"Creditors was credited {credited}, expected 12,390",
+	)
+	expect(
+		abs(flt(bill.grand_total) - 12390) < 0.005,
+		f"the bill totals {bill.grand_total}, expected 12,390",
+	)
+	frappe.db.commit()
+	return f"{bill.name}: 10,000 + 500 freight + 1,890 tax = 12,390 payable"
+
+
+@check("P. Procure to Pay", "Paying a supplier settles the bill")
+def p_payment_settles_the_bill():
+	supplier = a_supplier()
+	bill = a_bill(8000, supplier=supplier)
+	payment = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Payment Entry",
+			"company": company(),
+			"payment_direction": "Pay",
+			"party_type": "KNIT 360 Supplier",
+			"party": supplier,
+			"payment_date": nowdate(),
+			"amount": 5000,
+			"bank_account": account("Bank Account"),
+			"allocations": [
+				{
+					"reference_doctype": "KNIT 360 Supplier Invoice",
+					"reference_name": bill.name,
+					"allocated_amount": 5000,
+				}
+			],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Payment Entry", payment.name, "Pending Bank Authorization")
+	engine.transition("KNIT 360 Payment Entry", payment.name, "Disbursed / Cleared")
+
+	left = settlement.outstanding("KNIT 360 Supplier Invoice", bill.name)
+	expect(abs(left - 3000) < 0.005, f"{left} left owing after paying 5,000 of 8,000")
+	status = frappe.db.get_value("KNIT 360 Supplier Invoice", bill.name, model.FIELD)
+	expect(status == "Partially Paid", f"the bill reads {status!r} after a part payment")
+	frappe.db.commit()
+	return f"{bill.name}: 5,000 of 8,000 paid, 3,000 owing, status Partially Paid"
+
+
+@check("P. Procure to Pay", "Paying a bill in full closes it")
+def p_full_payment_closes_the_bill():
+	supplier = a_supplier()
+	bill = a_bill(2400, supplier=supplier)
+	payment = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Payment Entry",
+			"company": company(),
+			"payment_direction": "Pay",
+			"party_type": "KNIT 360 Supplier",
+			"party": supplier,
+			"payment_date": nowdate(),
+			"amount": 2400,
+			"bank_account": account("Bank Account"),
+			"allocations": [
+				{
+					"reference_doctype": "KNIT 360 Supplier Invoice",
+					"reference_name": bill.name,
+					"allocated_amount": 2400,
+				}
+			],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Payment Entry", payment.name, "Pending Bank Authorization")
+	engine.transition("KNIT 360 Payment Entry", payment.name, "Disbursed / Cleared")
+
+	expect(
+		settlement.outstanding("KNIT 360 Supplier Invoice", bill.name) < 0.005,
+		"the bill still shows an amount owing after being paid in full",
+	)
+	status = frappe.db.get_value("KNIT 360 Supplier Invoice", bill.name, model.FIELD)
+	expect(status == "Paid in Full", f"the bill reads {status!r} after full payment")
+	frappe.db.commit()
+	return f"{bill.name}: 2,400 paid in full, status Paid in Full"
+
+
+@check("P. Procure to Pay", "A purchase order posts nothing")
+def p_order_posts_nothing():
+	"""An order is a commitment to buy. No goods have moved, nothing is owed."""
+	order = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Purchase Order",
+			"company": company(),
+			"supplier": a_supplier(),
+			"order_date": nowdate(),
+			"items": [{"item_code": "Acceptance ordered goods", "qty": 5, "rate": 400}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Purchase Order", order.name, "Pending Approval")
+	engine.transition("KNIT 360 Purchase Order", order.name, "Approved / Ordered")
+
+	entries = frappe.db.count(
+		"KNIT 360 GL Entry", {"voucher_type": order.doctype, "voucher_no": order.name}
+	)
+	expect(entries == 0, f"an approved order wrote {entries} ledger entries")
+	order.reload()
+	expect(flt(order.grand_total) == 2000, f"the order totals {order.grand_total}, expected 2000")
+	frappe.db.commit()
+	return f"{order.name}: 2,000 committed, nothing posted"
+
+
+@check("P. Procure to Pay", "Cancelling a bill reverses it rather than deleting it")
+def p_cancelling_a_bill_reverses():
+	bill = a_bill(1500)
+	before = account_balance("Creditors")
+	engine.transition("KNIT 360 Supplier Invoice", bill.name, "Cancelled")
+	after = account_balance("Creditors")
+	expect(
+		abs(after - before - 1500) < 0.005,
+		f"cancelling moved Creditors by {after - before}, expected a 1500 debit back",
+	)
+	live = frappe.db.count(
+		"KNIT 360 GL Entry",
+		{"voucher_type": bill.doctype, "voucher_no": bill.name, "is_cancelled": 0},
+	)
+	cancelled = frappe.db.count(
+		"KNIT 360 GL Entry",
+		{"voucher_type": bill.doctype, "voucher_no": bill.name, "is_cancelled": 1},
+	)
+	expect(live == 0, f"{live} live entries remain after cancelling")
+	expect(cancelled > 0, "nothing was flagged cancelled, so the entries were deleted")
+	frappe.db.commit()
+	return f"{bill.name}: {cancelled} entries flagged, none deleted, Creditors back to nil"
+
+
+@check("P. Procure to Pay", "The buying ledger balances")
+def p_buying_balances():
+	totals_row = frappe.db.sql(
+		"""SELECT COALESCE(SUM(debit), 0) AS debit, COALESCE(SUM(credit), 0) AS credit
+		   FROM `tabKNIT 360 GL Entry`
+		   WHERE company = %s AND is_cancelled = 0""",
+		(COMPANY,),
+		as_dict=True,
+	)[0]
+	expect(
+		abs(flt(totals_row.debit) - flt(totals_row.credit)) < 0.005,
+		f"the acceptance books are out by "
+		f"{flt(totals_row.debit) - flt(totals_row.credit):.2f}",
+	)
+	return (
+		f"debits {flt(totals_row.debit):,.2f} equal credits "
+		f"{flt(totals_row.credit):,.2f}"
+	)
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -3151,6 +3483,7 @@ def cleanup():
 		"KNIT 360 Payment Entry",
 		"KNIT 360 Sales Invoice", "KNIT 360 Sales Order", "KNIT 360 Journal Entry",
 		"KNIT 360 Quotation", "KNIT 360 Opportunity", "KNIT 360 Lead",
+		"KNIT 360 Purchase Order",
 	):
 		frappe.db.sql(
 			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)

@@ -20,8 +20,8 @@ What exists and is proven:
 | Record types built | 73 parent, 22 child — 95 in total |
 | BRD modules with record types built | **15 of 28** |
 | Lifecycle definitions | 25 |
-| Automated checks | **165** — 49 structural, 116 runtime |
-| Last full run | 49/49 and 116/116, 8 October 2026 |
+| Automated checks | **178** — 49 structural, 129 runtime |
+| Last full run | 49/49 and 129/129, 8 October 2026 |
 | BRD modules with nothing built yet | **13 of 28** (listed below) |
 | Flows running end to end | 1 of 3 (Customer-to-Cash) |
 
@@ -69,11 +69,12 @@ Two of them are not merely decided but **built and proven** by automated checks.
 | **D5** | Stock valuation (`OQ-007`, CRITICAL) | **Closed.** FIFO default, weighted average per item, LIFO not offered — Ind AS 2 ¶25 permits only the first two. Balance derived per item per warehouse; Bin stays an address. Unblocks `W2`. | `DEC-023` |
 | **D6** | The HR reference | **Closed.** Leave is built. Statutory payroll is out of version one; pay, posting and an export for the client's payroll provider are in. Sizes `W3`. | `DEC-024` |
 
-**Two new open questions came out of deciding these, and neither blocks
-anything:** `OQ-025`, whether a supplier's freight is expensed or added to the
-cost of the goods — needed only when `W7` posts the buying side; and `OQ-026`,
-when stock is written down to net realisable value, which Ind AS 2 requires and
-nothing yet does.
+**Two new open questions came out of deciding these. `OQ-025` is now closed:**
+freight on a supplier's bill is expensed rather than added to the cost of the
+goods (`DEC-033`, 8 October 2026) — a deliberate departure from Ind AS 2
+paragraph 11 whose reasons and cost are recorded there, and whose correction is
+`W13`. **`OQ-026` is still open:** when stock is written down to net realisable
+value, which Ind AS 2 requires and nothing yet does.
 
 ### 2.2 Important but not blocking
 
@@ -107,7 +108,7 @@ Not decisions — actions outside what I can reach.
 | **Y2** | **Hosting, domain, TLS, backups.** | Everything so far runs in Docker on one machine. There is no production environment, no backup schedule and no restore test. |
 | **Y3** | **The administrator password.** | It is not recorded anywhere in the repository. I did not guess it and I did not change it. You will need it to sign in during the demonstration. |
 | **Y4** | **The 238 BRD requirements are every one marked "TBD — the BRD does not specify this detail."** | Until a stakeholder fills those in, "match the BRD" means building to the ERP-standard baseline agreed in CD-001. That is what has been done. It is a reasonable reading, not the specification. |
-| **Y5** | **User acceptance testing by someone who does the job.** | My 165 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
+| **Y5** | **User acceptance testing by someone who does the job.** | My 178 checks prove the system does what it was built to do. They cannot tell you whether that is what your business actually needs. |
 | **Y6** | **Decide what happens to the seven ERPNext reference documents** in `docs/` (`erpnext_accounting_module.md` and six others, roughly 4,200 lines). | I did not write them; they were swept into commit `2be7a50` by a `git add -A`. They are reference material about a GPL-3 product sitting in this repository. I flagged this previously and have had no answer. **This is the one item on this list I would act on soonest.** |
 | **Y7** | **Delete or keep the "Kelvinotherm Induction LLP" company** on the demo site. | It predates this work and holds one lead from 23 September. Harmless, but it appears in the company dropdown during a demonstration. |
 
@@ -125,13 +126,16 @@ Ordered by value. Each is a self-contained piece of work.
 | **W4** | Designed print formats and a letterhead | Medium | Printing and PDF already work; the output is Frappe's standard field dump. What is missing is a laid-out quotation, order and invoice carrying the client's letterhead. Nothing blocks this. | — |
 | ~~**W5**~~ | ~~Pricing reads from Item Price~~ | — | **Done 8 October 2026** (`DEC-032`). Quotation, Sales Order, Sales Invoice and Purchase Order read the master; a typed rate still wins and the list rate is kept beside it. Eleven checks. | — |
 | **W6** | Data import — opening balances, customers, items | Medium | Blocks the first customer, not the tenth. | — |
-| **W7** | Procure-to-Pay posting — Purchase Order and Supplier Invoice reach the ledger | Medium | The buying side totals correctly now but never reaches the books. | `OQ-025` for where freight lands |
+| ~~**W7**~~ | ~~Procure-to-Pay posting~~ | — | **Done 8 October 2026** (`DEC-033`). A bill creates the payable, clears what its receipt could not value, and a payment settles it. `OQ-025` answered: freight is expensed. Thirteen checks. | — |
 | **W8** | Credit and debit notes | Medium | Returns cannot be settled without them. | **D13** |
 | **W9** | Customer credit limit and credit hold | Small | A finance controller asks for this in the first demonstration. | **D13** |
 | **W10** | Email on status change | Small | Nothing is sent by the system today. | D8 for content |
 | **W11** | **Roles other than System Manager** | Medium | All 65 record types grant access to `System Manager` and nothing else, verified against the permissions table. So a salesperson cannot be given leads without also being given the power to delete the company's accounts. Acceptable for a pilot, not for a live client. | — |
 
 | **W12** | Line `item_code` becomes a link to Item | Small | On Quotation, Sales Order, Sales Invoice and Purchase Order lines the item code is a typed Data field, so a mistyped code is accepted, finds no price, and values no stock. Delivery Note and Goods Receipt were converted during `W2`; these four were not, because the conversion touches existing documents and eight acceptance fixtures. | — |
+
+| **W13** | Landed cost — freight capitalised into the cost of stock | Medium | `DEC-033` expenses freight, which is a deliberate departure from Ind AS 2 paragraph 11. Correcting it needs a revaluation document that apportions a charge across receipt lines and adjusts layers already costed, including stock already sold. | — |
+| **W14** | Three-way matching enforced | Medium | A bill can name an order and a receipt; nothing refuses one that disagrees with them. The difference posts to an expense where it is visible, which is the safe behaviour but not a control. | **D7** for who may approve a variance |
 
 **If you want one thing done next, make it W1.** It needs D4 answered first, and
 D4 is four short questions about how your business handles money coming in.
@@ -179,7 +183,7 @@ docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site kn
 ```bash
 docker exec knit-bench bash -lc 'cd /home/frappe/frappe-bench && bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean'
 ```
-116 runtime checks. Drives the live system, then removes its own data.
+129 runtime checks. Drives the live system, then removes its own data.
 
 ```bash
 docker exec knit-bench bash -lc 'cat /home/frappe/frappe-bench/sites/apps.txt'

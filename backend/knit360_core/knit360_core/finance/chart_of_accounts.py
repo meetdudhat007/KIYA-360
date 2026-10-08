@@ -100,6 +100,10 @@ DEFAULTS = {
 	"default_stock_account": "Stock In Hand",
 	"default_cogs_account": "Cost of Goods Sold",
 	"stock_received_but_not_billed": "Stock Received But Not Billed",
+	# DEC-033. Freight on a supplier's bill is a direct expense rather than
+	# part of the cost of the goods. It sits beside Cost of Goods Sold so that
+	# gross margin still carries it.
+	"default_freight_account": "Freight and Forwarding",
 }
 
 

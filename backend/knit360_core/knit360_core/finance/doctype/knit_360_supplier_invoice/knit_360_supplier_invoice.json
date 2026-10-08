@@ -25,6 +25,8 @@
   "statutory_tax_amount",
   "net_total",
   "grand_total",
+  "credit_to",
+  "outstanding_amount",
   "payment_terms"
  ],
  "fields": [
@@ -149,6 +151,21 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "credit_to",
+   "fieldtype": "Link",
+   "label": "Credit To",
+   "options": "KNIT 360 Account",
+   "read_only": 1,
+   "description": "FR-FIN-002 The payable account this bill credits. Resolved from the company's Default Payable Account when the bill is saved, so a payment can land exactly where the bill put the debt."
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding Amount",
+   "read_only": 1,
+   "description": "FR-FIN-004 What is still owed on this bill. A cache of the ledger figure derived by knit360_core.finance.settlement, refreshed whenever a payment settles against it."
+  },
+  {
    "fieldname": "payment_terms",
    "fieldtype": "Small Text",
    "label": "Payment Terms",
@@ -181,5 +198,6 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "PINV-.YYYY.-.####"
+ "autoname": "PINV-.YYYY.-.####",
+ "is_submittable": 1
 }

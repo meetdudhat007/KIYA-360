@@ -6,7 +6,7 @@
  "doctype": "DocType",
  "editable_grid": 0,
  "engine": "InnoDB",
- "description": "FR-PADM-1.1.1 — Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
+ "description": "FR-PADM-1.1.1 \u2014 Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
  "field_order": [
   "company_name",
   "business_type",
@@ -30,6 +30,7 @@
   "round_off_account",
   "write_off_tolerance",
   "default_stock_account",
+  "default_freight_account",
   "default_cogs_account",
   "stock_received_but_not_billed",
   "default_output_tax_account",
@@ -176,6 +177,13 @@
    "label": "Default Stock Account",
    "options": "KNIT 360 Account",
    "description": "FR-INV-006: where the value of stock on hand is held. An asset."
+  },
+  {
+   "fieldname": "default_freight_account",
+   "fieldtype": "Link",
+   "label": "Default Freight Account",
+   "options": "KNIT 360 Account",
+   "description": "FR-FIN-001 / FR-PROC-006 Where freight and ancillary charges on a supplier's bill are posted. A direct expense, not part of the cost of the stock -- see OQ-025 and DEC-033 for why, and for what that costs."
   },
   {
    "fieldname": "default_cogs_account",

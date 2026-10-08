@@ -4,6 +4,14 @@ DR-P2P-005 Purchase Order Commitment & Scheduling.
 
 Totals come from knit360_core.pricing.totals, the same engine the sales side
 uses, so a purchase order and a sales order are costed by one piece of code.
+
+**It posts nothing to the ledger, on purpose.** An order is a commitment to
+buy, not a transaction: no goods have moved and no money is owed. The books
+first hear about it when the goods arrive (the receipt debits stock) and then
+when the bill arrives (the bill creates the payable). Posting an order would
+put a liability on the balance sheet for something that can still be
+cancelled. An acceptance check asserts that an approved order writes no ledger
+entry, so this stays true rather than merely being intended.
 """
 
 import frappe

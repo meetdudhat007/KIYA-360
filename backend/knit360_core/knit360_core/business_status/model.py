@@ -380,6 +380,7 @@ SUPPLIER_INVOICE = Lifecycle(
 	draft_states={"Draft", "On Hold / Variance Pending"},
 	submitted_states={"Matched & Approved", "Paid in Full", "Partially Paid"},
 	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Matched & Approved", "Partially Paid", "Paid in Full"),
 )
 
 # DR-P2P-011 (Payment Entry): Disbursement moves cash, so it posts.

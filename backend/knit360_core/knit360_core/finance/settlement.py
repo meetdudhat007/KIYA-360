@@ -42,6 +42,10 @@ COMPANY = "KNIT 360 Company"
 #: doctype -> (the status when nothing is settled, partly, fully)
 SETTLES = {
 	"KNIT 360 Sales Invoice": ("Posted / Unpaid", "Partly Paid", "Paid"),
+	# DEC-033. A supplier's bill is settled the same way, in the other
+	# direction. outstanding() takes the absolute difference, so a payable's
+	# credit balance needs no special case here.
+	"KNIT 360 Supplier Invoice": ("Matched & Approved", "Partially Paid", "Paid in Full"),
 }
 
 #: Below this, a difference is arithmetic rather than money. Matches the

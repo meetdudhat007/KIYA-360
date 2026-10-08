@@ -177,9 +177,14 @@ class KNIT360PaymentEntry(Document):
 		for row in self.allocations or []:
 			# Post against the account the document itself used, so a payment
 			# lands exactly where the invoice put the debt.
+			# A sales invoice names the account it debited; a supplier's bill
+			# names the one it credited. Either way the payment lands where
+			# the document actually put the debt, not where the company
+			# default happens to point today.
+			held_on = "debit_to" if receiving else "credit_to"
 			account = (
-				frappe.db.get_value(row.reference_doctype, row.reference_name, "debit_to")
-				if receiving and frappe.get_meta(row.reference_doctype).has_field("debit_to")
+				frappe.db.get_value(row.reference_doctype, row.reference_name, held_on)
+				if frappe.get_meta(row.reference_doctype).has_field(held_on)
 				else None
 			) or default_account
 			if not account:
