@@ -224,6 +224,9 @@ bench --site knit360.localhost execute knit360_core.demo.seed        # sample da
 
 - `docs/03-guides/01-user-guide.md` — every screen and feature in plain language
 - `docs/03-guides/02-demonstration-script.md` — a 40-minute demonstration
+- `docs/03-guides/07-live-presentation-script.md` — the same thing as a script
+  to follow on screen: every click, every value to type, and what to say,
+  with every figure read off the running site
 - `docs/03-guides/04-new-client-setup-walkthrough.md` — setting up a new client
   from login, every field and value
 - `docs/03-guides/05-proving-requirements-to-a-client.md` — the evidence
