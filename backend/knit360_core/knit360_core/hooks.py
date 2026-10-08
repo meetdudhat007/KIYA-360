@@ -91,6 +91,9 @@ doc_events = {
 		# KNIT 360 parent document. See knit360_core/search/index.py.
 		"after_insert": "knit360_core.search.index.index_document",
 		"on_update": "knit360_core.search.index.index_document",
+		# A status moves by db_set, which fires on_change rather than
+		# on_update. Without this the bar described a paid invoice as Overdue.
+		"on_change": "knit360_core.search.index.index_document",
 		"after_rename": "knit360_core.search.index.rename_document",
 		"on_trash": "knit360_core.search.index.remove_document",
 	}

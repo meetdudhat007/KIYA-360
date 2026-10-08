@@ -120,7 +120,32 @@ def index_document(doc, method=None):
 	"""
 	if not is_indexable(doc.doctype):
 		return
+	# A delete can still move a field on its way out -- Frappe cancels before
+	# it trashes -- and an index row written after the document has gone is a
+	# result that opens nothing.
+	if doc.flags.get("in_delete"):
+		return
 	meta = frappe.get_meta(doc.doctype)
+
+	# A business status moves by db_set, which fires on_change and not
+	# on_update, so both are hooked -- otherwise the bar went on describing an
+	# invoice as Overdue after it had been paid. Hooking both means an
+	# ordinary save indexes twice, so a row that would be written identically
+	# is left where it is.
+	fresh = {
+		"title": _title(doc, meta),
+		"subtitle": _subtitle(doc, meta),
+		"content": " ".join(_values(doc, meta)),
+	}
+	existing = frappe.db.get_value(
+		INDEX,
+		{"reference_doctype": doc.doctype, "reference_name": doc.name},
+		["title", "subtitle", "content"],
+		as_dict=True,
+	)
+	if existing and all(existing.get(key) == value for key, value in fresh.items()):
+		return
+
 	remove_document(doc)
 	row = frappe.get_doc(
 		{
@@ -130,11 +155,11 @@ def index_document(doc, method=None):
 			"record_type": doc.doctype.replace("KNIT 360 ", ""),
 			"route": route_for(doc.doctype, doc.name),
 			"indexed_at": now(),
-			"title": _title(doc, meta),
-			"subtitle": _subtitle(doc, meta),
+			"title": fresh["title"],
+			"subtitle": fresh["subtitle"],
 			"company": doc.get("company") or "",
 			"weight": 1 if is_derived(doc.doctype) else 0,
-			"content": " ".join(_values(doc, meta)),
+			"content": fresh["content"],
 		}
 	)
 	# Says "this write came from here". The row refuses any other author.
