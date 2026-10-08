@@ -1,0 +1,24 @@
+{#
+	The quotation a customer receives -- FR-SALES-002.
+
+	A thin wrapper: it says what this document is and what belongs in its
+	columns, then includes the shared layout. Everything about how it looks
+	lives in one place -- knit360_core/templates/print/document.html.
+#}
+{% set heading = "QUOTATION" %}
+{% set party_label = "To" %}
+{% set party_name = doc.customer %}
+{% set party_lines = [doc.get('billing_address'), doc.get('shipping_address')] %}
+{% set facts = [("Date", frappe.utils.format_date(doc.creation)), ("Valid until", frappe.utils.format_date(doc.valid_till) if doc.valid_till else ""), ("Opportunity", doc.opportunity), ("Price list", doc.price_list)] %}
+{% set columns = [{"label": "Item", "key": "item_code"}, {"label": "Qty", "key": "qty", "align": "right"}, {"label": "Unit", "key": "uom"}, {"label": "Rate", "key": "unit_rate", "align": "right", "money": true}, {"label": "Disc %", "key": "discount_percentage", "align": "right"}, {"label": "Amount", "key": "amount", "align": "right", "money": true}] %}
+{% set rows = doc.items %}
+{% set totals = [("Net total", doc.net_total, false)] %}
+{% for tax in tax_lines(doc.net_total, doc.get('tax_template')) %}
+	{% set _ = totals.append((tax.component ~ " at " ~ tax.rate ~ "%", tax.amount, false)) %}
+{% endfor %}
+{% set _ = totals.append(("Quoted total", doc.grand_total, true)) %}
+{% set amount_in_words = frappe.utils.money_in_words(doc.grand_total, doc.get('currency') or 'INR') %}
+{% set terms = doc.payment_terms %}
+{% set closing = "This quotation is valid until the date shown above and is subject to the terms stated on it." %}
+
+{% include "knit360_core/templates/print/document.html" %}

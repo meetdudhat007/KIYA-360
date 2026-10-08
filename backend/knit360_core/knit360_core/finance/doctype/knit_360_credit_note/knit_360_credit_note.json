@@ -162,5 +162,6 @@
    "read_only": 1,
    "description": "The whole amount credited."
   }
- ]
+ ],
+ "default_print_format": "Credit Note"
 }

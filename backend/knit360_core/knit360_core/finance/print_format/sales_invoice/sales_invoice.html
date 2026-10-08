@@ -1,0 +1,28 @@
+{#
+	The invoice a customer is asked to pay -- FR-FIN-003.
+
+	A thin wrapper: it says what this document is and what belongs in its
+	columns, then includes the shared layout. Everything about how it looks
+	lives in one place -- knit360_core/templates/print/document.html.
+#}
+{% set heading = "TAX INVOICE" %}
+{% set party_label = "Billed to" %}
+{% set party_name = doc.customer %}
+{% set party_lines = [doc.get('billing_address'), doc.get('shipping_address')] %}
+{% set facts = [("Invoice date", frappe.utils.format_date(doc.posting_date)), ("Payment due", frappe.utils.format_date(doc.due_date) if doc.due_date else ""), ("Sales order", doc.sales_order), ("Delivery note", doc.delivery_note)] %}
+{% set columns = [{"label": "Item", "key": "item_code"}, {"label": "Qty", "key": "qty", "align": "right"}, {"label": "Unit", "key": "uom"}, {"label": "Rate", "key": "rate", "align": "right", "money": true}, {"label": "Amount", "key": "amount", "align": "right", "money": true}] %}
+{% set rows = doc.items %}
+{% set totals = [("Net total", doc.net_total, false)] %}
+{% for tax in tax_lines(doc.net_total, doc.get('tax_template')) %}
+	{% set _ = totals.append((tax.component ~ " at " ~ tax.rate ~ "%", tax.amount, false)) %}
+{% endfor %}
+{% set _ = totals.append(("Amount payable", doc.grand_total, true)) %}
+{% if doc.get('outstanding_amount') is not none and doc.outstanding_amount != doc.grand_total %}
+	{% set _ = totals.append(("Already settled", doc.grand_total - doc.outstanding_amount, false)) %}
+	{% set _ = totals.append(("Now due", doc.outstanding_amount, true)) %}
+{% endif %}
+{% set amount_in_words = frappe.utils.money_in_words(doc.grand_total, doc.get('currency') or 'INR') %}
+{% set terms = doc.payment_terms %}
+{% set closing = "Please quote the invoice number shown above when paying." %}
+
+{% include "knit360_core/templates/print/document.html" %}

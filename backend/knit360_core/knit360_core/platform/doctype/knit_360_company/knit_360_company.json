@@ -15,6 +15,9 @@
   "default_currency",
   "tax_registration_number",
   "country",
+  "registered_address",
+  "contact_phone",
+  "contact_email",
   "sec1",
   "fiscal_year_start_date",
   "fiscal_year_end_date",
@@ -85,6 +88,24 @@
    "label": "Country",
    "description": "From company details",
    "options": "Country"
+  },
+  {
+   "fieldname": "registered_address",
+   "fieldtype": "Small Text",
+   "label": "Registered Address",
+   "description": "The address printed on every document the company issues."
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Contact Phone",
+   "description": "Printed on documents, so a customer can reach somebody about one."
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "description": "Printed on documents, and the address replies are expected at."
   },
   {
    "fieldname": "sec1",

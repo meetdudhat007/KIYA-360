@@ -156,5 +156,6 @@
  "track_changes": 1,
  "autoname": "DN-.YYYY.-.####",
  "title_field": "sales_order",
- "is_submittable": 1
+ "is_submittable": 1,
+ "default_print_format": "Delivery Note"
 }

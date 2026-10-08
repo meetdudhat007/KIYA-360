@@ -195,5 +195,6 @@
  "states": [],
  "track_changes": 1,
  "autoname": "SO-.YYYY.-.####",
- "title_field": "customer"
+ "title_field": "customer",
+ "default_print_format": "Sales Order"
 }

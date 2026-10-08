@@ -60,6 +60,17 @@ after_migrate = [
 	"knit360_core.search.index.top_up",
 ]
 
+# --- Printing -------------------------------------------------------------
+# The print formats break tax into its components, which means calling the
+# same function the posting code calls rather than a second copy of the rule
+# written in Jinja. A print format that computes its own tax is a print format
+# that will one day disagree with the ledger.
+jinja = {
+	# The function keeps its own name in the template; Frappe takes the
+	# name from the function, not from an alias.
+	"methods": ["knit360_core.pricing.totals.tax_lines"],
+}
+
 # --- Search ---------------------------------------------------------------
 # The framework's own index only holds fields a doctype marks for it, and no
 # KNIT 360 field did, so the bar found nothing. This adds our index as a source.

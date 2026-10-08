@@ -1,0 +1,23 @@
+{#
+	What left the warehouse, for the person signing for it -- FR-SALES-005.
+
+	Quantities only, and no money anywhere on it. This document carries the
+	cost of the goods in its own fields because the ledger needs it, and what
+	the goods cost us is nobody's business but ours.
+
+	A thin wrapper: it says what this document is and what belongs in its
+	columns, then includes the shared layout. Everything about how it looks
+	lives in one place -- knit360_core/templates/print/document.html.
+#}
+{% set heading = "DELIVERY NOTE" %}
+{% set party_label = "Deliver to" %}
+{% set party_name = doc.get('customer') or doc.sales_order %}
+{% set party_lines = [doc.get('billing_address'), doc.get('shipping_address')] %}
+{% set facts = [("Date", frappe.utils.format_date(doc.delivery_note_date) if doc.delivery_note_date else frappe.utils.format_date(doc.creation)), ("From warehouse", doc.source_warehouse), ("Sales order", doc.sales_order), ("Vehicle", doc.vehicle_number), ("Tracking", doc.tracking_number)] %}
+{% set columns = [{"label": "Item", "key": "item_code"}, {"label": "Qty", "key": "qty", "align": "right"}, {"label": "Unit", "key": "uom"}] %}
+{% set rows = doc.items %}
+{% set totals = [] %}
+{% set terms = "" %}
+{% set closing = "Received the goods listed above in good order and condition." %}
+
+{% include "knit360_core/templates/print/document.html" %}

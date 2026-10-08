@@ -1,0 +1,226 @@
+{#
+	The shared body of every KNIT 360 print format -- FR-SALES-002 / FR-FIN-003.
+
+	One file, included by each format, because a quotation and the invoice that
+	follows it must look like they came from the same company. Six copies of
+	this layout would be six places for the column widths to drift apart.
+
+	A wrapper sets these and includes this file:
+
+		heading       what the document is called in capitals, e.g. QUOTATION
+		party_label   "To" or "Supplier"
+		party_name    who it is addressed to
+		party_lines   further lines under the name (address, contact)
+		facts         [(label, value)] for the block on the right
+		columns       [{label, key, align, money}] for the line table
+		rows          the line items
+		totals        [(label, amount, strong)] under the table
+		terms         free text printed at the foot, or nothing
+		closing       a final sentence, or nothing
+
+	Deliberately plain: black on white, one serif face, rules rather than
+	panels, no colour and no icons. A printed invoice is a legal record of a
+	transaction, and it should read like one.
+#}
+<div class="knit-print">
+<style>
+	.knit-print {
+		font-family: Georgia, "Times New Roman", Times, serif;
+		color: #111;
+		font-size: 11pt;
+		line-height: 1.45;
+	}
+	.knit-print .doc-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		border-bottom: 1.5px solid #111;
+		padding-bottom: 8px;
+		margin-bottom: 18px;
+	}
+	.knit-print .doc-title {
+		font-size: 17pt;
+		letter-spacing: 3px;
+		text-transform: uppercase;
+		margin: 0;
+	}
+	.knit-print .doc-no {
+		font-size: 12pt;
+		letter-spacing: 1px;
+		text-align: right;
+	}
+	.knit-print .parties {
+		display: flex;
+		justify-content: space-between;
+		gap: 36px;
+		margin-bottom: 20px;
+	}
+	.knit-print .parties > div { flex: 1 1 0; }
+	.knit-print .label {
+		font-size: 8pt;
+		letter-spacing: 1.4px;
+		text-transform: uppercase;
+		color: #666;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.knit-print .party-name { font-size: 12pt; margin-top: 2px; }
+	.knit-print .party-line { color: #333; }
+	.knit-print table.facts { width: 100%; border-collapse: collapse; }
+	.knit-print table.facts td { padding: 1px 0; vertical-align: top; }
+	.knit-print table.facts td.k { color: #666; padding-right: 14px; white-space: nowrap; }
+	.knit-print table.facts td.v { text-align: right; }
+
+	.knit-print table.lines { width: 100%; border-collapse: collapse; margin-bottom: 2px; }
+	.knit-print table.lines th {
+		font-size: 8pt;
+		letter-spacing: 1.2px;
+		text-transform: uppercase;
+		color: #666;
+		font-family: Arial, Helvetica, sans-serif;
+		font-weight: normal;
+		border-bottom: 1px solid #111;
+		padding: 6px 8px;
+		text-align: left;
+	}
+	.knit-print table.lines td {
+		padding: 7px 8px;
+		border-bottom: 1px solid #ddd;
+		vertical-align: top;
+	}
+	.knit-print .num { text-align: right; font-variant-numeric: tabular-nums; }
+	.knit-print .idx { color: #666; width: 28px; }
+	.knit-print .desc { color: #444; font-size: 10pt; }
+
+	.knit-print .totals { width: 54%; margin-left: auto; border-collapse: collapse; }
+	.knit-print .totals td { padding: 5px 8px; }
+	.knit-print .totals td.k { color: #333; }
+	.knit-print .totals td.v { text-align: right; font-variant-numeric: tabular-nums; }
+	.knit-print .totals tr.strong td {
+		border-top: 1px solid #111;
+		border-bottom: 2.5px double #111;
+		font-size: 12pt;
+	}
+	.knit-print .words {
+		margin-top: 14px;
+		padding-top: 10px;
+		border-top: 1px solid #ddd;
+	}
+	.knit-print .terms { margin-top: 22px; }
+	.knit-print .terms p { margin: 4px 0 0; white-space: pre-line; }
+	.knit-print .sign {
+		margin-top: 44px;
+		display: flex;
+		justify-content: space-between;
+	}
+	.knit-print .sign div { width: 44%; }
+	.knit-print .sign .rule {
+		border-top: 1px solid #111;
+		margin-top: 40px;
+		padding-top: 5px;
+	}
+	.knit-print .letter-head { margin-bottom: 16px; }
+	.knit-print .closing {
+		margin-top: 26px;
+		padding-top: 8px;
+		border-top: 1px solid #ddd;
+		color: #666;
+		font-size: 9pt;
+		text-align: center;
+	}
+</style>
+
+{# A custom print format renders its own letterhead: Frappe only puts one on
+   its standard template, and passes the content to ours as `letter_head`. #}
+{% if not no_letterhead and letter_head %}
+	<div class="letter-head">{{ letter_head }}</div>
+{% endif %}
+
+<div class="doc-head">
+	<h1 class="doc-title">{{ heading }}</h1>
+	<div class="doc-no">{{ doc.name }}</div>
+</div>
+
+<div class="parties">
+	<div>
+		<div class="label">{{ party_label }}</div>
+		<div class="party-name">{{ party_name or "" }}</div>
+		{% for line in (party_lines or []) %}{% if line %}
+			<div class="party-line">{{ line }}</div>
+		{% endif %}{% endfor %}
+	</div>
+	<div>
+		<table class="facts">
+			{% for label, value in (facts or []) %}{% if value %}
+				<tr><td class="k">{{ label }}</td><td class="v">{{ value }}</td></tr>
+			{% endif %}{% endfor %}
+		</table>
+	</div>
+</div>
+
+<table class="lines">
+	<thead>
+		<tr>
+			<th class="idx">#</th>
+			{% for column in columns %}
+				<th{% if column.align == "right" %} class="num"{% endif %}>{{ column.label }}</th>
+			{% endfor %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in rows %}
+		<tr>
+			<td class="idx">{{ loop.index }}</td>
+			{% for column in columns %}
+				<td{% if column.align == "right" %} class="num"{% endif %}>
+					{%- set value = row.get(column.key) -%}
+					{%- if column.money -%}
+						{{ frappe.utils.fmt_money(value or 0, currency=doc.get("currency")) }}
+					{%- elif column.key == "item_code" -%}
+						{{ value or "" }}
+						{%- if row.get("description") %}<div class="desc">{{ row.description }}</div>{% endif -%}
+					{%- else -%}
+						{{ "" if value is none else value }}
+					{%- endif -%}
+				</td>
+			{% endfor %}
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<table class="totals">
+	{% for label, amount, strong in (totals or []) %}
+		<tr{% if strong %} class="strong"{% endif %}>
+			<td class="k">{{ label }}</td>
+			<td class="v">{{ frappe.utils.fmt_money(amount or 0, currency=doc.get("currency")) }}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% if amount_in_words %}
+	<div class="words">
+		<span class="label">Amount in words</span><br>
+		{{ amount_in_words }}
+	</div>
+{% endif %}
+
+{% if terms %}
+	<div class="terms">
+		<span class="label">Terms</span>
+		<p>{{ terms }}</p>
+	</div>
+{% endif %}
+
+<div class="sign">
+	<div>
+		<div class="rule">{{ party_name or "" }}</div>
+	</div>
+	<div>
+		<div class="rule">For {{ doc.get("company") or "" }}</div>
+	</div>
+</div>
+
+{% if closing %}
+	<div class="closing">{{ closing }}</div>
+{% endif %}
+</div>

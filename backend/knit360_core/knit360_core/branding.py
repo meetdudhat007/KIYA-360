@@ -96,9 +96,84 @@ def hide_vendor_navbar_items():
 	return hidden
 
 
+#: What a letterhead is built from. Every line comes off the Company record,
+#: so a client who fills their own details in gets their own letterhead and
+#: nobody has to edit HTML -- DEC-038.
+LETTERHEAD_FIELDS = (
+	"company_name", "legal_entity", "registered_address",
+	"contact_phone", "contact_email", "tax_registration_number",
+)
+
+
+def letterheads():
+	"""One Letter Head per company, from the company's own details.
+
+	Rebuilt on every migrate so a corrected address reaches the documents,
+	but only where this app wrote it: a letterhead somebody has edited by
+	hand is left alone, because their version is the one they chose.
+	"""
+	made = {}
+	marker = "<!-- built by knit360_core.branding -->"
+
+	for name in frappe.get_all("KNIT 360 Company", pluck="name"):
+		row = frappe.db.get_value("KNIT 360 Company", name, LETTERHEAD_FIELDS, as_dict=True)
+		lines = [
+			'<div style="font-family: Georgia, Times, serif; '
+			'border-bottom: 1.5px solid #111; padding-bottom: 10px; margin-bottom: 4px;">',
+			'<div style="font-size: 16pt; letter-spacing: 1px;">'
+			+ (row.company_name or name)
+			+ "</div>",
+		]
+		detail = [
+			row.legal_entity,
+			" ".join((row.registered_address or "").split()) or None,
+			row.contact_phone,
+			row.contact_email,
+			f"Tax registration {row.tax_registration_number}"
+			if row.tax_registration_number else None,
+		]
+		detail = [part for part in detail if part]
+		if detail:
+			lines.append(
+				'<div style="font-size: 9pt; color: #444; margin-top: 3px;">'
+				+ " &middot; ".join(detail)
+				+ "</div>"
+			)
+		lines.append("</div>")
+		content = marker + "".join(lines)
+
+		existing = frappe.db.get_value(
+			"Letter Head", name, ["content", "is_default"], as_dict=True
+		)
+		if existing and marker not in (existing.content or ""):
+			made[name] = "edited by hand, left alone"
+			continue
+		if existing:
+			if existing.content != content:
+				frappe.db.set_value("Letter Head", name, "content", content,
+				                    update_modified=False)
+				made[name] = "refreshed"
+			continue
+
+		frappe.get_doc(
+			{
+				"doctype": "Letter Head",
+				"letter_head_name": name,
+				"source": "HTML",
+				"content": content,
+				"is_default": 0 if frappe.db.exists("Letter Head", {"is_default": 1}) else 1,
+			}
+		).insert(ignore_permissions=True)
+		made[name] = "created"
+
+	return made
+
+
 def after_install():
 	apply()
+	letterheads()
 
 
 def after_migrate():
 	apply()
+	letterheads()

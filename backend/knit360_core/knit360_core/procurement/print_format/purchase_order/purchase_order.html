@@ -1,0 +1,24 @@
+{#
+	The order a supplier receives -- FR-PROC-004.
+
+	A thin wrapper: it says what this document is and what belongs in its
+	columns, then includes the shared layout. Everything about how it looks
+	lives in one place -- knit360_core/templates/print/document.html.
+#}
+{% set heading = "PURCHASE ORDER" %}
+{% set party_label = "Supplier" %}
+{% set party_name = doc.supplier %}
+{% set party_lines = [doc.get('billing_address'), doc.get('shipping_address')] %}
+{% set facts = [("Order date", frappe.utils.format_date(doc.order_date) if doc.order_date else frappe.utils.format_date(doc.creation)), ("Deliver to", doc.ship_to_warehouse), ("Incoterms", doc.incoterms), ("Quotation", doc.supplier_quotation)] %}
+{% set columns = [{"label": "Item", "key": "item_code"}, {"label": "Qty", "key": "qty", "align": "right"}, {"label": "Unit", "key": "uom"}, {"label": "Rate", "key": "rate", "align": "right", "money": true}, {"label": "Required by", "key": "schedule_date"}, {"label": "Amount", "key": "amount", "align": "right", "money": true}] %}
+{% set rows = doc.items %}
+{% set totals = [("Net total", doc.net_total, false)] %}
+{% for tax in tax_lines(doc.net_total, doc.get('tax_template')) %}
+	{% set _ = totals.append((tax.component ~ " at " ~ tax.rate ~ "%", tax.amount, false)) %}
+{% endfor %}
+{% set _ = totals.append(("Order total", doc.grand_total, true)) %}
+{% set amount_in_words = frappe.utils.money_in_words(doc.grand_total, doc.get('currency') or 'INR') %}
+{% set terms = doc.payment_terms %}
+{% set closing = "Please acknowledge this order and quote its number on your delivery documents and invoice." %}
+
+{% include "knit360_core/templates/print/document.html" %}

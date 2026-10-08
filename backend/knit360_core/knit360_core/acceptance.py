@@ -3696,6 +3696,167 @@ def r_empty_note_refused():
 	return "a credit note with no lines credits nothing, and is refused"
 
 
+# --- S. printing ---------------------------------------------------------
+#
+# DEC-038. Printing worked before this; the output was Frappe's field-by-field
+# dump, which is not a document anybody would send a customer. These checks
+# prove each format renders at all -- a Jinja error in a print format is
+# invisible until somebody tries to print -- and that a delivery note carries
+# no money on it.
+
+PRINT_FORMATS = {
+	"KNIT 360 Quotation": "Quotation",
+	"KNIT 360 Sales Order": "Sales Order",
+	"KNIT 360 Sales Invoice": "Sales Invoice",
+	"KNIT 360 Delivery Note": "Delivery Note",
+	"KNIT 360 Purchase Order": "Purchase Order",
+	"KNIT 360 Credit Note": "Credit Note",
+}
+
+
+def printed(doctype, name, letterhead=None):
+	"""The HTML a person would see, through the same call the Print button makes."""
+	return frappe.get_print(
+		doctype, name, print_format=PRINT_FORMATS[doctype], letterhead=letterhead
+	)
+
+
+@check("S. Printing", "Every document type has a format of its own")
+def s_every_document_has_a_format():
+	missing = [
+		doctype for doctype, fmt in PRINT_FORMATS.items()
+		if not frappe.db.exists("Print Format", {"name": fmt, "doc_type": doctype})
+	]
+	expect(not missing, f"these have no print format: {missing}")
+
+	not_default = [
+		doctype for doctype, fmt in PRINT_FORMATS.items()
+		if frappe.db.get_value("DocType", doctype, "default_print_format") != fmt
+	]
+	expect(not not_default, f"these do not open on their own format: {not_default}")
+	return f"{len(PRINT_FORMATS)} document types, each opening on its own format"
+
+
+@check("S. Printing", "An invoice prints as a document, not a field dump")
+def s_invoice_prints():
+	invoice = a_posted_invoice(12500)
+	html = printed(invoice.doctype, invoice.name)
+	for fragment in ("TAX INVOICE", invoice.name, "Amount payable", "AMOUNT IN WORDS"):
+		expect(fragment.lower() in html.lower(), f"the printed invoice has no {fragment!r}")
+	expect(
+		"12,500" in html,
+		"the printed invoice does not show its own total",
+	)
+	frappe.db.commit()
+	return f"{invoice.name} prints with its heading, total and amount in words"
+
+
+@check("S. Printing", "Tax prints component by component")
+def s_tax_prints_by_component():
+	"""A customer disputing an invoice asks which tax, not how much tax."""
+	template = a_tax_template(
+		"Acceptance Print Tax",
+		[("CGST", 9, account("Output Tax Payable")), ("SGST", 9, account("Output Tax Payable"))],
+	)
+	invoice = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Sales Invoice",
+			"company": company(),
+			"customer": a_payer(),
+			"posting_date": nowdate(),
+			"due_date": add_days(nowdate(), 30),
+			"tax_template": template,
+			"items": [{"item_name": "Acceptance printed widget", "qty": 1, "rate": 1000}],
+		}
+	).insert(ignore_permissions=True)
+	engine.transition("KNIT 360 Sales Invoice", invoice.name, "Posted / Unpaid")
+	html = printed("KNIT 360 Sales Invoice", invoice.name)
+	expect("CGST at 9" in html, "the printed invoice does not name CGST and its rate")
+	expect("SGST at 9" in html, "the printed invoice does not name SGST and its rate")
+	frappe.db.commit()
+	return f"{invoice.name} prints CGST at 9% and SGST at 9% as separate lines"
+
+
+@check("S. Printing", "A delivery note carries no money at all")
+def s_delivery_note_has_no_money():
+	"""What the goods cost us is nobody's business but ours, and the note
+	carries that cost in its own fields because the ledger needs it."""
+	item = an_item("Acceptance Printed Coil")
+	a_receipt(item, 10, 1234)
+	note = a_dispatch(item, 3)
+	html = printed(note.doctype, note.name)
+
+	expect(note.name in html, "the printed delivery note does not show its own number")
+	leaked = [word for word in ("1,234", "3,702", "Amount", "Rate", "Net total") if word in html]
+	expect(not leaked, f"the printed delivery note shows money: {leaked}")
+	frappe.db.commit()
+	return f"{note.name} prints 3 units and no figure of any kind"
+
+
+@check("S. Printing", "The letterhead is built from the company's own details")
+def s_letterhead_is_the_company():
+	from knit360_core import branding
+
+	frappe.db.set_value(
+		COMPANY_DOCTYPE, COMPANY,
+		{
+			"registered_address": "Unit 9, Acceptance Estate",
+			"contact_phone": "+91 00 0000 0000",
+			"contact_email": "acceptance@example.com",
+		},
+		update_modified=False,
+	)
+	branding.letterheads()
+	content = frappe.db.get_value("Letter Head", COMPANY, "content") or ""
+	for fragment in (COMPANY, "Unit 9, Acceptance Estate", "acceptance@example.com"):
+		expect(fragment in content, f"the letterhead does not carry {fragment!r}")
+
+	invoice = a_posted_invoice(2000)
+	html = printed(invoice.doctype, invoice.name, letterhead=COMPANY)
+	expect(COMPANY in html, "the letterhead did not reach the printed document")
+	frappe.db.commit()
+	return f"the {COMPANY} letterhead carries its address and reaches the page"
+
+
+@check("S. Printing", "A letterhead somebody edited by hand is left alone")
+def s_letterhead_respects_an_edit():
+	from knit360_core import branding
+
+	branding.letterheads()
+	frappe.db.set_value(
+		"Letter Head", COMPANY, "content", "<div>Our own letterhead</div>",
+		update_modified=False,
+	)
+	branding.letterheads()
+	expect(
+		frappe.db.get_value("Letter Head", COMPANY, "content") == "<div>Our own letterhead</div>",
+		"a hand-written letterhead was overwritten on migrate",
+	)
+	frappe.db.delete("Letter Head", {"name": COMPANY})
+	frappe.db.commit()
+	return "an edited letterhead survives a migrate; only generated ones are refreshed"
+
+
+@check("S. Printing", "One layout serves every format")
+def s_one_layout():
+	"""Six copies of a layout is six places for the columns to drift apart."""
+	import pathlib as _pathlib
+
+	root = _pathlib.Path(frappe.get_app_path("knit360_core"))
+	shared = root / "templates" / "print" / "document.html"
+	expect(shared.exists(), "the shared print layout is missing")
+
+	formats = list(root.glob("*/print_format/*/*.html"))
+	expect(len(formats) == len(PRINT_FORMATS), f"{len(formats)} format files, expected 6")
+
+	standalone = [
+		path.name for path in formats
+		if "templates/print/document.html" not in path.read_text(encoding="utf-8")
+	]
+	expect(not standalone, f"these formats carry their own layout: {standalone}")
+	return f"{len(formats)} formats, all drawing from one layout"
+
+
 # --- the runner ---------------------------------------------------------
 
 

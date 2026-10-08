@@ -170,5 +170,6 @@
  "states": [],
  "track_changes": 1,
  "autoname": "QTN-.YYYY.-.####",
- "title_field": "customer"
+ "title_field": "customer",
+ "default_print_format": "Quotation"
 }

@@ -125,8 +125,24 @@ def company():
 			"default_currency": CURRENCY,
 			"business_type": "Manufacturing",
 			"legal_entity": "Private Limited",
+			# Printed on every document, so the demonstration shows a
+			# letterhead rather than a blank space where one belongs. The
+			# address is fictional, as all demonstration data here is.
+			"registered_address": "Plot 14, Phase II Industrial Area, Pune 411026",
+			"contact_phone": "+91 20 0000 0000",
+			"contact_email": "accounts@knit360.example",
+			"tax_registration_number": "27AAAAA0000A1Z5",
 		},
 		{"company_name": COMPANY},
+	)
+	frappe.db.set_value(
+		"KNIT 360 Company", name,
+		{
+			"registered_address": "Plot 14, Phase II Industrial Area, Pune 411026",
+			"contact_phone": "+91 20 0000 0000",
+			"contact_email": "accounts@knit360.example",
+		},
+		update_modified=False,
 	)
 
 	if not frappe.db.exists("KNIT 360 Account", {"company": name}):

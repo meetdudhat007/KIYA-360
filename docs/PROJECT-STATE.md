@@ -172,8 +172,8 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | BRD modules with record types | **15 of 28** |
 | Lifecycle definitions (`CD-002`) | 25 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
-| Automated checks | **198** — 49 structural, 149 runtime |
-| Last full run | 49/49 and 149/149, 8 October 2026, site `knit360.localhost` |
+| Automated checks | **205** — 49 structural, 156 runtime |
+| Last full run | 49/49 and 156/156, 8 October 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
 | BRD requirement coverage (live report) | **71 of 238 — 12 proven, 59 modelled, 167 not started** |
@@ -204,8 +204,6 @@ group accounts, disabled accounts and closed fiscal years.
   than blocked.
 - **Stock is never written down to net realisable value.** Ind AS 2 paragraph
   28 requires it; `OQ-026` is open and nothing writes stock down.
-- **No designed print formats and no letterhead.** Printing and PDF work via
-  Frappe's standard format; the output is a field-by-field dump.
 - **No outgoing mail account, so nothing can be emailed.** The address at the
   foot of an outgoing email is set on the site (System Settings → Email Footer
   Address); the account that would actually send needs an SMTP server and an
@@ -218,7 +216,7 @@ group accounts, disabled accounts and closed fiscal years.
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 149 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 156 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

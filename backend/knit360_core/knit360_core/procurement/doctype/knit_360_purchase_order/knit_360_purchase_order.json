@@ -174,5 +174,6 @@
  "states": [],
  "track_changes": 1,
  "title_field": "supplier",
- "autoname": "PO-.YYYY.-.####"
+ "autoname": "PO-.YYYY.-.####",
+ "default_print_format": "Purchase Order"
 }
