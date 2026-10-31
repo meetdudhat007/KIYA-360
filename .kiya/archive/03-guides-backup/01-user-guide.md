@@ -57,7 +57,8 @@ to the other.
 
 ## 3. The simple screen, step by step
 
-Open `/knit360`.
+Open `/knit360`. To get back to the full system's home screen (`/app/knit-360`),
+press **KNIT 360 Home** at the top right; on a phone it just says **Home**.
 
 ### 3.1 The strip across the top
 
