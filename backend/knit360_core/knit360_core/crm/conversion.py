@@ -20,6 +20,7 @@ from knit360_core.business_status import engine
 LEAD = "KNIT 360 Lead"
 CUSTOMER = "KNIT 360 Customer"
 OPPORTUNITY = "KNIT 360 Opportunity"
+CONTACT = "KNIT 360 Contact"
 
 #: DR-C2C-001 puts Converted only after Qualified. Enforced here as well as in
 #: the transition matrix, so the reason given is about conversion, not states.
@@ -27,31 +28,75 @@ REQUIRED_STATUS = "Qualified"
 CONVERTED = "Converted"
 
 
+def _first_person(lead):
+	return lead.contact_persons[0] if lead.contact_persons else None
+
+
 def customer_name_for(lead):
-	"""KNIT 360 Customer is autonamed field:customer_name, so this is also its id."""
-	return lead.organization_name or lead.lead_name
+	"""KNIT 360 Customer is autonamed field:customer_name, so this is also its id.
+
+	Organization Name is required on a lead (DEC-045); the first person's name
+	is only a fallback for a lead saved before it was.
+	"""
+	first = _first_person(lead)
+	return lead.organization_name or (first.person_name if first else None)
 
 
 def _find_or_create_customer(lead):
 	"""'Creates OR LINKS a unified Customer Master' -- an existing customer of
 	the same name is reused rather than duplicated, which is the point of a
-	unified master (SF-003)."""
+	unified master (SF-003).
+
+	The customer's own email and phone are the first person's, as they were the
+	lead's single contact before a lead could hold several (DEC-045).
+	"""
 	name = customer_name_for(lead)
 	if frappe.db.exists(CUSTOMER, name):
 		return name, False
 
+	first = _first_person(lead)
 	customer = frappe.get_doc(
 		{
 			"doctype": CUSTOMER,
 			"customer_name": name,
 			"company": lead.company,
 			"territory": lead.territory,
-			"email": lead.email,
-			"phone": lead.phone,
+			"email": first.email if first else None,
+			"phone": first.phone if first else None,
 			"address": lead.address,
 		}
 	).insert()
 	return customer.name, True
+
+
+def _contacts_for(customer, lead):
+	"""A Contact under the customer for every person on the lead (FR-CRM-004).
+
+	A person the customer already has a contact of the same name for is skipped,
+	so converting a second lead for an existing customer does not repeat its
+	people. The first new contact is marked primary only when the customer has
+	no primary contact yet -- a customer has one primary, not one per lead.
+	"""
+	has_primary = bool(frappe.db.exists(CONTACT, {"customer": customer, "is_primary": 1}))
+	made = []
+	for person in lead.contact_persons:
+		if frappe.db.exists(CONTACT, {"customer": customer, "contact_name": person.person_name}):
+			continue
+		contact = frappe.get_doc(
+			{
+				"doctype": CONTACT,
+				"contact_name": person.person_name,
+				"customer": customer,
+				"is_primary": 0 if has_primary else 1,
+				"designation": person.designation,
+				"department": person.department,
+				"email": person.email,
+				"phone": person.phone,
+			}
+		).insert()
+		has_primary = True
+		made.append(contact.name)
+	return made
 
 
 @frappe.whitelist()
@@ -84,6 +129,7 @@ def convert_lead(lead, customer=None):
 		customer_id, created = customer, False
 	else:
 		customer_id, created = _find_or_create_customer(doc)
+	contacts = _contacts_for(customer_id, doc)
 
 	opportunity = frappe.get_doc(
 		{
@@ -103,5 +149,6 @@ def convert_lead(lead, customer=None):
 	return {
 		"customer": customer_id,
 		"customer_created": created,
+		"contacts": contacts,
 		"opportunity": opportunity.name,
 	}

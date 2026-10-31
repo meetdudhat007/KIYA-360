@@ -38,6 +38,8 @@ app_include_js = [
 	# Suppresses Frappe's own product adverts in the list sidebar. Our CRM
 	# module triggers one for a competing CRM product; see the file.
 	"branding.bundle.js",
+	# Field descriptions behind an info icon on the forms it lists (DEC-045).
+	"field_help.bundle.js",
 ]
 
 after_install = [

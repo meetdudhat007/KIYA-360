@@ -161,11 +161,7 @@ knit360.business_status = {
 				// Say why rather than showing a button that refuses. The reason
 				// comes from the server, so it is never a guess.
 				if (action.reason) {
-					frm.dashboard.add_comment(
-						__("{0}: {1}", [action.label, action.reason]),
-						"orange",
-						true
-					);
+					this.note(frm, __("{0}: {1}", [action.label, action.reason]), "orange");
 				}
 				return;
 			}
@@ -204,16 +200,29 @@ knit360.business_status = {
 		go();
 	},
 
+	// Two refreshes can overlap -- right after a new document's first save,
+	// for one -- and each one's answer arrives after both have cleared the
+	// form, so the same note was shown twice. A note already on show is left
+	// as it is.
+	note(frm, text, color) {
+		const plain = $("<div>").html(text).text().trim();
+		const shown = frm.layout.message
+			.find(".form-message")
+			.toArray()
+			.some((el) => $(el).text().trim() === plain);
+		if (!shown) frm.dashboard.add_comment(text, color, true);
+	},
+
 	render(frm, steps) {
 		if (!steps.length) {
 			// Terminal states are a real answer, not a missing one. Saying so
 			// stops someone hunting for a button that should not exist.
-			frm.dashboard.add_comment(
+			this.note(
+				frm,
 				__("This {0} has reached the end of its life. Nothing further happens to it.", [
 					frm.doctype.replace("KNIT 360 ", ""),
 				]),
-				"blue",
-				true
+				"blue"
 			);
 			return;
 		}

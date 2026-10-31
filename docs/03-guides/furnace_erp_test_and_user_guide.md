@@ -38,14 +38,11 @@ This guide is written in **plain, layman terms**, walking through every click, f
 
 ## 2. Navigating the ERP: Golden Rules
 
-### Rule 1: The Two Ways In
-1. **The Full Desk — `http://knit360.localhost:8000/app`**
-   - Used for the complete business: Setup, Inventory, Manufacturing, Delivery, Finance, and Service.
-   - The sidebar on the left lists the areas: KNIT 360 (home), Platform, CRM, Sales, Finance, Tax, Procurement, Inventory, Warehouse, Manufacturing, Asset Management, Maintenance and others.
-   - The search bar at the top ("Search or type a command", shortcut **Ctrl + G**) opens any screen or record by name.
-2. **The Simple Sales Board — `http://knit360.localhost:8000/knit360`**
-   - For salespeople on phones or laptops. Shows Leads, Opportunities and Quotations.
-   - To return to the full desk, click **KNIT 360 Home** at the top right (on a phone it just says **Home**).
+### Rule 1: One Way In
+- Everything happens in the **Desk — `http://knit360.localhost:8000/app`**: setup, CRM, sales, inventory, manufacturing, delivery, finance and service. Leads are entered only on the **Lead** form (**CRM** → **Lead** → **Add KNIT 360 Lead**).
+- The sidebar on the left lists the areas: KNIT 360 (home), Platform, CRM, Sales, Finance, Tax, Procurement, Inventory, Warehouse, Manufacturing, Asset Management, Maintenance and others.
+- The search bar at the top ("Search or type a command", shortcut **Ctrl + G**) opens any screen or record by name.
+- On a narrow window, the extra step buttons at the top right (for example **Convert to Customer + Opportunity**, **Lost**) fold into the **⋯** menu next to the main button. Widen the window to see them side by side.
 
 > **Important Hostname Tip**: Always use `http://knit360.localhost:8000`, not `localhost:8000`. The browser keeps a separate sign-in for each address, so being signed in on one does not sign you in on the other.
 
@@ -217,21 +214,27 @@ A Goods Receipt brings everything into **one** warehouse, so you need **two** re
 
 Now a prospective foundry client calls wanting a furnace.
 
-1. Go to **CRM** → **Lead** → **Add KNIT 360 Lead** (or add it on `/knit360`):
-   - **Prospect Name**: `Rajesh Patel`
-   - **Organization Name**: `Sardar Foundry Works LLP`
-   - **Company**: `Bharat Induction Furnaces Pvt Ltd`
-   - **Phone**: `+91 98250 11223`
-   - **Email**: `rajesh@sardarfoundry.in`
+1. Go to **CRM** → **Lead** → **Add KNIT 360 Lead**:
+   - **Organization Information**:
+     - **Organization Name**: `Sardar Foundry Works LLP` (required)
+     - **Company**: `Bharat Induction Furnaces Pvt Ltd` (required)
+     - **Lead Source**: e.g. `Referral`
+   - **Contact Details** (at least one person is required; click **+ Add New Contact** under the last person for more people at the same organization, now or later, and **Remove** to take one out):
+     - **Person Name** `Rajesh Patel`, **Designation** `Plant Head`, **Department** `Production`
+     - **Email** `rajesh@sardarfoundry.in`, **Phone** `+91 98250 11223`
+     - A contact you added but left completely empty is ignored when you save.
    - **Estimated Requirement**: `One 1000 kg induction furnace with commissioning`
    - Click **Save**.
+   - The small outline **ⓘ** next to a field's name explains the field: hover over it, or tap it on a phone.
+   - In the lead list, **Organization Name** is the first column, followed by **Person Name**, **Designation**, **Phone**, **Email** and **Department**. Each of these cells lists every person on the lead in the same order (for example `Rajesh Patel, Anil Shah`); a `-` stands for a person who has no value there. How many columns fit depends on your screen width. To choose your own columns, switch the list to **Report** view (the view menu at the top). There you can add or hide any column, and your choice is saved for you only.
 2. **Move the Lead along**:
    - At the top right, click **Contacted**.
    - After discussing requirements, click **Qualified**.
 3. **Convert to Customer**:
    - On the Qualified lead, click the button **Convert to Customer + Opportunity** at the top right.
-   - *Result*: the ERP creates two linked records and opens the Opportunity:
-     - Customer **`Sardar Foundry Works LLP`** (named after the Organization Name)
+   - *Result*: the ERP creates linked records and opens the Opportunity:
+     - Customer **`Sardar Foundry Works LLP`** (named after the Organization Name), with the first person's email and phone
+     - A **Contact** (`CON-2026-…`, under **CRM** → **Contact**) for every person on the lead, with their designation, department, email and phone. The first is marked **Is Primary Contact** if the customer had no primary contact yet. A person the customer already has a contact of the same name for is not added twice.
      - Opportunity `OPP-2026-…`
    - The lead becomes **Converted**.
 

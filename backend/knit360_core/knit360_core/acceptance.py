@@ -19,7 +19,6 @@ demo or live data, and every check is written to be re-runnable.
 A failing check prints the exception that caused it. Nothing is swallowed.
 """
 
-import json
 import pathlib
 import traceback
 
@@ -123,12 +122,13 @@ def account(leaf):
 	return name
 
 
-def a_lead(**overrides):
+def a_lead(person="Acceptance Contact", **overrides):
+	"""A lead for an organization with one person to speak to (DEC-045)."""
 	fields = {
 		"doctype": "KNIT 360 Lead",
-		"lead_name": "Acceptance Contact",
 		"organization_name": "Acceptance Buyer Pvt Ltd",
 		"company": company(),
+		"contact_persons": [{"person_name": person}],
 	}
 	fields.update(overrides)
 	return frappe.get_doc(fields).insert(ignore_permissions=True)
@@ -308,22 +308,111 @@ def c_allowed_next():
 # --- D. Customer-to-Cash -----------------------------------------------
 
 
-@check("D. Customer to Cash", "A lead can be created through the web seam")
+@check("D. Customer to Cash", "A lead entered on the Lead form starts at New")
 def d_create_lead():
+	# Inserted with permission checks on, as the Desk's Lead form saves it.
+	lead = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Lead",
+			"organization_name": "Form Organization Pvt Ltd",
+			"company": company(),
+			"contact_persons": [{"person_name": "Form Contact", "email": "form@example.com"}],
+		}
+	).insert()
+	status = engine.current_status(lead)
+	initial = model.for_doctype("KNIT 360 Lead").initial
+	expect(status == initial, f"a new lead starts at {status!r}, not {initial!r}")
+	frappe.db.commit()
+	return f"{lead.name} at status {status!r}"
+
+
+@check("D. Customer to Cash", "A lead needs an organization name and at least one person")
+def d_lead_needs_org_and_person():
+	base = {"doctype": "KNIT 360 Lead", "company": company()}
+	no_org = refuses(
+		frappe.get_doc(dict(base, contact_persons=[{"person_name": "Orgless Contact"}])).insert
+	)
+	nobody = refuses(frappe.get_doc(dict(base, organization_name="Peopleless Pvt Ltd")).insert)
+	return f"no organization: {no_org[:70]} | no person: {nobody[:70]}"
+
+
+@check("D. Customer to Cash", "Each person detail is a lead-list column listing every person")
+def d_persons_in_one_cell():
+	lead = a_lead(
+		organization_name="Two Person Foundry Pvt Ltd",
+		contact_persons=[
+			{"person_name": "Asha Rao", "phone": "+91 98250 00001", "email": "asha@example.com"},
+			{"person_name": "Vikram Shah", "designation": "Plant Head", "phone": "+91 98250 00002"},
+		],
+	)
+	frappe.db.commit()
+	# A person with no value keeps their place with a dash; a column nobody
+	# has a value for stays empty.
+	expected = {
+		"person_names": "Asha Rao, Vikram Shah",
+		"designations": "-, Plant Head",
+		"phones": "+91 98250 00001, +91 98250 00002",
+		"emails": "asha@example.com, -",
+		"departments": "",
+	}
+	cells = {column: lead.get(column) or "" for column in expected}
+	expect(cells == expected, f"the cells read {cells!r}")
+	meta = frappe.get_meta("KNIT 360 Lead")
+	expect(meta.title_field == "organization_name", f"the list leads with {meta.title_field!r}")
+	listed = [f.fieldname for f in meta.fields if f.in_list_view]
+	expect(listed[: len(expected) + 1] == ["organization_name", *expected],
+	       f"the list's first columns are {listed[:6]}")
+	return "; ".join(f"{meta.get_label(c)}: {v or '(empty)'}" for c, v in expected.items())
+
+
+@check("D. Customer to Cash", "Conversion makes a contact for every person, the first one primary")
+def d_conversion_contacts():
 	from knit360_core.api import c2c
 
-	result = c2c.create_lead(lead_name="Seam Contact", company=company(), email="seam@example.com")
-	expect(result.get("name"), f"create_lead returned no name: {result}")
-	expect(result.get("status"), "create_lead returned no status")
+	def qualified(lead):
+		for status in ("Contacted", "Qualified"):
+			engine.transition("KNIT 360 Lead", lead.name, status)
+		return lead
+
+	# Its own customer every run, so contacts left by an earlier run cannot be
+	# mistaken for -- or suppress -- the ones this conversion makes.
+	organization = f"Contact Castings {frappe.generate_hash(length=6)} Pvt Ltd"
+	people = [
+		{"person_name": "Meera Iyer", "designation": "Purchase Head", "department": "Purchase",
+		 "email": "meera@castings.example", "phone": "+91 98250 00011"},
+		{"person_name": "Ravi Kumar", "designation": "Maintenance Manager", "department": "Maintenance",
+		 "email": "ravi@castings.example", "phone": "+91 98250 00012"},
+	]
+	first = c2c.convert_lead(qualified(a_lead(organization_name=organization, contact_persons=people)).name)
+	contacts = [frappe.get_doc("KNIT 360 Contact", n) for n in first["contacts"]]
+	expect(len(contacts) == 2, f"{len(contacts)} contacts made for 2 persons")
+	expect([c.contact_name for c in contacts] == ["Meera Iyer", "Ravi Kumar"], "contacts out of order")
+	expect(all(c.customer == first["customer"] for c in contacts), "a contact is not under the customer")
+	expect([c.is_primary for c in contacts] == [1, 0], f"primary flags {[c.is_primary for c in contacts]}")
+	expect(contacts[1].department == "Maintenance" and contacts[1].designation == "Maintenance Manager",
+	       "designation or department was not carried")
+	customer = frappe.get_doc("KNIT 360 Customer", first["customer"])
+	expect((customer.email, customer.phone) == (people[0]["email"], people[0]["phone"]),
+	       "the customer's email and phone are not the first person's")
+
+	# A second lead for the same organization repeats one person and adds one.
+	again = c2c.convert_lead(qualified(a_lead(
+		organization_name=organization,
+		contact_persons=[{"person_name": "Ravi Kumar"}, {"person_name": "Sunita Das"}],
+	)).name)
+	expect(again["customer"] == first["customer"], "the second lead made a second customer")
+	added = [frappe.get_doc("KNIT 360 Contact", n) for n in again["contacts"]]
+	expect([c.contact_name for c in added] == ["Sunita Das"], f"repeated a person: {[c.contact_name for c in added]}")
+	expect(not added[0].is_primary, "the customer now has two primary contacts")
 	frappe.db.commit()
-	return f"{result['name']} at status {result['status']!r}"
+	return f"{first['customer']}: {', '.join(c.name for c in contacts + added)}; one primary"
 
 
 @check("D. Customer to Cash", "A lead converts to a customer and an opportunity")
 def d_convert():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Converting Contact")
+	lead = a_lead(person="Converting Contact")
 	lifecycle = model.for_doctype("KNIT 360 Lead")
 	status = lifecycle.initial
 	# Walk the declared happy path up to the point conversion is legal.
@@ -351,7 +440,7 @@ def d_convert():
 def d_quotation():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Quoting Contact")
+	lead = a_lead(person="Quoting Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -376,7 +465,7 @@ def d_quotation():
 def d_items():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Itemising Contact")
+	lead = a_lead(person="Itemising Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -388,16 +477,13 @@ def d_items():
 			break
 	quotation = c2c.create_quotation(c2c.convert_lead(lead.name)["opportunity"])["name"]
 
-	c2c.set_items(
-		"quotation",
-		quotation,
-		json.dumps(
-			[
-				{"item_code": "Induction coil", "qty": 3, "unit_rate": 1500},
-				{"item_code": "Control panel", "qty": 1, "unit_rate": 22000, "discount_percentage": 10},
-			]
-		),
+	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
+	doc.append("items", {"item_code": "Induction coil", "qty": 3, "unit_rate": 1500})
+	doc.append(
+		"items",
+		{"item_code": "Control panel", "qty": 1, "unit_rate": 22000, "discount_percentage": 10},
 	)
+	doc.save()
 	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
 	expect(len(doc.items) == 2, f"{len(doc.items)} lines stored, expected 2")
 	expect(flt(doc.items[0].amount) == 4500, f"line 1 amount is {doc.items[0].amount}, expected 4500")
@@ -410,43 +496,11 @@ def d_items():
 	return f"2 lines incl. a 10% discount, grand total {doc.grand_total}"
 
 
-@check("D. Customer to Cash", "A mistyped line column is refused, not silently dropped")
-def d_unknown_column():
-	from knit360_core.api import c2c
-
-	quotation = _a_quotation()
-	# `rate` is the Sales Order Item column; Quotation Item calls it unit_rate.
-	# This used to store a line with no price and report success.
-	message = refuses(
-		c2c.set_items, "quotation", quotation,
-		json.dumps([{"item_code": "Coil", "qty": 1, "rate": 999}]),
-	)
-	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
-	expect(not doc.items, f"{len(doc.items)} priceless lines were stored anyway")
-	frappe.db.commit()
-	return message
-
-
-@check("D. Customer to Cash", "A calculated column cannot be set by hand")
-def d_computed_column():
-	from knit360_core.api import c2c
-
-	message = refuses(
-		c2c.set_items, "quotation", _a_quotation(),
-		json.dumps([{"item_code": "Coil", "qty": 1, "unit_rate": 100, "amount": 5}]),
-	)
-	frappe.db.commit()
-	return message
-
-
 @check("D. Customer to Cash", "A discount outside 0-100 is refused")
 def d_bad_discount():
-	from knit360_core.api import c2c
-
-	message = refuses(
-		c2c.set_items, "quotation", _a_quotation(),
-		json.dumps([{"item_code": "Coil", "qty": 1, "unit_rate": 100, "discount_percentage": 150}]),
-	)
+	doc = frappe.get_doc("KNIT 360 Quotation", _a_quotation())
+	doc.append("items", {"item_code": "Coil", "qty": 1, "unit_rate": 100, "discount_percentage": 150})
+	message = refuses(doc.save)
 	frappe.db.commit()
 	return message
 
@@ -534,7 +588,7 @@ def _a_quotation():
 	"""A fresh draft quotation, walked up from a lead."""
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Column Contact")
+	lead = a_lead(person="Column Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -1039,58 +1093,14 @@ def g_label_equals_name():
 	return "name == label == reference on every chart"
 
 
-# --- H. the web seam ----------------------------------------------------
+# --- H. Desk actions ----------------------------------------------------
 
 
-@check("H. Web seam", "stages() describes every stage with its actions")
-def h_stages():
-	from knit360_core.api import c2c
-
-	stages = c2c.stages()
-	expect(len(stages) == len(c2c.STAGES), f"{len(stages)} stages returned")
-	for stage in stages:
-		expect(stage.get("key"), f"a stage came back with no key: {stage}")
-		expect(stage.get("label"), f"{stage.get('key')} has no label")
-		expect(stage.get("states"), f"{stage['key']} describes no lifecycle states")
-		expect("counts" in stage, f"{stage['key']} reports no per-status counts")
-	return f"{len(stages)} stages: {', '.join(s['key'] for s in stages)}"
-
-
-@check("H. Web seam", "documents() returns the listed fields and nothing else")
-def h_documents():
-	from knit360_core.api import c2c
-
-	a_lead(lead_name="Listed Contact")
-	frappe.db.commit()
-	rows = c2c.documents("lead")
-	expect(rows, "no leads came back, though one was just created")
-	allowed = set(c2c.BY_KEY["lead"]["fields"]) | {"status", "title"}
-	leaked = set(rows[0]) - allowed
-	expect(not leaked, f"documents() leaked fields the seam does not declare: {sorted(leaked)}")
-	expect("docstatus" not in rows[0], "docstatus leaked; the seam exists to hide it")
-	return f"{len(rows)} rows, fields {sorted(rows[0])}"
-
-
-@check("H. Web seam", "document() returns guidance a non-technical user can act on")
-def h_document_guidance():
-	from knit360_core.api import c2c
-
-	lead = a_lead(lead_name="Guided Contact")
-	frappe.db.commit()
-	detail = c2c.document("lead", lead.name)
-	for key in ("name", "status", "actions"):
-		expect(key in detail, f"document() returned no {key!r}")
-	expect(detail["actions"], "a fresh lead was offered no next action at all")
-	for action in detail["actions"]:
-		expect(action.get("label"), f"an action has no label: {action}")
-	return f"status {detail['status']!r}, {len(detail['actions'])} actions offered"
-
-
-@check("H. Web seam", "next_steps tells the Desk what each move will do")
+@check("H. Desk actions", "next_steps tells the Desk what each move will do")
 def h_next_steps():
 	from knit360_core.business_status import engine as eng
 
-	lead = a_lead(lead_name="Stepping Contact")
+	lead = a_lead(person="Stepping Contact")
 	frappe.db.commit()
 	steps = eng.next_steps("KNIT 360 Lead", lead.name)
 	expect(steps, "a fresh lead was offered no steps at all")
@@ -1114,11 +1124,11 @@ def h_next_steps():
 	return f"{len(steps)} steps, forward={[s['status'] for s in steps if s['is_forward']]}"
 
 
-@check("H. Web seam", "The Desk is offered the same stage actions as the web page")
+@check("H. Desk actions", "Conversion is offered only to a Qualified lead, with a reason otherwise")
 def h_actions_for():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Acting Contact")
+	lead = a_lead(person="Acting Contact")
 	frappe.db.commit()
 
 	early = c2c.actions_for("KNIT 360 Lead", lead.name)
@@ -1142,12 +1152,12 @@ def h_actions_for():
 	expect(ready["enabled"], f"a Qualified lead was refused conversion: {ready['reason']}")
 	expect(
 		c2c.actions_for("KNIT 360 Item", "nothing") == [],
-		"actions_for raised on a doctype outside the three stages",
+		"actions_for raised on a doctype that has no actions",
 	)
 	return f"disabled when New ({convert['reason'][:60]}...), enabled when Qualified"
 
 
-@check("H. Web seam", "An action declares the status it reaches on its own")
+@check("H. Desk actions", "An action declares the status it reaches on its own")
 def h_action_claims_status():
 	"""Stops the Desk offering two buttons that look alike and are not.
 
@@ -1160,7 +1170,7 @@ def h_action_claims_status():
 	from knit360_core.api import c2c
 	from knit360_core.crm import conversion
 
-	lead = a_lead(lead_name="Claiming Contact")
+	lead = a_lead(person="Claiming Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -1185,42 +1195,30 @@ def h_action_claims_status():
 	return f"convert_lead claims {action['produces_status']!r}"
 
 
-@check("H. Web seam", "The seam refuses a stage it does not expose")
-def h_unknown_stage():
-	from knit360_core.api import c2c
-
-	return refuses(c2c.documents, "payroll")
-
-
-@check("H. Web seam", "advance() goes through the engine, so it refuses illegal moves")
-def h_advance_guarded():
-	from knit360_core.api import c2c
-
-	lead = a_lead(lead_name="Jumping Contact")
-	frappe.db.commit()
-	message = refuses(c2c.advance, "lead", lead.name, "Converted")
-	frappe.db.commit()
-	return message
-
-
-@check("H. Web seam", "The Customer-to-Cash page is served with a usable CSRF token")
-def h_page_renders():
-	# Outside a web request there is no session object for the new CSRF token
-	# to be saved to, so the page raised and Frappe served its error page -- on
-	# which every check below used to pass. Frappe skips that save in tests.
+@check("H. Desk actions", "The /knit360 page is gone; leads are entered on the Lead form only")
+def h_page_removed():
+	# The owner removed the simplified sales page on 31 October 2026 (DEC-044).
+	# A page left behind would be a second way in with fewer fields than the
+	# form, which is what was removed.
 	in_test = frappe.flags.in_test
 	frappe.flags.in_test = True
 	try:
 		response = frappe.website.serve.get_response_content("/knit360")
 	finally:
 		frappe.flags.in_test = in_test
-	expect("<title>KNIT 360 — Customer to Cash</title>" in response, "the page did not render; Frappe served an error page")
-	expect("csrf_token" in response, "the page carries no CSRF token at all")
-	expect('"None"' not in response and "'None'" not in response, "the CSRF token rendered as None")
-	expect("KNIT 360" in response, "the page does not name the product")
-	expect('href="/app/knit-360"' in response, "the page has no way back to the KNIT 360 home screen")
-	return f"{len(response)} bytes, token present"
+	expect(
+		"Customer to Cash</title>" not in response,
+		"/knit360 still renders the sales page",
+	)
+	shortcuts = frappe.get_all(
+		"Workspace Shortcut", filters={"parent": "KNIT 360", "url": "/knit360"}, pluck="label"
+	)
+	expect(not shortcuts, f"the home screen still links to /knit360: {shortcuts}")
+	from knit360_core.api import c2c
 
+	for gone in ("create_lead", "stages", "documents", "document", "advance", "set_items", "companies"):
+		expect(not hasattr(c2c, gone), f"c2c.{gone} is still reachable")
+	return "no page, no home-screen link, no page-only endpoints"
 
 
 # --- I. HR: leave -------------------------------------------------------
@@ -1847,7 +1845,7 @@ def k_counters_are_separate():
 	naming these two came back consecutive.
 	"""
 	company()
-	lead = a_lead(lead_name="Numbering Contact")
+	lead = a_lead(person="Numbering Contact")
 	customer_name = "Acceptance Numbering Customer"
 	if not frappe.db.exists("KNIT 360 Customer", customer_name):
 		frappe.get_doc(
@@ -1885,7 +1883,7 @@ def k_year_in_the_number():
 	the number counted from the beginning of the system.
 	"""
 	company()
-	lead = a_lead(lead_name="Year Contact")
+	lead = a_lead(person="Year Contact")
 	year = getdate(nowdate()).year
 	expect(
 		f"-{year}-" in lead.name,
@@ -1946,7 +1944,7 @@ def l_findable_on_insert():
 	"""Indexed by the document's own lifecycle, not by a scheduled job."""
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Findable Contact")
+	lead = a_lead(person="Findable Contact")
 	frappe.db.commit()
 
 	hits = api.search(lead.name)
@@ -1965,7 +1963,7 @@ def l_partial_match():
 	"""
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Partial Contact")
+	lead = a_lead(person="Partial Contact")
 	frappe.db.commit()
 	stem = lead.name.rsplit("-", 1)[0]
 
@@ -1978,7 +1976,7 @@ def l_partial_match():
 def l_find_by_content():
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Marigold Searchable", organization_name="Marigold Castings Pvt Ltd")
+	lead = a_lead(person="Marigold Searchable", organization_name="Marigold Castings Pvt Ltd")
 	frappe.db.commit()
 
 	names = [h["name"] for h in api.search("Marigold")]
@@ -1991,7 +1989,7 @@ def l_rename_follows():
 	"""The index is keyed on the document, so a rename must move it."""
 	from knit360_core.search import api, index
 
-	lead = a_lead(lead_name="Renamed Contact")
+	lead = a_lead(person="Renamed Contact")
 	old = lead.name
 	new = f"{old}-RENAMED"
 	frappe.db.set_value("DocType", "KNIT 360 Lead", "allow_rename", 1, update_modified=False)
@@ -2018,7 +2016,7 @@ def l_rename_follows():
 def l_delete_removes():
 	from knit360_core.search import api, index
 
-	lead = a_lead(lead_name="Vanishing Contact")
+	lead = a_lead(person="Vanishing Contact")
 	name = lead.name
 	frappe.db.commit()
 	expect(name in [h["name"] for h in api.search(name)], "it was not findable before deletion")
@@ -4730,6 +4728,11 @@ def cleanup():
 	if orphaned:
 		removed["Business Status Log"] = len(orphaned)
 
+	# Conversion gives a customer a Contact per person on the lead (DEC-045).
+	# Contact has no company of its own; it goes with its customer.
+	acceptance_customers = frappe.get_all("KNIT 360 Customer", filters={"company": COMPANY}, pluck="name")
+	if acceptance_customers:
+		wipe("KNIT 360 Contact", {"customer": ["in", acceptance_customers]}, force=True)
 	wipe("KNIT 360 Customer", {"company": COMPANY}, force=True)
 
 	# The buying side, and the tax masters the posting checks create. Tax

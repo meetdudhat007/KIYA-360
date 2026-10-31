@@ -60,7 +60,6 @@ HOME = {
 	"module": "Platform",
 	"sequence": 1,
 	"shortcuts": [
-		("URL", "/knit360", "Customer to Cash", "Green"),
 		("DocType", PREFIX + "Lead", "Leads", "Blue"),
 		("DocType", PREFIX + "Sales Order", "Sales Orders", "Blue"),
 		("DocType", PREFIX + "Sales Invoice", "Sales Invoices", "Orange"),

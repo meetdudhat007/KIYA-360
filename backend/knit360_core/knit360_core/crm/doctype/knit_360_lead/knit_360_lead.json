@@ -7,17 +7,21 @@
  "engine": "InnoDB",
  "description": "FR-CRM-001 - DR-C2C-001 Lead Acquisition and Qualification. Inputs: prospect name, organization name, contact details, lead source, estimated requirement, assigned territory.",
  "field_order": [
-  "lead_name",
+  "sec_org",
   "organization_name",
+  "person_names",
+  "designations",
+  "phones",
+  "emails",
+  "departments",
   "lead_source",
   "col1",
   "company",
   "territory",
   "knit360_business_status",
   "sec1",
-  "email",
-  "phone",
-  "col2",
+  "contact_editor",
+  "contact_persons",
   "address",
   "sec2",
   "estimated_requirement",
@@ -27,24 +31,64 @@
  ],
  "fields": [
   {
-   "fieldname": "lead_name",
-   "fieldtype": "Data",
-   "label": "Prospect Name",
-   "description": "Prospect name",
-   "reqd": 1,
-   "in_list_view": 1
+   "fieldname": "sec_org",
+   "fieldtype": "Section Break",
+   "label": "Organization Information"
   },
   {
    "fieldname": "organization_name",
    "fieldtype": "Data",
    "label": "Organization Name",
-   "description": "Organization name"
+   "description": "Organization name",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "person_names",
+   "fieldtype": "Small Text",
+   "label": "Person Name",
+   "read_only": 1,
+   "depends_on": "eval:0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "designations",
+   "fieldtype": "Small Text",
+   "label": "Designation",
+   "read_only": 1,
+   "depends_on": "eval:0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "phones",
+   "fieldtype": "Small Text",
+   "label": "Phone",
+   "read_only": 1,
+   "depends_on": "eval:0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "emails",
+   "fieldtype": "Small Text",
+   "label": "Email",
+   "read_only": 1,
+   "depends_on": "eval:0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "departments",
+   "fieldtype": "Small Text",
+   "label": "Department",
+   "read_only": 1,
+   "depends_on": "eval:0",
+   "in_list_view": 1
   },
   {
    "fieldname": "lead_source",
    "fieldtype": "Data",
    "label": "Lead Source",
-   "description": "Lead source"
+   "description": "Lead source",
+   "in_list_view": 1
   },
   {
    "fieldname": "col1",
@@ -56,14 +100,16 @@
    "label": "Company",
    "description": "Company and Branch context active",
    "options": "KNIT 360 Company",
-   "reqd": 1
+   "reqd": 1,
+   "in_list_view": 1
   },
   {
    "fieldname": "territory",
    "fieldtype": "Link",
    "label": "Assigned Territory",
    "description": "Assigned territory",
-   "options": "KNIT 360 Territory"
+   "options": "KNIT 360 Territory",
+   "hidden": 1
   },
   {
    "fieldname": "knit360_business_status",
@@ -82,28 +128,24 @@
    "label": "Contact Details"
   },
   {
-   "fieldname": "email",
-   "fieldtype": "Data",
-   "label": "Email",
-   "description": "Contact details",
-   "options": "Email"
+   "fieldname": "contact_editor",
+   "fieldtype": "HTML",
+   "label": "Contacts"
   },
   {
-   "fieldname": "phone",
-   "fieldtype": "Data",
-   "label": "Phone",
-   "description": "Contact details",
-   "options": "Phone"
-  },
-  {
-   "fieldname": "col2",
-   "fieldtype": "Column Break"
+   "fieldname": "contact_persons",
+   "fieldtype": "Table",
+   "label": "Contact Persons",
+   "options": "KNIT 360 Lead Person",
+   "reqd": 1,
+   "depends_on": "eval:0"
   },
   {
    "fieldname": "address",
    "fieldtype": "Small Text",
    "label": "Address",
-   "description": "Contact details"
+   "description": "Contact details",
+   "in_list_view": 1
   },
   {
    "fieldname": "sec2",
@@ -114,7 +156,8 @@
    "fieldname": "estimated_requirement",
    "fieldtype": "Small Text",
    "label": "Estimated Requirement",
-   "description": "Estimated requirement"
+   "description": "Estimated requirement",
+   "in_list_view": 1
   },
   {
    "fieldname": "sec3",
@@ -127,7 +170,8 @@
    "label": "Converted Customer",
    "description": "Conversion creates or links a unified Customer Master",
    "options": "KNIT 360 Customer",
-   "read_only": 1
+   "read_only": 1,
+   "in_list_view": 1
   },
   {
    "fieldname": "converted_opportunity",
@@ -135,12 +179,13 @@
    "label": "Converted Opportunity",
    "description": "Conversion generates an Opportunity",
    "options": "KNIT 360 Opportunity",
-   "read_only": 1
+   "read_only": 1,
+   "in_list_view": 1
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-09-22 00:00:00.000000",
+ "modified": "2026-11-01 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "KNIT 360 Lead",
@@ -163,6 +208,6 @@
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "title_field": "lead_name",
+ "title_field": "organization_name",
  "autoname": "LEAD-.YYYY.-.####"
 }

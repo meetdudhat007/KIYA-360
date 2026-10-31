@@ -168,15 +168,17 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 75 parent, 26 child — 101 total, across 18 application modules |
+| Record types | 75 parent, 27 child — 102 total, across 18 application modules |
 | BRD modules with record types | **15 of 28** |
 | Lifecycle definitions (`CD-002`) | 29 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
-| Automated checks | **230** — 49 structural, 181 runtime |
-| Last full run | 49/49 and 181/181, 28 October 2026, site `knit360.localhost` |
+| Front end | The Desk (`/app`) only. The simplified `/knit360` sales page was removed on 31 October 2026 at the owner's request; leads are entered on the Lead form (`DEC-044`). |
+| Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; conversion makes a Contact per person (`DEC-045`, `DEC-046`). |
+| Automated checks | **221** — 44 structural, 177 runtime |
+| Last full run | 44/44 and 177/177, 1 November 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
-| BRD requirement coverage (live report) | **74 of 238 — 21 proven, 53 modelled, 164 not started** |
+| BRD requirement coverage (live report) | **74 of 238 — 22 proven, 52 modelled, 164 not started** |
 | Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `.kiya/archive/03-guides-backup/06-the-money-decisions-in-plain-language.md`. |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
@@ -238,8 +240,8 @@ Added 28 October 2026, for a furnace manufacturing and repair client
 ### How to verify
 
 ```
-bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 156 runtime
+bench --site knit360.localhost run-tests --app knit360_core          # 44 structural
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 177 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 

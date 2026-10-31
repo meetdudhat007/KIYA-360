@@ -66,8 +66,9 @@ PROVEN = "Proven"
 #: the marketing it exists to replace.
 PROVEN_BY = {
 	"FR-PADM-1.1.1": "A company created the ordinary way gets its own books",
-	"FR-CRM-001": "A lead can be created through the web seam",
+	"FR-CRM-001": "A lead entered on the Lead form starts at New",
 	"FR-CRM-002": "A lead converts to a customer and an opportunity",
+	"FR-CRM-004": "Conversion makes a contact for every person, the first one primary",
 	"FR-SALES-002": "An opportunity becomes a quotation carrying its value",
 	"FR-SALES-003": "A sales order totals with the same engine as the quotation",
 	"FR-SALES-004": "Quotation lines compute an amount and a total",

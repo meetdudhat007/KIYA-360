@@ -1,8 +1,8 @@
-"""Desk buttons that make the next document, for documents outside the web seam.
+"""Desk buttons that make the next document, from the quotation onwards.
 
-c2c.actions_for answers this for the three stages on /knit360. Everything else
-in the order-to-cash and after-sales chains lives on the Desk only, so its
-actions are declared here and the web seam is left exactly as it was.
+c2c.actions_for answers this for leads and opportunities and passes every
+other document here, so the order-to-cash and after-sales chains declare their
+actions in one place.
 
 Whether a button is enabled is the same rule the creating function enforces --
 each module's *_refusal -- so the Desk can never offer a button that would
