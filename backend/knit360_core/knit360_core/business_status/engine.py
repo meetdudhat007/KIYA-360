@@ -113,10 +113,22 @@ def transition(reference_doctype, reference_name, to_status, reason=None):
 	# Goods Receipt needs this: both "Received in Bay" and "Rejected at Gate"
 	# submit from the same draft state, and only one of them puts stock away.
 	doc.flags.knit360_to_status = to_status
+	# A move that changes no docstatus runs no controller method of its own: an
+	# Asset is never submitted, so reaching Commissioned would check nothing and
+	# start nothing. A controller may define these to refuse a move before it
+	# happens and to act on it once it has.
+	_hook(doc, "before_business_status", from_status, to_status)
 	_apply_docstatus(doc, lifecycle.required_docstatus(to_status, from_docstatus))
 	doc.db_set(FIELD, to_status, update_modified=True)
 	_log(doc, from_status, to_status, reason, from_docstatus, doc.docstatus)
+	_hook(doc, "after_business_status", from_status, to_status)
 	return to_status
+
+
+def _hook(doc, method, from_status, to_status):
+	handler = getattr(doc, method, None)
+	if callable(handler):
+		handler(from_status, to_status)
 
 
 @frappe.whitelist()

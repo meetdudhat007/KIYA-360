@@ -40,6 +40,8 @@
   "default_input_tax_account",
   "default_sales_returns_account",
   "default_purchase_returns_account",
+  "default_service_income_account",
+  "default_warranty_expense_account",
   "default_cost_center"
  ],
  "fields": [
@@ -249,6 +251,20 @@
    "label": "Default Purchase Returns Account",
    "options": "KNIT 360 Account",
    "description": "Where a debit note puts what was sent back."
+  },
+  {
+   "fieldname": "default_service_income_account",
+   "fieldtype": "Link",
+   "label": "Default Service Income Account",
+   "options": "KNIT 360 Account",
+   "description": "Where labour and travel charged on a repair are credited. Kept apart from Sales, which is for goods sold."
+  },
+  {
+   "fieldname": "default_warranty_expense_account",
+   "fieldtype": "Link",
+   "label": "Default Warranty Expense Account",
+   "options": "KNIT 360 Account",
+   "description": "Where the cost of spare parts given free under warranty is charged, so the books can say what warranty costs."
   },
   {
    "fieldname": "default_cost_center",

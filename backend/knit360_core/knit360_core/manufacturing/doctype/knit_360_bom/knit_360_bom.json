@@ -19,11 +19,12 @@
  "fields": [
   {
    "fieldname": "item_code",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Produced Item",
    "description": "Bill of Materials",
    "reqd": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "options": "KNIT 360 Item"
   },
   {
    "fieldname": "quantity",

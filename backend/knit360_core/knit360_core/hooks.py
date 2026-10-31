@@ -76,6 +76,14 @@ jinja = {
 # KNIT 360 field did, so the bar found nothing. This adds our index as a source.
 awesomebar_search = ["knit360_core.search.api.awesomebar"]
 
+# --- Scheduled work -------------------------------------------------------
+# A warranty or contract past its end date is moved to Expired, so a list of
+# contracts never shows lapsed cover as in force. Cover itself is judged from
+# the dates, so nothing is wrongly covered while this waits for its run.
+scheduler_events = {
+	"daily": ["knit360_core.maintenance.entitlement.expire_contracts"],
+}
+
 # --- Lifecycle integrity -------------------------------------------------
 # CD-002 makes the business status the lifecycle. These refuse a submit or
 # cancel that did not come through the adapter, on any doctype that has a

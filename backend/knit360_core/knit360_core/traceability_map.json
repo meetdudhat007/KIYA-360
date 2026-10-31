@@ -27,7 +27,9 @@
   "parent_asset": "FR-AST-001 / FR-AST-002 / FR-AST-003: parent equipment link (for sub-assemblies)",
   "serial_number": "FR-AST-001 / FR-AST-002 / FR-AST-003: Serial Number",
   "site_address": "FR-AST-001 / FR-AST-002 / FR-AST-003: Installation site address",
-  "site_contact_person": "FR-AST-001 / FR-AST-002 / FR-AST-003: contact person"
+  "site_contact_person": "FR-AST-001 / FR-AST-002 / FR-AST-003: contact person",
+  "delivery_note": "FR-AST-001 / FR-SALES-005: installed asset linked to the dispatch that delivered it (DR-A2S-001 BRD-DERIVED).",
+  "sales_order": "FR-AST-001 / FR-SALES-003: installed asset linked to the order it was sold on (DR-A2S-001 BRD-DERIVED)."
  },
  "KNIT 360 BOM": {
   "company": "FR-MFG-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
@@ -98,7 +100,9 @@
   "round_off_account": "FR-FIN-001: General Ledger -- where rounding differences are absorbed so an entry still balances",
   "stock_received_but_not_billed": "FR-INV-006: holds the value of goods received whose supplier bill has not arrived. A liability -- the goods are ours and we owe for them.",
   "tax_registration_number": "FR-PADM-1.1.1: tax registration",
-  "write_off_tolerance": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all."
+  "write_off_tolerance": "FR-FIN-003: the largest residue that may be written off to Round Off by an explicit action. Nothing is ever written off automatically. Left empty, nothing can be written off at all.",
+  "default_service_income_account": "FR-FIN-001 / FR-MFS-006: service labour and travel revenue credited apart from goods sold (DR-A2S-009 BRD-DERIVED: credits Service Revenue for labour).",
+  "default_warranty_expense_account": "FR-FIN-001 / FR-MFS-005 / FR-MFS-006: cost of warranty-covered spare parts (DR-A2S-006 BRD-DERIVED: COGS vs warranty expense governed by entitlement)."
  },
  "KNIT 360 Contact": {
   "contact_name": "FR-CRM-004: Contacts (FR-CRM-004)",
@@ -204,7 +208,8 @@
   "item_code": "FR-SALES-005 / FR-INV-002: a real item. Stock cannot be issued for something that does not exist, and a typed code would let it be.",
   "qty": "FR-SALES-005: BRD-DERIVED: dispatched quantity",
   "stock_value": "FR-INV-006: quantity times cost -- what left the warehouse in money.",
-  "valuation_rate": "FR-INV-006: what these units cost us, worked out by the stock ledger when they left. Not a selling price, and not typed."
+  "valuation_rate": "FR-INV-006: what these units cost us, worked out by the stock ledger when they left. Not a selling price, and not typed.",
+  "serial_numbers": "FR-INV-003 / FR-AST-001: Batch / Serial Tracking; serialised equipment dispatched seeds the installed base (DR-A2S-001 BRD-DERIVED)."
  },
  "KNIT 360 Department": {
   "company": "FR-PADM-1.1.4: BRD-DERIVED from the BRD 1.1 worked example hierarchy",
@@ -269,7 +274,17 @@
   "service_request": "FR-MFS-002 / FR-MFS-007: Service Request reference",
   "sop": "FR-MFS-002 / FR-MFS-007: Standard operating procedures (SOP)",
   "travel_hours": "FR-MFS-002 / FR-MFS-007: Travel hours",
-  "warranty_entitlement": "FR-MFS-002 / FR-MFS-007: Warranty entitlement flag (DR-A2S-006 Inputs)"
+  "warranty_entitlement": "FR-MFS-002 / FR-MFS-007: Warranty entitlement flag (DR-A2S-006 Inputs)",
+  "work_type": "FR-MFS-007 / FR-MFS-003 / FR-MFS-004: installation, preventive and breakdown work executed as field work orders (DR-A2S-002, DR-A2S-007, DR-A2S-008).",
+  "customer": "FR-MFS-002 / FR-CRM-003: customer of the installed asset, the billing party for the job (DR-A2S-009 Preconditions).",
+  "knit360_business_status": "FR-MFS-002 / FR-MFS-007: Candidate Work Order Status (DR-A2S-007, CD-002 PROPOSED lifecycle).",
+  "posting_date": "FR-MFS-005 / FR-INV-002: date of the spare parts stock movement (DR-A2S-006 BRD-DERIVED).",
+  "maintenance_schedule": "FR-MFS-003: preventive maintenance programme the work order fulfils (DR-A2S-008 BRD-DERIVED reschedule on completion).",
+  "covering_contract": "FR-MFS-006: contract giving the entitlement applied to the lines (DR-A2S-003 / DR-A2S-007 BRD-DERIVED).",
+  "parts_warehouse": "FR-MFS-005 / FR-INV-001: source warehouse / mobile van location (DR-A2S-006 Inputs).",
+  "items": "FR-MFS-005 / FR-MFS-002: parts consumed and labour recorded against the work order (DR-A2S-006, DR-A2S-007 BRD-DERIVED).",
+  "parts_cost": "FR-MFS-005 / FR-INV-006: cost of spare parts consumed, from the stock ledger.",
+  "sales_invoice": "FR-MFS-002 / FR-FIN-003: billing reference updated on the source work order (DR-A2S-009 BRD-DERIVED)."
  },
  "KNIT 360 Fiscal Year": {
   "is_closed": "FR-FIN-007: BRD-DERIVED: a closed year takes no further postings",
@@ -361,7 +376,8 @@
   "item_name": "FR-INV-001 / FR-PADM-1.4.3: BRD-DERIVED",
   "safety_stock": "FR-INV-001 / FR-PADM-1.4.3: safety stock thresholds (DR-C2C-008 Inputs)",
   "stock_uom": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; now a master; 'Nos' and 'nos' were previously different units",
-  "valuation_method": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies."
+  "valuation_method": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies.",
+  "warranty_period_months": "FR-MFS-006 / FR-AST-003: Item Master warranty template (DR-A2S-003 Inputs); warranty activation on commissioning (DR-A2S-002 BRD-DERIVED)."
  },
  "KNIT 360 Item Group": {
   "description": "FR-INV-001: BRD-DERIVED: what belongs in this group",
@@ -490,7 +506,10 @@
   "service_contract": "FR-MFS-003 / FR-MFS-004: Service contract linkage",
   "tasks": "FR-MFS-003 / FR-MFS-004: Maintenance tasks/checklists",
   "trigger_type": "FR-MFS-003 / FR-MFS-004: Trigger rules (calendar interval, operating hours, run cycles)",
-  "trigger_value": "FR-MFS-003 / FR-MFS-004: Trigger rules"
+  "trigger_value": "FR-MFS-003 / FR-MFS-004: Trigger rules",
+  "customer": "FR-MFS-003 / FR-CRM-003: customer of the scheduled asset (DR-A2S-008 BRD-DERIVED).",
+  "next_due_date": "FR-MFS-003: next scheduled preventive maintenance date (DR-A2S-008 BRD-DERIVED: reschedules next due date upon completion).",
+  "last_done_date": "FR-MFS-003 / FR-AST-006: execution history of the preventive programme (DR-A2S-008 acceptance criteria)."
  },
  "KNIT 360 Material Plan": {
   "bom": "FR-MRP-002 / FR-MRP-004: Bill of Materials (BOM)",
@@ -708,7 +727,8 @@
   "price_list": "FR-SALES-004 The price list this document reads rates from. Left blank, the party's own default is used, then the company default for this side of the business.",
   "sales_order": "FR-SALES-003: BRD-DERIVED: the order being billed",
   "tax_template": "FR-TAX-001: the tax treatment applied",
-  "total_taxes": "FR-TAX-001: tax total, computed"
+  "total_taxes": "FR-TAX-001: tax total, computed",
+  "field_work_order": "FR-MFS-002 / FR-FIN-003: service invoice raised from a completed field work order (DR-A2S-009 BRD-DERIVED billing reference)."
  },
  "KNIT 360 Sales Invoice Item": {
   "amount": "FR-FIN-003: Accounts Receivable -- qty x rate, computed",
@@ -761,7 +781,8 @@
   "parts_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (parts covered)",
   "sla_tier": "FR-AST-003 / FR-MFS-006: SLA tier, optional",
   "start_date": "FR-AST-003 / FR-MFS-006: Start date",
-  "travel_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (travel covered)"
+  "travel_covered": "FR-AST-003 / FR-MFS-006: Coverage terms (travel covered)",
+  "customer": "FR-MFS-006 / FR-CRM-003: contract holder, taken from the installed asset's customer (DR-A2S-003 Preconditions: Customer Master active)."
  },
  "KNIT 360 Service Dispatch": {
   "assigned_technician": "FR-MFS-007 / FR-MFS-001: Assigned technician identifier",
@@ -782,7 +803,10 @@
   "priority": "FR-MFS-004 / FR-MFS-007: Urgency/Priority indicator; enumeration TBD",
   "problem_description": "FR-MFS-004 / FR-MFS-007: Problem description",
   "request_timestamp": "FR-MFS-004 / FR-MFS-007: Request timestamp",
-  "site_access_constraints": "FR-MFS-004 / FR-MFS-007: Site access constraints"
+  "site_access_constraints": "FR-MFS-004 / FR-MFS-007: Site access constraints",
+  "knit360_business_status": "FR-MFS-004 / FR-MFS-007: Candidate Request Lifecycle (DR-A2S-004, CD-002 PROPOSED lifecycle).",
+  "warranty_status": "FR-MFS-006 / FR-MFS-004: active warranty / AMC entitlement displayed at intake (DR-A2S-004 BRD-DERIVED).",
+  "covering_contract": "FR-MFS-006 / FR-MFS-004: the contract giving that entitlement (DR-A2S-003 BRD-REQUIRED entitlement validation during triage)."
  },
  "KNIT 360 Sourcing Project": {
   "commodity_categories": "FR-SUPM-002 / FR-PROC-001: target item/commodity categories",
@@ -950,6 +974,28 @@
   "production_item": "FR-MFG-003: target item; becomes a Link once the Item Master (FR-INV-001) is populated",
   "qty_to_produce": "FR-MFG-003: quantity to produce",
   "routing_sequence": "FR-MFG-003: routing sequence (FR-MFG-002)",
-  "sales_order": "FR-MFG-003: BRD-DERIVED: C2C linkage (DEP-001)"
+  "sales_order": "FR-MFG-003: BRD-DERIVED: C2C linkage (DEP-001)",
+  "knit360_business_status": "FR-MFG-003: Candidate Work Order Status (DR-C2C-009, CD-002 PROPOSED lifecycle).",
+  "posting_date": "FR-MFG-003 / FR-INV-002: date of the production stock movements (DR-C2C-009 Stage 9C).",
+  "source_warehouse": "FR-MFG-003 / FR-INV-002: stores the raw materials are issued from (DR-C2C-009 Stage 9A).",
+  "target_warehouse": "FR-MFG-003 / FR-INV-002: warehouse receiving the finished goods (DR-C2C-009 Stage 9C).",
+  "materials": "FR-MFG-001 / FR-MFG-003: BOM explosion consumed on completion (DR-C2C-009 acceptance: posts inventory deductions for raw materials).",
+  "total_material_cost": "FR-MFG-006 / FR-INV-006: material cost of production from the stock ledger.",
+  "produced_unit_cost": "FR-MFG-006 / FR-INV-006: valuation of the finished goods receipt."
+ },
+ "KNIT 360 Work Order Item": {
+  "item_code": "FR-MFG-001 / FR-MFG-003: BOM component consumed by the work order (DR-C2C-009 Stage 9A material issue).",
+  "required_qty": "FR-MFG-001 / FR-MFG-003: component quantity exploded from the BOM for the quantity to produce.",
+  "valuation_rate": "FR-INV-006 / FR-MFG-006: cost of the material consumed, from the stock ledger.",
+  "cost_amount": "FR-INV-006 / FR-MFG-006: quantity times cost of the material consumed."
+ },
+ "KNIT 360 Field Work Order Item": {
+  "line_type": "FR-MFS-002 / FR-MFS-005: labour and spare parts line items on the service work order (DR-A2S-007 BRD-DERIVED; travel per DR-A2S-003 coverage terms).",
+  "item_code": "FR-MFS-005 / FR-INV-001: spare parts use the unified Item Master (DR-A2S-006 BRD-REQUIRED, DEC-007).",
+  "description": "FR-MFS-002: BRD-DERIVED line description.",
+  "qty": "FR-MFS-005: required / consumed quantity (DR-A2S-006 Inputs).",
+  "coverage": "FR-MFS-006 / FR-MFS-002: entitlement indicator Warranty Covered / Contract Covered / Billable to Customer inherited from Stage 3 (DR-A2S-007 BRD-DERIVED).",
+  "valuation_rate": "FR-INV-006 / FR-MFS-005: cost of the spare part consumed, from the stock ledger.",
+  "stock_value": "FR-INV-006 / FR-MFS-005: quantity times cost of the spare part consumed."
  }
 }

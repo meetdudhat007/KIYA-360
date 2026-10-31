@@ -14,6 +14,7 @@
   "col_si_1",
   "sales_order",
   "delivery_note",
+  "field_work_order",
   "currency",
   "knit360_business_status",
   "sec_si_1",
@@ -81,6 +82,14 @@
    "label": "Delivery Note",
    "description": "The dispatch being billed. DR-C2C requires dispatch before invoice.",
    "options": "KNIT 360 Delivery Note"
+  },
+  {
+   "fieldname": "field_work_order",
+   "fieldtype": "Link",
+   "label": "Field Work Order",
+   "options": "KNIT 360 Field Work Order",
+   "read_only": 1,
+   "description": "The repair or service job this invoice bills, when it is a service invoice."
   },
   {
    "fieldname": "currency",

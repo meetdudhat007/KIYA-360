@@ -1,5 +1,15 @@
 # KIYA 360 — AI Handoff
 
+## Update — 28 October 2026 (read this first)
+
+This file's Phase 1 sections below are history. Implementation exists: `docs/PROJECT-STATE.md` ("Implementation State") is the current record.
+
+- **Done:** furnace-business fine-tune -- quotation to invoice without re-typing, production that moves stock, and the Asset-to-Service flow end to end. Decisions `DEC-039`..`DEC-043`; client guide `docs/03-guides/furnace_erp_test_and_user_guide.md` (consolidated test & user manual in docs/03-guides/; earlier guides archived in .kiya/archive/03-guides-backup/).
+- **Evidence:** `bench --site knit360.localhost run-tests --app knit360_core` (49/49) and `bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean` (181/181).
+- **Earlier guides** `01`–`09`, including another session's `08-hosted-first-user-guide.md`, now live in `.kiya/archive/03-guides-backup/`.
+- **Next for the owner:** set the warranty terms (`OQ-011`); send a test email (an outgoing account for omchaudhari2627@gmail.com through Gmail exists with a password, untested); decide roles (`W11`).
+- **Next buildable:** labour and overhead in production cost (FR-MFG-006); a scheduler process in the hosted stack so the nightly contract-expiry job runs; quality inspection after production (DR-C2C-010).
+
 ## Current Phase
 
 Phase 1 — Platform Architecture & System Design (Phase 1 Complete — Sealed Baseline)

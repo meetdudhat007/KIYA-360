@@ -91,6 +91,65 @@ knit360.business_status = {
 			args: (frm) => ({ opportunity: frm.doc.name }),
 			open: (res) => ["KNIT 360 Quotation", res.name],
 		},
+		make_sales_order: {
+			method: "knit360_core.sales.document_from.sales_order_from_quotation",
+			args: (frm) => ({ quotation: frm.doc.name }),
+			open: (name) => ["KNIT 360 Sales Order", name],
+		},
+		make_delivery_note: {
+			method: "knit360_core.sales.document_from.delivery_note_from_sales_order",
+			args: (frm) => ({ sales_order: frm.doc.name }),
+			// Stock is counted per warehouse, so a dispatch must say where from.
+			ask: (frm) => [
+				{
+					fieldname: "source_warehouse",
+					fieldtype: "Link",
+					options: "KNIT 360 Warehouse",
+					label: __("Ship From Warehouse"),
+					reqd: 1,
+					get_query: () => ({ filters: { company: frm.doc.company } }),
+				},
+			],
+			open: (name) => ["KNIT 360 Delivery Note", name],
+		},
+		make_sales_invoice: {
+			method: "knit360_core.sales.document_from.sales_invoice_from_delivery_note",
+			args: (frm) => ({ delivery_note: frm.doc.name }),
+			open: (name) => ["KNIT 360 Sales Invoice", name],
+		},
+		log_service_request: {
+			method: "knit360_core.maintenance.make.service_request_for_asset",
+			args: (frm) => ({ asset: frm.doc.name }),
+			ask: () => [
+				{
+					fieldname: "problem_description",
+					fieldtype: "Small Text",
+					label: __("What does the customer say is wrong?"),
+					reqd: 1,
+				},
+			],
+			open: (name) => ["KNIT 360 Service Request", name],
+		},
+		make_field_work_order: {
+			method: "knit360_core.maintenance.make.work_order_from_request",
+			args: (frm) => ({ service_request: frm.doc.name }),
+			open: (name) => ["KNIT 360 Field Work Order", name],
+		},
+		make_service_dispatch: {
+			method: "knit360_core.maintenance.make.dispatch_from_request",
+			args: (frm) => ({ service_request: frm.doc.name }),
+			open: (name) => ["KNIT 360 Service Dispatch", name],
+		},
+		make_preventive_work_order: {
+			method: "knit360_core.maintenance.make.work_order_from_schedule",
+			args: (frm) => ({ maintenance_schedule: frm.doc.name }),
+			open: (name) => ["KNIT 360 Field Work Order", name],
+		},
+		make_service_invoice: {
+			method: "knit360_core.maintenance.service_invoice.from_field_work_order",
+			args: (frm) => ({ field_work_order: frm.doc.name }),
+			open: (name) => ["KNIT 360 Sales Invoice", name],
+		},
 	},
 
 	render_actions(frm, actions) {
@@ -119,21 +178,30 @@ knit360.business_status = {
 	},
 
 	run(frm, action, runner) {
-		frappe.call({
-			method: runner.method,
-			args: runner.args(frm),
-			freeze: true,
-			freeze_message: __("{0}...", [action.label]),
-			callback: (r) => {
-				const [doctype, name] = runner.open(r.message || {});
-				if (!name) {
-					frm.reload_doc();
-					return;
-				}
-				frappe.show_alert({ message: __("Created {0}", [name]), indicator: "green" });
-				frappe.set_route("Form", doctype, name);
-			},
-		});
+		const go = (answers) =>
+			frappe.call({
+				method: runner.method,
+				args: Object.assign(runner.args(frm), answers || {}),
+				freeze: true,
+				freeze_message: __("{0}...", [action.label]),
+				callback: (r) => {
+					const [doctype, name] = runner.open(r.message || {});
+					if (!name) {
+						frm.reload_doc();
+						return;
+					}
+					frappe.show_alert({ message: __("Created {0}", [name]), indicator: "green" });
+					frappe.set_route("Form", doctype, name);
+				},
+			});
+
+		// Some actions need an answer only the user has -- which warehouse,
+		// what the customer reported -- so they ask before they run.
+		if (runner.ask) {
+			frappe.prompt(runner.ask(frm), (values) => go(values), __(action.label), __(action.label));
+			return;
+		}
+		go();
 	},
 
 	render(frm, steps) {

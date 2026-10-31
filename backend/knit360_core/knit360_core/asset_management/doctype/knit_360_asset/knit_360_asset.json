@@ -18,11 +18,15 @@
   "iot_identifier",
   "commissioning_date",
   "knit360_business_status",
+  "delivery_note",
+  "sales_order",
   "sec_21",
   "site_address",
   "col_28",
   "site_contact_person",
-  "operating_parameters"
+  "operating_parameters",
+  "sec_history",
+  "service_history"
  ],
  "fields": [
   {
@@ -41,15 +45,16 @@
   },
   {
    "fieldname": "item_code",
-   "fieldtype": "Data",
-   "label": "Item Master",
-   "description": "Item Master link"
+   "fieldtype": "Link",
+   "label": "Item",
+   "description": "The product this unit is.",
+   "options": "KNIT 360 Item"
   },
   {
    "fieldname": "serial_number",
    "fieldtype": "Data",
    "label": "Serial Number",
-   "description": "Serial Number"
+   "description": "The maker's serial number. One unit, one number."
   },
   {
    "fieldname": "company",
@@ -87,7 +92,7 @@
    "fieldname": "commissioning_date",
    "fieldtype": "Date",
    "label": "Commissioning Date",
-   "description": "Commissioning date"
+   "description": "The day the unit was installed and handed over. Needed before it can be marked Commissioned, and the warranty runs from it."
   },
   {
    "fieldname": "knit360_business_status",
@@ -99,6 +104,21 @@
    "in_standard_filter": 1,
    "in_list_view": 1,
    "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "label": "Delivered On",
+   "options": "KNIT 360 Delivery Note",
+   "read_only": 1,
+   "description": "The dispatch that delivered this unit, when it was registered from one."
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "KNIT 360 Sales Order",
+   "read_only": 1
   },
   {
    "fieldname": "sec_21",
@@ -126,10 +146,41 @@
    "fieldtype": "Text",
    "label": "Operating Parameters",
    "description": "Operating parameters"
+  },
+  {
+   "fieldname": "sec_history",
+   "fieldtype": "Section Break",
+   "label": "Service History"
+  },
+  {
+   "fieldname": "service_history",
+   "fieldtype": "HTML",
+   "label": "Service History"
   }
  ],
  "index_web_pages_for_search": 0,
- "links": [],
+ "links": [
+  {
+   "group": "Service",
+   "link_doctype": "KNIT 360 Service Request",
+   "link_fieldname": "asset"
+  },
+  {
+   "group": "Service",
+   "link_doctype": "KNIT 360 Field Work Order",
+   "link_fieldname": "asset"
+  },
+  {
+   "group": "Cover",
+   "link_doctype": "KNIT 360 Service Contract",
+   "link_fieldname": "asset"
+  },
+  {
+   "group": "Cover",
+   "link_doctype": "KNIT 360 Maintenance Schedule",
+   "link_fieldname": "asset"
+  }
+ ],
  "modified": "2026-09-22 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Asset Management",

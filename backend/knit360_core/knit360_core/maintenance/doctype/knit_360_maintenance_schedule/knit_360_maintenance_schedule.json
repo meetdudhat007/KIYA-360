@@ -8,11 +8,14 @@
  "description": "FR-MFS-003 / FR-MFS-004 - DR-A2S-008 Maintenance Execution (Preventive & Corrective).",
  "field_order": [
   "asset",
+  "customer",
   "service_contract",
   "company",
   "col_36",
   "trigger_type",
   "trigger_value",
+  "next_due_date",
+  "last_done_date",
   "sec_26",
   "tasks"
  ],
@@ -24,6 +27,15 @@
    "description": "Asset reference",
    "options": "KNIT 360 Asset",
    "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "KNIT 360 Customer",
+   "fetch_from": "asset.customer",
+   "read_only": 1,
    "in_list_view": 1
   },
   {
@@ -47,15 +59,32 @@
   },
   {
    "fieldname": "trigger_type",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "label": "Trigger Type",
-   "description": "Trigger rules (calendar interval, operating hours, run cycles)"
+   "description": "How the next visit falls due. Only a fixed number of days is built: running hours and cycle counts need meter readings, which nothing records yet.",
+   "options": "Calendar Days",
+   "default": "Calendar Days"
   },
   {
    "fieldname": "trigger_value",
    "fieldtype": "Float",
-   "label": "Trigger Value",
-   "description": "Trigger rules"
+   "label": "Interval (Days)",
+   "description": "Days between visits."
+  },
+  {
+   "fieldname": "next_due_date",
+   "fieldtype": "Date",
+   "label": "Next Visit Due",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Enter the first one. After each completed visit it is moved on by the interval, counted from the day of that visit."
+  },
+  {
+   "fieldname": "last_done_date",
+   "fieldtype": "Date",
+   "label": "Last Visit",
+   "read_only": 1,
+   "description": "The latest completed preventive visit on this schedule."
   },
   {
    "fieldname": "sec_26",
@@ -66,11 +95,17 @@
    "fieldname": "tasks",
    "fieldtype": "Text",
    "label": "Maintenance Tasks / Checklist",
-   "description": "Maintenance tasks/checklists"
+   "description": "What the engineer checks on each visit. Copied onto the work order as its procedure."
   }
  ],
  "index_web_pages_for_search": 0,
- "links": [],
+ "links": [
+  {
+   "group": "Visits",
+   "link_doctype": "KNIT 360 Field Work Order",
+   "link_fieldname": "maintenance_schedule"
+  }
+ ],
  "modified": "2026-09-22 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Maintenance",

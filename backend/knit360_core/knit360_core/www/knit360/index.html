@@ -63,6 +63,7 @@ header .brand span { font-size: 12px; color: var(--muted); }
 header .spacer { flex: 1; }
 header a, header .who { color: var(--muted); font-size: 13px; text-decoration: none; }
 header a:hover { color: var(--brand); }
+header .btn { white-space: nowrap; }
 
 /* ---------- journey ---------- */
 .journey { background: var(--panel); border-bottom: 1px solid var(--line); padding: 14px 20px 16px; }
@@ -230,6 +231,10 @@ form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (min-width: 861px) {
   .back { display: none !important; }
 }
+
+@media (max-width: 480px) {
+  header .wide { display: none; }
+}
 </style>
 </head>
 <body>
@@ -242,7 +247,13 @@ form.new .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   </div>
   <div class="spacer"></div>
   <span class="who" id="who"></span>
-  <a href="/app" title="Administration">Admin</a>
+  <!-- Named, not "/app": that opens whichever workspace was opened last, so
+       the way back led somewhere different each time. The workspace is
+       desk.HOME. -->
+  <a class="btn quiet small" href="/app/knit-360" title="Back to the KNIT 360 home screen">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
+    <span><span class="wide">KNIT 360 </span>Home</span>
+  </a>
 </header>
 
 <div class="journey">

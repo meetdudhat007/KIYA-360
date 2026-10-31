@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-28 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-MFS-005 / FR-MFS-002 - spare parts, labour and travel on a field work order, each tagged with its warranty cover (DR-A2S-006, DR-A2S-007).",
+ "field_order": [
+  "line_type",
+  "item_code",
+  "description",
+  "qty",
+  "coverage",
+  "valuation_rate",
+  "stock_value"
+ ],
+ "fields": [
+  {
+   "fieldname": "line_type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Spare Part\nLabour\nTravel",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "A spare part leaves stock when the work is complete. Labour and travel are charges only."
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item",
+   "options": "KNIT 360 Item",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "For labour and travel, a service item whose price is the rate you charge."
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "coverage",
+   "fieldtype": "Select",
+   "label": "Cover",
+   "options": "Billable to Customer\nWarranty Covered\nContract Covered",
+   "default": "Billable to Customer",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Worked out from the unit's warranty and contracts. Only Billable lines go on the service invoice."
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Currency",
+   "label": "Cost",
+   "read_only": 1,
+   "description": "For a spare part: what one unit cost us, worked out by the stock ledger when it left."
+  },
+  {
+   "fieldname": "stock_value",
+   "fieldtype": "Currency",
+   "label": "Cost Total",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-28 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Maintenance",
+ "name": "KNIT 360 Field Work Order Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

@@ -8,6 +8,7 @@
  "description": "FR-AST-003 / FR-MFS-006 - DR-A2S-003 Warranty & Service Contract Management.",
  "field_order": [
   "asset",
+  "customer",
   "contract_type",
   "company",
   "col_29",
@@ -33,10 +34,22 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "KNIT 360 Customer",
+   "fetch_from": "asset.customer",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
    "fieldname": "contract_type",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "label": "Contract Type",
-   "description": "Contract type (Standard Warranty, Extended Warranty, AMC, CMC)"
+   "description": "Standard and Extended Warranty are the maker's cover; AMC and CMC are paid maintenance contracts. Which one it is decides how a covered repair is costed.",
+   "options": "Standard Warranty\nExtended Warranty\nAMC\nCMC",
+   "reqd": 1,
+   "in_list_view": 1
   },
   {
    "fieldname": "company",
@@ -54,13 +67,13 @@
    "fieldname": "start_date",
    "fieldtype": "Date",
    "label": "Start Date",
-   "description": "Start date"
+   "description": "Cover starts on this day."
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Date",
    "label": "End Date",
-   "description": "End date"
+   "description": "Cover ends at the end of this day."
   },
   {
    "fieldname": "sla_tier",

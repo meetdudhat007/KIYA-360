@@ -76,6 +76,9 @@ TREE = {
 			("Freight and Forwarding", "Expense Account", []),
 			# A purchase sent back, for the same reason -- DEC-037.
 			("Purchase Returns", "Expense Account", []),
+			# Spare parts given free under warranty. Kept apart from Cost of
+			# Goods Sold so the books can say what warranty costs -- DEC-041.
+			("Warranty Expense", "Expense Account", []),
 		]),
 		("Indirect Expenses", None, [
 			("Administrative Expenses", "Expense Account", []),
@@ -113,6 +116,11 @@ DEFAULTS = {
 	# against Sales and the expense, so the size of them is answerable.
 	"default_sales_returns_account": "Sales Returns",
 	"default_purchase_returns_account": "Purchase Returns",
+	# DEC-041. Labour and travel billed on a repair are earned by doing the
+	# work, not by selling goods, so they are credited apart from Sales; free
+	# warranty parts are an expense of the warranty, not a cost of a sale.
+	"default_service_income_account": "Service Revenue",
+	"default_warranty_expense_account": "Warranty Expense",
 }
 
 

@@ -10,6 +10,7 @@
   "item_code",
   "description",
   "qty",
+  "serial_numbers",
   "valuation_rate",
   "stock_value"
  ],
@@ -36,6 +37,12 @@
    "description": "Dispatched quantity",
    "in_list_view": 1,
    "reqd": 1
+  },
+  {
+   "fieldname": "serial_numbers",
+   "fieldtype": "Small Text",
+   "label": "Serial Numbers",
+   "description": "For an item tracked by serial number: one serial number per line, as many as the quantity. Each becomes an installed unit you can follow through warranty and service."
   },
   {
    "fieldname": "valuation_rate",

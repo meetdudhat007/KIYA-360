@@ -474,15 +474,18 @@ def actions_for(doctype, name):
 	rules, so the two front ends cannot come to different conclusions about
 	what is allowed.
 
-	Returns [] for any doctype outside the three stages, rather than raising,
-	because the Desk asks this on every form that opens.
+	Documents outside the three stages get their Desk-only actions from
+	desk_actions, which leaves this seam's own answer unchanged.
 	"""
+	from knit360_core.api import desk_actions
+
 	spec = BY_DOCTYPE.get(doctype)
+	desk_only = desk_actions.actions_for(doctype, name)
 	if not spec:
-		return []
+		return desk_only
 	doc = frappe.get_doc(doctype, name)
 	doc.check_permission("read")
-	return _actions(spec, doc, engine.current_status(doc))
+	return _actions(spec, doc, engine.current_status(doc)) + desk_only
 
 
 @frappe.whitelist()

@@ -21,6 +21,12 @@ note today.
 
 This posts no revenue. The invoice does that, and the two are deliberately
 separate: goods can leave before they are billed.
+
+**Against an order** it may not dispatch more of an item than the order still
+has outstanding (DR-C2C-012). **Serial-tracked items** carry one serial number
+per unit, and each unit dispatched is registered as an installed asset for
+the order's customer -- the start of its warranty and service history
+(DR-A2S-001, FR-INV-003).
 """
 
 import frappe
@@ -31,6 +37,37 @@ from knit360_core.finance import ledger
 from knit360_core.stock import ledger as stock_ledger
 
 COMPANY = "KNIT 360 Company"
+ITEM = "KNIT 360 Item"
+ASSET = "KNIT 360 Asset"
+SALES_ORDER = "KNIT 360 Sales Order"
+REGISTERED = "Registered"
+
+
+def serials(text):
+	"""Serial numbers typed one per line, or separated by commas."""
+	return [s.strip() for s in (text or "").replace(",", "\n").splitlines() if s.strip()]
+
+
+def ordered_and_dispatched(sales_order, exclude=None, include_drafts=False):
+	"""item -> (ordered, already dispatched) for one sales order."""
+	ordered = {}
+	for row in frappe.get_all("KNIT 360 Sales Order Item", filters={"parent": sales_order},
+	                          fields=["item_code", "qty"]):
+		ordered[row.item_code] = ordered.get(row.item_code, 0.0) + flt(row.qty)
+
+	statuses = "(dn.docstatus = 1 OR (dn.docstatus = 0 AND dn.knit360_business_status = 'Draft'))" \
+		if include_drafts else "dn.docstatus = 1"
+	sent = frappe.db.sql(
+		f"""SELECT item.item_code, SUM(item.qty) AS qty
+		    FROM `tabKNIT 360 Delivery Note Item` item
+		    JOIN `tabKNIT 360 Delivery Note` dn ON dn.name = item.parent
+		    WHERE dn.sales_order = %(order)s AND dn.name != %(exclude)s AND {statuses}
+		    GROUP BY item.item_code""",
+		{"order": sales_order, "exclude": exclude or ""},
+		as_dict=True,
+	)
+	dispatched = {row.item_code: flt(row.qty) for row in sent}
+	return {item: (qty, dispatched.get(item, 0.0)) for item, qty in ordered.items()}, dispatched
 
 
 class KNIT360DeliveryNote(Document):
@@ -46,6 +83,41 @@ class KNIT360DeliveryNote(Document):
 				stock_ledger.check_can_issue(
 					row.item_code, self.source_warehouse, row.qty, self.company
 				)
+		if self.sales_order and self.docstatus == 0:
+			self._within_the_order()
+
+	def _within_the_order(self):
+		balance, _sent = ordered_and_dispatched(self.sales_order, exclude=self.name)
+		here = {}
+		for row in self.items:
+			here[row.item_code] = here.get(row.item_code, 0.0) + flt(row.qty)
+		for item, qty in here.items():
+			if item not in balance:
+				frappe.throw(f"{item} is not on {self.sales_order}.")
+			ordered, sent = balance[item]
+			if qty - (ordered - sent) > stock_ledger.TOLERANCE:
+				frappe.throw(
+					f"{self.sales_order} ordered {ordered:g} of {item} and {sent:g} have already "
+					f"been dispatched, so {ordered - sent:g} can go now, not {qty:g}."
+				)
+
+	def before_submit(self):
+		for row in self.items:
+			if not frappe.db.get_value(ITEM, row.item_code, "is_serial_tracked"):
+				continue
+			numbers = serials(row.serial_numbers)
+			if flt(row.qty) != int(flt(row.qty)) or len(numbers) != int(flt(row.qty)):
+				frappe.throw(
+					f"Line {row.idx}: {row.item_code} is tracked by serial number, so dispatching "
+					f"{flt(row.qty):g} needs {flt(row.qty):g} serial numbers, one per unit. "
+					f"{len(numbers)} given."
+				)
+			if len(set(numbers)) != len(numbers):
+				frappe.throw(f"Line {row.idx}: a serial number is repeated.")
+			for number in numbers:
+				known = frappe.db.get_value(ASSET, {"item_code": row.item_code, "serial_number": number}, "name")
+				if known:
+					frappe.throw(f"Line {row.idx}: {row.item_code} serial {number} has already been delivered as {known}.")
 
 	def on_submit(self):
 		movements = stock_ledger.post(
@@ -65,10 +137,46 @@ class KNIT360DeliveryNote(Document):
 		)
 		self._record_cost(movements)
 		self._post_cost_of_sales()
+		self._register_units()
 
 	def on_cancel(self):
+		units = self._registered_units()
+		moved_on = [u.name for u in units if u.knit360_business_status != REGISTERED]
+		if moved_on:
+			frappe.throw(
+				f"{', '.join(moved_on)} delivered on this note have been put into service. "
+				f"Their history depends on this dispatch, so it cannot be cancelled."
+			)
 		stock_ledger.reverse(self.doctype, self.name)
 		ledger.reverse(self.doctype, self.name)
+		# The dispatch did not happen, so neither did the delivery of these units.
+		for unit in units:
+			frappe.delete_doc(ASSET, unit.name, ignore_permissions=True)
+
+	def _registered_units(self):
+		return frappe.get_all(ASSET, filters={"delivery_note": self.name},
+		                      fields=["name", "knit360_business_status"])
+
+	def _register_units(self):
+		customer = frappe.db.get_value(SALES_ORDER, self.sales_order, "customer") if self.sales_order else None
+		for row in self.items:
+			if not frappe.db.get_value(ITEM, row.item_code, "is_serial_tracked"):
+				continue
+			name = frappe.db.get_value(ITEM, row.item_code, "item_name") or row.item_code
+			for number in serials(row.serial_numbers):
+				frappe.get_doc(
+					{
+						"doctype": ASSET,
+						"asset_name": name,
+						"item_code": row.item_code,
+						"serial_number": number,
+						"company": self.company,
+						"customer": customer,
+						"delivery_note": self.name,
+						"sales_order": self.sales_order,
+						"site_address": self.ship_to_address,
+					}
+				).insert(ignore_permissions=True)
 
 	def _record_cost(self, movements):
 		"""Copy what the ledger worked out back onto the lines, to be read.
