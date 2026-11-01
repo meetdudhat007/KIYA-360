@@ -497,6 +497,74 @@ SERVICE_DISPATCH = Lifecycle(
 	draft_states={"Unassigned", "Assigned", "Dispatched / En Route", "On Site", "Work Started", "Reassigned", "Rescheduled"},
 )
 
+# DR-A2S-004: "Logged / Open -> Triaged -> Dispatched / Scheduled -> Work In
+# Progress -> Resolved -> Closed (or Cancelled)". A request posts nothing.
+# Triaged may go straight to Resolved because doc 33 section 14 provides for a
+# request closed without a site visit once the customer confirms a remote fix.
+# Which states may be cancelled is inferred; the source gives the branch
+# without placing it.
+SERVICE_REQUEST = Lifecycle(
+	name="Service Request",
+	initial="Logged / Open",
+	transitions={
+		"Logged / Open": {"Triaged", "Cancelled"},
+		"Triaged": {"Dispatched / Scheduled", "Resolved", "Cancelled"},
+		"Dispatched / Scheduled": {"Work In Progress", "Cancelled"},
+		"Work In Progress": {"Resolved"},
+		"Resolved": {"Closed"},
+		"Closed": set(),
+		"Cancelled": set(),
+	},
+	draft_states={"Logged / Open", "Triaged", "Dispatched / Scheduled", "Work In Progress",
+	              "Resolved", "Closed", "Cancelled"},
+	happy_path=("Logged / Open", "Triaged", "Dispatched / Scheduled", "Work In Progress",
+	            "Resolved", "Closed"),
+)
+
+# DR-A2S-007: "Scheduled -> In Progress -> Pending Parts / On Hold -> Work
+# Complete -> Customer Signed Off -> Closed (or Cancelled)". Work Complete is
+# where spare parts leave stock, so it submits. On Hold is a pause that returns
+# to In Progress, keeping the hours logged so far (doc 33 section 14). A job
+# can be cancelled until it is closed, so a wrongly recorded one can be undone
+# by reversal like every other posting.
+FIELD_WORK_ORDER = Lifecycle(
+	name="Field Work Order",
+	initial="Scheduled",
+	transitions={
+		"Scheduled": {"In Progress", "Cancelled"},
+		"In Progress": {"Pending Parts / On Hold", "Work Complete", "Cancelled"},
+		"Pending Parts / On Hold": {"In Progress", "Cancelled"},
+		"Work Complete": {"Customer Signed Off", "Cancelled"},
+		"Customer Signed Off": {"Closed", "Cancelled"},
+		"Closed": set(),
+		"Cancelled": set(),
+	},
+	draft_states={"Scheduled", "In Progress", "Pending Parts / On Hold"},
+	submitted_states={"Work Complete", "Customer Signed Off", "Closed"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Scheduled", "In Progress", "Work Complete", "Customer Signed Off", "Closed"),
+)
+
+# DR-C2C-009: "Not Started -> In Process -> Completed (or Stopped / Cancelled)".
+# Completing is where materials leave stock and the finished goods come in, so
+# it submits. Stopped is a pause that resumes to In Process. Branch placement
+# is inferred.
+WORK_ORDER = Lifecycle(
+	name="Work Order",
+	initial="Not Started",
+	transitions={
+		"Not Started": {"In Process", "Cancelled"},
+		"In Process": {"Completed", "Stopped", "Cancelled"},
+		"Stopped": {"In Process", "Cancelled"},
+		"Completed": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Not Started", "In Process", "Stopped"},
+	submitted_states={"Completed"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Not Started", "In Process", "Completed"),
+)
+
 # FR-FIN-001. No DR- record specifies a journal entry lifecycle, so this is the
 # minimum a manual posting needs: it is drafted, it may be reviewed, it posts,
 # and a posted entry is reversed rather than edited. PROPOSED.
@@ -608,6 +676,9 @@ REGISTRY = {
 	"KNIT 360 Asset": ASSET,
 	"KNIT 360 Service Contract": SERVICE_CONTRACT,
 	"KNIT 360 Service Dispatch": SERVICE_DISPATCH,
+	"KNIT 360 Service Request": SERVICE_REQUEST,
+	"KNIT 360 Field Work Order": FIELD_WORK_ORDER,
+	"KNIT 360 Work Order": WORK_ORDER,
 	"KNIT 360 Leave Allocation": LEAVE_ALLOCATION,
 	"KNIT 360 Leave Application": LEAVE_APPLICATION,
 }

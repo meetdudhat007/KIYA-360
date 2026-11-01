@@ -14,7 +14,10 @@
   "col_31",
   "fault_symptom_code",
   "priority",
+  "knit360_business_status",
   "contact_details",
+  "warranty_status",
+  "covering_contract",
   "sec_23",
   "problem_description",
   "col_32",
@@ -35,13 +38,16 @@
    "fieldtype": "Link",
    "label": "Customer",
    "description": "Customer reference",
-   "options": "KNIT 360 Customer"
+   "options": "KNIT 360 Customer",
+   "fetch_from": "asset.customer",
+   "fetch_if_empty": 1
   },
   {
    "fieldname": "request_timestamp",
    "fieldtype": "Datetime",
    "label": "Request Timestamp",
-   "description": "Request timestamp"
+   "description": "When the customer reported it. Warranty cover is judged on this date.",
+   "default": "Now"
   },
   {
    "fieldname": "company",
@@ -68,10 +74,35 @@
    "description": "Urgency/Priority indicator"
   },
   {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Logged / Open\nTriaged\nDispatched / Scheduled\nWork In Progress\nResolved\nClosed\nCancelled",
+   "default": "Logged / Open",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
+  },
+  {
    "fieldname": "contact_details",
    "fieldtype": "Data",
    "label": "Contact Details",
    "description": "Contact details"
+  },
+  {
+   "fieldname": "warranty_status",
+   "fieldtype": "Data",
+   "label": "Warranty / Contract Cover",
+   "read_only": 1,
+   "description": "Worked out from the unit's contracts on the date of the request. Not typed."
+  },
+  {
+   "fieldname": "covering_contract",
+   "fieldtype": "Link",
+   "label": "Covering Contract",
+   "options": "KNIT 360 Service Contract",
+   "read_only": 1
   },
   {
    "fieldname": "sec_23",
@@ -82,7 +113,8 @@
    "fieldname": "problem_description",
    "fieldtype": "Text",
    "label": "Problem Description",
-   "description": "Problem description"
+   "description": "What the customer says is wrong, in their words.",
+   "reqd": 1
   },
   {
    "fieldname": "col_32",
@@ -96,7 +128,18 @@
   }
  ],
  "index_web_pages_for_search": 0,
- "links": [],
+ "links": [
+  {
+   "group": "Work",
+   "link_doctype": "KNIT 360 Field Work Order",
+   "link_fieldname": "service_request"
+  },
+  {
+   "group": "Work",
+   "link_doctype": "KNIT 360 Service Dispatch",
+   "link_fieldname": "service_request"
+  }
+ ],
  "modified": "2026-09-22 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Maintenance",

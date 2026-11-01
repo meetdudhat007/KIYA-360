@@ -157,7 +157,7 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 - Mobile offline synchronization and state collisions in intermittent connectivity (`RSK-05`). Mitigated by client-generated UUIDs, outbox sync, and `PoC-04`.
 
 
-## Implementation State — 5 October 2026
+## Implementation State — 5 October 2026, updated 28 October 2026
 
 Recorded so another agent can continue without re-deriving it. The product name
 is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
@@ -168,16 +168,18 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 75 parent, 24 child — 99 total, across 18 application modules |
+| Record types | 75 parent, 27 child — 102 total, across 18 application modules |
 | BRD modules with record types | **15 of 28** |
-| Lifecycle definitions (`CD-002`) | 25 |
+| Lifecycle definitions (`CD-002`) | 29 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
-| Automated checks | **205** — 49 structural, 156 runtime |
-| Last full run | 49/49 and 156/156, 8 October 2026, site `knit360.localhost` |
+| Front end | The Desk (`/app`) only. The simplified `/knit360` sales page was removed on 31 October 2026 at the owner's request; leads are entered on the Lead form (`DEC-044`). |
+| Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; conversion makes a Contact per person (`DEC-045`, `DEC-046`). |
+| Automated checks | **221** — 44 structural, 177 runtime |
+| Last full run | 44/44 and 177/177, 1 November 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
-| BRD requirement coverage (live report) | **71 of 238 — 12 proven, 59 modelled, 167 not started** |
-| Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `docs/03-guides/06-the-money-decisions-in-plain-language.md`. |
+| BRD requirement coverage (live report) | **74 of 238 — 22 proven, 52 modelled, 164 not started** |
+| Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `.kiya/archive/03-guides-backup/06-the-money-decisions-in-plain-language.md`. |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
 Logistics (15), Projects (16), E-Commerce (20), Document Management (21),
@@ -192,6 +194,21 @@ Customer-to-Cash: Lead → Opportunity → Quotation → Sales Order → Sales I
 onto a double-entry ledger (`knit360_core/finance/ledger.py`, the only writer of
 GL Entry) that balances, reverses rather than deletes, and refuses postings to
 group accounts, disabled accounts and closed fiscal years.
+
+Added 28 October 2026, for a furnace manufacturing and repair client
+(`DEC-039`..`DEC-043`; guide `docs/03-guides/furnace_erp_test_and_user_guide.md`):
+
+- **No re-typing from quotation to invoice.** Desk buttons make the Sales Order
+  from an accepted Quotation, the Delivery Note from a confirmed order (for what
+  is outstanding), and the Sales Invoice from a dispatch, each once only.
+- **Production moves stock.** A Work Order explodes its BOM and, on Completed,
+  takes the materials out FIFO and brings the finished goods in at material cost.
+- **Asset-to-Service runs end to end.** Serial numbers on dispatch register each
+  unit as an installed Asset; commissioning drafts the maker's warranty; cover
+  is judged on the day a fault is reported; a Field Work Order uses spare parts
+  (warranty parts to Warranty Expense, others to Cost of Goods Sold); a draft
+  service invoice bills only what nothing covers; preventive visits move the
+  schedule on; the Asset shows its whole history.
 
 ### Not working
 
@@ -211,28 +228,27 @@ group accounts, disabled accounts and closed fiscal years.
 - **HR: leave is built and proven; nothing else in HR is.** Attendance,
   payroll, appraisal and recruitment are not started. See doc 45 for the
   observed reference surface and `OQ-024` for the open questions.
+- **Finished goods carry material cost only.** Labour and production overhead
+  are not absorbed (Ind AS 2 paragraph 12; `DEC-040`); that is production
+  costing, FR-MFG-006. No work-in-progress stage or job cards.
+- **Warranty terms are the owner's** (`OQ-011`). The warranty is drafted on
+  commissioning and covers nothing until someone ticks its terms and activates
+  it; exclusions such as misuse are not built.
+- **The nightly contract-expiry job does not run locally.** The dev stack starts
+  `bench serve` only, with no scheduler process. Cover does not depend on it.
 
 ### How to verify
 
 ```
-bench --site knit360.localhost run-tests --app knit360_core          # 49 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 156 runtime
+bench --site knit360.localhost run-tests --app knit360_core          # 44 structural
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 177 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
 
 ### Operational guides
 
-- `docs/03-guides/01-user-guide.md` — every screen and feature in plain language
-- `docs/03-guides/02-demonstration-script.md` — a 40-minute demonstration
-- `docs/03-guides/07-live-presentation-script.md` — the same thing as a script
-  to follow on screen: every click, every value to type, and what to say,
-  with every figure read off the running site
-- `docs/03-guides/04-new-client-setup-walkthrough.md` — setting up a new client
-  from login, every field and value
-- `docs/03-guides/05-proving-requirements-to-a-client.md` — the evidence
-  session, built on the live coverage report
-- `docs/03-guides/03-handover-what-is-left.md` — remaining work, divided by who
-  can do it; names the decisions that block implementation
+- docs/03-guides/furnace_erp_test_and_user_guide.md -- complete end-to-end user and testing guide for furnace manufacturing and repair (CRM, Quotation, BOM, Work Order, Delivery, Invoicing, Payment, Commissioning, Warranty, Service Request, Field Work Order, and Asset History).
+- Pre-existing operational guides archived in .kiya/archive/03-guides-backup/.
 
 ### Open items needing the owner
 
@@ -271,5 +287,7 @@ GPL-3 product. Flagged twice; no decision recorded.
 Antigravity (Phase 1 seal)
 
 Claude Opus 5 — 5 October 2026, implementation state and operational guides
+
+Claude Opus 5.5 — 28 October 2026, furnace-business fine-tune (`DEC-039`..`DEC-043`)
 
 

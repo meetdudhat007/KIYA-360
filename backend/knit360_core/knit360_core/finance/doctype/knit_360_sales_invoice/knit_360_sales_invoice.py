@@ -102,6 +102,11 @@ class KNIT360SalesInvoice(Document):
 
 	def on_cancel(self):
 		ledger.reverse(self.doctype, self.name)
+		# A cancelled service invoice no longer bills its repair job, which can
+		# then be billed again.
+		if self.field_work_order:
+			frappe.db.set_value("KNIT 360 Field Work Order", self.field_work_order,
+			                    "sales_invoice", None, update_modified=False)
 
 	def _lines(self):
 		lines = [

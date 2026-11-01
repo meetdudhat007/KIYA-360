@@ -19,7 +19,6 @@ demo or live data, and every check is written to be re-runnable.
 A failing check prints the exception that caused it. Nothing is swallowed.
 """
 
-import json
 import pathlib
 import traceback
 
@@ -123,12 +122,13 @@ def account(leaf):
 	return name
 
 
-def a_lead(**overrides):
+def a_lead(person="Acceptance Contact", **overrides):
+	"""A lead for an organization with one person to speak to (DEC-045)."""
 	fields = {
 		"doctype": "KNIT 360 Lead",
-		"lead_name": "Acceptance Contact",
 		"organization_name": "Acceptance Buyer Pvt Ltd",
 		"company": company(),
+		"contact_persons": [{"person_name": person}],
 	}
 	fields.update(overrides)
 	return frappe.get_doc(fields).insert(ignore_permissions=True)
@@ -308,22 +308,111 @@ def c_allowed_next():
 # --- D. Customer-to-Cash -----------------------------------------------
 
 
-@check("D. Customer to Cash", "A lead can be created through the web seam")
+@check("D. Customer to Cash", "A lead entered on the Lead form starts at New")
 def d_create_lead():
+	# Inserted with permission checks on, as the Desk's Lead form saves it.
+	lead = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Lead",
+			"organization_name": "Form Organization Pvt Ltd",
+			"company": company(),
+			"contact_persons": [{"person_name": "Form Contact", "email": "form@example.com"}],
+		}
+	).insert()
+	status = engine.current_status(lead)
+	initial = model.for_doctype("KNIT 360 Lead").initial
+	expect(status == initial, f"a new lead starts at {status!r}, not {initial!r}")
+	frappe.db.commit()
+	return f"{lead.name} at status {status!r}"
+
+
+@check("D. Customer to Cash", "A lead needs an organization name and at least one person")
+def d_lead_needs_org_and_person():
+	base = {"doctype": "KNIT 360 Lead", "company": company()}
+	no_org = refuses(
+		frappe.get_doc(dict(base, contact_persons=[{"person_name": "Orgless Contact"}])).insert
+	)
+	nobody = refuses(frappe.get_doc(dict(base, organization_name="Peopleless Pvt Ltd")).insert)
+	return f"no organization: {no_org[:70]} | no person: {nobody[:70]}"
+
+
+@check("D. Customer to Cash", "Each person detail is a lead-list column listing every person")
+def d_persons_in_one_cell():
+	lead = a_lead(
+		organization_name="Two Person Foundry Pvt Ltd",
+		contact_persons=[
+			{"person_name": "Asha Rao", "phone": "+91 98250 00001", "email": "asha@example.com"},
+			{"person_name": "Vikram Shah", "designation": "Plant Head", "phone": "+91 98250 00002"},
+		],
+	)
+	frappe.db.commit()
+	# A person with no value keeps their place with a dash; a column nobody
+	# has a value for stays empty.
+	expected = {
+		"person_names": "Asha Rao, Vikram Shah",
+		"designations": "-, Plant Head",
+		"phones": "+91 98250 00001, +91 98250 00002",
+		"emails": "asha@example.com, -",
+		"departments": "",
+	}
+	cells = {column: lead.get(column) or "" for column in expected}
+	expect(cells == expected, f"the cells read {cells!r}")
+	meta = frappe.get_meta("KNIT 360 Lead")
+	expect(meta.title_field == "organization_name", f"the list leads with {meta.title_field!r}")
+	listed = [f.fieldname for f in meta.fields if f.in_list_view]
+	expect(listed[: len(expected) + 1] == ["organization_name", *expected],
+	       f"the list's first columns are {listed[:6]}")
+	return "; ".join(f"{meta.get_label(c)}: {v or '(empty)'}" for c, v in expected.items())
+
+
+@check("D. Customer to Cash", "Conversion makes a contact for every person, the first one primary")
+def d_conversion_contacts():
 	from knit360_core.api import c2c
 
-	result = c2c.create_lead(lead_name="Seam Contact", company=company(), email="seam@example.com")
-	expect(result.get("name"), f"create_lead returned no name: {result}")
-	expect(result.get("status"), "create_lead returned no status")
+	def qualified(lead):
+		for status in ("Contacted", "Qualified"):
+			engine.transition("KNIT 360 Lead", lead.name, status)
+		return lead
+
+	# Its own customer every run, so contacts left by an earlier run cannot be
+	# mistaken for -- or suppress -- the ones this conversion makes.
+	organization = f"Contact Castings {frappe.generate_hash(length=6)} Pvt Ltd"
+	people = [
+		{"person_name": "Meera Iyer", "designation": "Purchase Head", "department": "Purchase",
+		 "email": "meera@castings.example", "phone": "+91 98250 00011"},
+		{"person_name": "Ravi Kumar", "designation": "Maintenance Manager", "department": "Maintenance",
+		 "email": "ravi@castings.example", "phone": "+91 98250 00012"},
+	]
+	first = c2c.convert_lead(qualified(a_lead(organization_name=organization, contact_persons=people)).name)
+	contacts = [frappe.get_doc("KNIT 360 Contact", n) for n in first["contacts"]]
+	expect(len(contacts) == 2, f"{len(contacts)} contacts made for 2 persons")
+	expect([c.contact_name for c in contacts] == ["Meera Iyer", "Ravi Kumar"], "contacts out of order")
+	expect(all(c.customer == first["customer"] for c in contacts), "a contact is not under the customer")
+	expect([c.is_primary for c in contacts] == [1, 0], f"primary flags {[c.is_primary for c in contacts]}")
+	expect(contacts[1].department == "Maintenance" and contacts[1].designation == "Maintenance Manager",
+	       "designation or department was not carried")
+	customer = frappe.get_doc("KNIT 360 Customer", first["customer"])
+	expect((customer.email, customer.phone) == (people[0]["email"], people[0]["phone"]),
+	       "the customer's email and phone are not the first person's")
+
+	# A second lead for the same organization repeats one person and adds one.
+	again = c2c.convert_lead(qualified(a_lead(
+		organization_name=organization,
+		contact_persons=[{"person_name": "Ravi Kumar"}, {"person_name": "Sunita Das"}],
+	)).name)
+	expect(again["customer"] == first["customer"], "the second lead made a second customer")
+	added = [frappe.get_doc("KNIT 360 Contact", n) for n in again["contacts"]]
+	expect([c.contact_name for c in added] == ["Sunita Das"], f"repeated a person: {[c.contact_name for c in added]}")
+	expect(not added[0].is_primary, "the customer now has two primary contacts")
 	frappe.db.commit()
-	return f"{result['name']} at status {result['status']!r}"
+	return f"{first['customer']}: {', '.join(c.name for c in contacts + added)}; one primary"
 
 
 @check("D. Customer to Cash", "A lead converts to a customer and an opportunity")
 def d_convert():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Converting Contact")
+	lead = a_lead(person="Converting Contact")
 	lifecycle = model.for_doctype("KNIT 360 Lead")
 	status = lifecycle.initial
 	# Walk the declared happy path up to the point conversion is legal.
@@ -351,7 +440,7 @@ def d_convert():
 def d_quotation():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Quoting Contact")
+	lead = a_lead(person="Quoting Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -376,7 +465,7 @@ def d_quotation():
 def d_items():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Itemising Contact")
+	lead = a_lead(person="Itemising Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -388,16 +477,13 @@ def d_items():
 			break
 	quotation = c2c.create_quotation(c2c.convert_lead(lead.name)["opportunity"])["name"]
 
-	c2c.set_items(
-		"quotation",
-		quotation,
-		json.dumps(
-			[
-				{"item_code": "Induction coil", "qty": 3, "unit_rate": 1500},
-				{"item_code": "Control panel", "qty": 1, "unit_rate": 22000, "discount_percentage": 10},
-			]
-		),
+	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
+	doc.append("items", {"item_code": "Induction coil", "qty": 3, "unit_rate": 1500})
+	doc.append(
+		"items",
+		{"item_code": "Control panel", "qty": 1, "unit_rate": 22000, "discount_percentage": 10},
 	)
+	doc.save()
 	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
 	expect(len(doc.items) == 2, f"{len(doc.items)} lines stored, expected 2")
 	expect(flt(doc.items[0].amount) == 4500, f"line 1 amount is {doc.items[0].amount}, expected 4500")
@@ -410,43 +496,11 @@ def d_items():
 	return f"2 lines incl. a 10% discount, grand total {doc.grand_total}"
 
 
-@check("D. Customer to Cash", "A mistyped line column is refused, not silently dropped")
-def d_unknown_column():
-	from knit360_core.api import c2c
-
-	quotation = _a_quotation()
-	# `rate` is the Sales Order Item column; Quotation Item calls it unit_rate.
-	# This used to store a line with no price and report success.
-	message = refuses(
-		c2c.set_items, "quotation", quotation,
-		json.dumps([{"item_code": "Coil", "qty": 1, "rate": 999}]),
-	)
-	doc = frappe.get_doc("KNIT 360 Quotation", quotation)
-	expect(not doc.items, f"{len(doc.items)} priceless lines were stored anyway")
-	frappe.db.commit()
-	return message
-
-
-@check("D. Customer to Cash", "A calculated column cannot be set by hand")
-def d_computed_column():
-	from knit360_core.api import c2c
-
-	message = refuses(
-		c2c.set_items, "quotation", _a_quotation(),
-		json.dumps([{"item_code": "Coil", "qty": 1, "unit_rate": 100, "amount": 5}]),
-	)
-	frappe.db.commit()
-	return message
-
-
 @check("D. Customer to Cash", "A discount outside 0-100 is refused")
 def d_bad_discount():
-	from knit360_core.api import c2c
-
-	message = refuses(
-		c2c.set_items, "quotation", _a_quotation(),
-		json.dumps([{"item_code": "Coil", "qty": 1, "unit_rate": 100, "discount_percentage": 150}]),
-	)
+	doc = frappe.get_doc("KNIT 360 Quotation", _a_quotation())
+	doc.append("items", {"item_code": "Coil", "qty": 1, "unit_rate": 100, "discount_percentage": 150})
+	message = refuses(doc.save)
 	frappe.db.commit()
 	return message
 
@@ -534,7 +588,7 @@ def _a_quotation():
 	"""A fresh draft quotation, walked up from a lead."""
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Column Contact")
+	lead = a_lead(person="Column Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -1039,58 +1093,14 @@ def g_label_equals_name():
 	return "name == label == reference on every chart"
 
 
-# --- H. the web seam ----------------------------------------------------
+# --- H. Desk actions ----------------------------------------------------
 
 
-@check("H. Web seam", "stages() describes every stage with its actions")
-def h_stages():
-	from knit360_core.api import c2c
-
-	stages = c2c.stages()
-	expect(len(stages) == len(c2c.STAGES), f"{len(stages)} stages returned")
-	for stage in stages:
-		expect(stage.get("key"), f"a stage came back with no key: {stage}")
-		expect(stage.get("label"), f"{stage.get('key')} has no label")
-		expect(stage.get("states"), f"{stage['key']} describes no lifecycle states")
-		expect("counts" in stage, f"{stage['key']} reports no per-status counts")
-	return f"{len(stages)} stages: {', '.join(s['key'] for s in stages)}"
-
-
-@check("H. Web seam", "documents() returns the listed fields and nothing else")
-def h_documents():
-	from knit360_core.api import c2c
-
-	a_lead(lead_name="Listed Contact")
-	frappe.db.commit()
-	rows = c2c.documents("lead")
-	expect(rows, "no leads came back, though one was just created")
-	allowed = set(c2c.BY_KEY["lead"]["fields"]) | {"status", "title"}
-	leaked = set(rows[0]) - allowed
-	expect(not leaked, f"documents() leaked fields the seam does not declare: {sorted(leaked)}")
-	expect("docstatus" not in rows[0], "docstatus leaked; the seam exists to hide it")
-	return f"{len(rows)} rows, fields {sorted(rows[0])}"
-
-
-@check("H. Web seam", "document() returns guidance a non-technical user can act on")
-def h_document_guidance():
-	from knit360_core.api import c2c
-
-	lead = a_lead(lead_name="Guided Contact")
-	frappe.db.commit()
-	detail = c2c.document("lead", lead.name)
-	for key in ("name", "status", "actions"):
-		expect(key in detail, f"document() returned no {key!r}")
-	expect(detail["actions"], "a fresh lead was offered no next action at all")
-	for action in detail["actions"]:
-		expect(action.get("label"), f"an action has no label: {action}")
-	return f"status {detail['status']!r}, {len(detail['actions'])} actions offered"
-
-
-@check("H. Web seam", "next_steps tells the Desk what each move will do")
+@check("H. Desk actions", "next_steps tells the Desk what each move will do")
 def h_next_steps():
 	from knit360_core.business_status import engine as eng
 
-	lead = a_lead(lead_name="Stepping Contact")
+	lead = a_lead(person="Stepping Contact")
 	frappe.db.commit()
 	steps = eng.next_steps("KNIT 360 Lead", lead.name)
 	expect(steps, "a fresh lead was offered no steps at all")
@@ -1114,11 +1124,11 @@ def h_next_steps():
 	return f"{len(steps)} steps, forward={[s['status'] for s in steps if s['is_forward']]}"
 
 
-@check("H. Web seam", "The Desk is offered the same stage actions as the web page")
+@check("H. Desk actions", "Conversion is offered only to a Qualified lead, with a reason otherwise")
 def h_actions_for():
 	from knit360_core.api import c2c
 
-	lead = a_lead(lead_name="Acting Contact")
+	lead = a_lead(person="Acting Contact")
 	frappe.db.commit()
 
 	early = c2c.actions_for("KNIT 360 Lead", lead.name)
@@ -1142,12 +1152,12 @@ def h_actions_for():
 	expect(ready["enabled"], f"a Qualified lead was refused conversion: {ready['reason']}")
 	expect(
 		c2c.actions_for("KNIT 360 Item", "nothing") == [],
-		"actions_for raised on a doctype outside the three stages",
+		"actions_for raised on a doctype that has no actions",
 	)
 	return f"disabled when New ({convert['reason'][:60]}...), enabled when Qualified"
 
 
-@check("H. Web seam", "An action declares the status it reaches on its own")
+@check("H. Desk actions", "An action declares the status it reaches on its own")
 def h_action_claims_status():
 	"""Stops the Desk offering two buttons that look alike and are not.
 
@@ -1160,7 +1170,7 @@ def h_action_claims_status():
 	from knit360_core.api import c2c
 	from knit360_core.crm import conversion
 
-	lead = a_lead(lead_name="Claiming Contact")
+	lead = a_lead(person="Claiming Contact")
 	status = model.for_doctype("KNIT 360 Lead").initial
 	for _ in range(6):
 		nxt = model.for_doctype("KNIT 360 Lead").forward_from(status)
@@ -1185,32 +1195,30 @@ def h_action_claims_status():
 	return f"convert_lead claims {action['produces_status']!r}"
 
 
-@check("H. Web seam", "The seam refuses a stage it does not expose")
-def h_unknown_stage():
+@check("H. Desk actions", "The /knit360 page is gone; leads are entered on the Lead form only")
+def h_page_removed():
+	# The owner removed the simplified sales page on 31 October 2026 (DEC-044).
+	# A page left behind would be a second way in with fewer fields than the
+	# form, which is what was removed.
+	in_test = frappe.flags.in_test
+	frappe.flags.in_test = True
+	try:
+		response = frappe.website.serve.get_response_content("/knit360")
+	finally:
+		frappe.flags.in_test = in_test
+	expect(
+		"Customer to Cash</title>" not in response,
+		"/knit360 still renders the sales page",
+	)
+	shortcuts = frappe.get_all(
+		"Workspace Shortcut", filters={"parent": "KNIT 360", "url": "/knit360"}, pluck="label"
+	)
+	expect(not shortcuts, f"the home screen still links to /knit360: {shortcuts}")
 	from knit360_core.api import c2c
 
-	return refuses(c2c.documents, "payroll")
-
-
-@check("H. Web seam", "advance() goes through the engine, so it refuses illegal moves")
-def h_advance_guarded():
-	from knit360_core.api import c2c
-
-	lead = a_lead(lead_name="Jumping Contact")
-	frappe.db.commit()
-	message = refuses(c2c.advance, "lead", lead.name, "Converted")
-	frappe.db.commit()
-	return message
-
-
-@check("H. Web seam", "The Customer-to-Cash page is served with a usable CSRF token")
-def h_page_renders():
-	response = frappe.website.serve.get_response_content("/knit360")
-	expect("csrf_token" in response, "the page carries no CSRF token at all")
-	expect('"None"' not in response and "'None'" not in response, "the CSRF token rendered as None")
-	expect("KNIT 360" in response, "the page does not name the product")
-	return f"{len(response)} bytes, token present"
-
+	for gone in ("create_lead", "stages", "documents", "document", "advance", "set_items", "companies"):
+		expect(not hasattr(c2c, gone), f"c2c.{gone} is still reachable")
+	return "no page, no home-screen link, no page-only endpoints"
 
 
 # --- I. HR: leave -------------------------------------------------------
@@ -1837,7 +1845,7 @@ def k_counters_are_separate():
 	naming these two came back consecutive.
 	"""
 	company()
-	lead = a_lead(lead_name="Numbering Contact")
+	lead = a_lead(person="Numbering Contact")
 	customer_name = "Acceptance Numbering Customer"
 	if not frappe.db.exists("KNIT 360 Customer", customer_name):
 		frappe.get_doc(
@@ -1875,7 +1883,7 @@ def k_year_in_the_number():
 	the number counted from the beginning of the system.
 	"""
 	company()
-	lead = a_lead(lead_name="Year Contact")
+	lead = a_lead(person="Year Contact")
 	year = getdate(nowdate()).year
 	expect(
 		f"-{year}-" in lead.name,
@@ -1936,7 +1944,7 @@ def l_findable_on_insert():
 	"""Indexed by the document's own lifecycle, not by a scheduled job."""
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Findable Contact")
+	lead = a_lead(person="Findable Contact")
 	frappe.db.commit()
 
 	hits = api.search(lead.name)
@@ -1955,7 +1963,7 @@ def l_partial_match():
 	"""
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Partial Contact")
+	lead = a_lead(person="Partial Contact")
 	frappe.db.commit()
 	stem = lead.name.rsplit("-", 1)[0]
 
@@ -1968,7 +1976,7 @@ def l_partial_match():
 def l_find_by_content():
 	from knit360_core.search import api
 
-	lead = a_lead(lead_name="Marigold Searchable", organization_name="Marigold Castings Pvt Ltd")
+	lead = a_lead(person="Marigold Searchable", organization_name="Marigold Castings Pvt Ltd")
 	frappe.db.commit()
 
 	names = [h["name"] for h in api.search("Marigold")]
@@ -1981,7 +1989,7 @@ def l_rename_follows():
 	"""The index is keyed on the document, so a rename must move it."""
 	from knit360_core.search import api, index
 
-	lead = a_lead(lead_name="Renamed Contact")
+	lead = a_lead(person="Renamed Contact")
 	old = lead.name
 	new = f"{old}-RENAMED"
 	frappe.db.set_value("DocType", "KNIT 360 Lead", "allow_rename", 1, update_modified=False)
@@ -2008,7 +2016,7 @@ def l_rename_follows():
 def l_delete_removes():
 	from knit360_core.search import api, index
 
-	lead = a_lead(lead_name="Vanishing Contact")
+	lead = a_lead(person="Vanishing Contact")
 	name = lead.name
 	frappe.db.commit()
 	expect(name in [h["name"] for h in api.search(name)], "it was not findable before deletion")
@@ -3857,6 +3865,684 @@ def s_one_layout():
 	return f"{len(formats)} formats, all drawing from one layout"
 
 
+# --- T. order to invoice without re-typing ------------------------------
+#
+# BRD section 11, document-to-document linking. Each document is made from the
+# last with its lines and terms carried across, and none is made twice.
+
+QUOTATION_DT = "KNIT 360 Quotation"
+ORDER_DT = "KNIT 360 Sales Order"
+DISPATCH_DT = "KNIT 360 Delivery Note"
+INVOICE_DT = "KNIT 360 Sales Invoice"
+
+
+def a_quotation(item_code, qty, rate, discount=0, customer=None):
+	return frappe.get_doc(
+		{
+			"doctype": QUOTATION_DT,
+			"company": company(),
+			"customer": customer or a_payer(),
+			"items": [{"item_code": item_code, "qty": qty, "unit_rate": rate,
+			           "discount_percentage": discount}],
+		}
+	).insert(ignore_permissions=True)
+
+
+def an_accepted_quotation(item_code, qty, rate, discount=0, customer=None):
+	quotation = a_quotation(item_code, qty, rate, discount, customer)
+	for status in ("Pending Approval", "Issued / Sent", "Accepted"):
+		engine.transition(QUOTATION_DT, quotation.name, status)
+	quotation.reload()
+	return quotation
+
+
+def a_confirmed_order(item_code, qty, rate, customer=None):
+	from knit360_core.sales import document_from
+
+	quotation = an_accepted_quotation(item_code, qty, rate, customer=customer)
+	name = document_from.sales_order_from_quotation(quotation.name)
+	engine.transition(ORDER_DT, name, "Confirmed / Booked")
+	return frappe.get_doc(ORDER_DT, name)
+
+
+@check("T. Order to invoice", "An accepted quotation becomes a sales order at the agreed price")
+def t_order_from_quotation():
+	from knit360_core.sales import document_from
+
+	item = an_item("Acceptance Chain Coil Set")
+	quotation = an_accepted_quotation(item, 2, 50000, discount=10)
+	name = document_from.sales_order_from_quotation(quotation.name)
+	order = frappe.get_doc(ORDER_DT, name)
+	expect(order.quotation == quotation.name, "the order does not point back at its quotation")
+	expect(flt(order.items[0].rate) == 45000,
+	       f"the order carries {order.items[0].rate}, not the agreed 45000 after 10% off")
+	expect(flt(order.grand_total) == flt(quotation.grand_total),
+	       f"the order totals {order.grand_total} and the quotation {quotation.grand_total}")
+	again = refuses(document_from.sales_order_from_quotation, quotation.name)
+	frappe.db.commit()
+	return f"{quotation.name} -> {name}: 2 at 45,000; a second order refused ({again[:60]})"
+
+
+@check("T. Order to invoice", "A quotation not yet accepted cannot be ordered")
+def t_unaccepted_quotation_refused():
+	from knit360_core.sales import document_from
+
+	quotation = a_quotation(an_item("Acceptance Chain Coil Set"), 1, 1000)
+	why = refuses(document_from.sales_order_from_quotation, quotation.name)
+	frappe.db.commit()
+	return f"Draft quotation refused: {why[:90]}"
+
+
+@check("T. Order to invoice", "A confirmed order becomes a delivery note for what is still to go")
+def t_dispatch_from_order():
+	from knit360_core.sales import document_from
+
+	item = an_item("Acceptance Chain Ladle")
+	a_receipt(item, 10, 1000)
+	order = a_confirmed_order(item, 3, 5000)
+
+	first = frappe.get_doc(DISPATCH_DT, document_from.delivery_note_from_sales_order(order.name, a_warehouse()))
+	expect(flt(first.items[0].qty) == 3, f"the first dispatch offers {first.items[0].qty}, not 3")
+	first.items[0].qty = 2
+	first.save(ignore_permissions=True)
+	engine.transition(DISPATCH_DT, first.name, "Dispatched / In Transit")
+
+	second = frappe.get_doc(DISPATCH_DT, document_from.delivery_note_from_sales_order(order.name, a_warehouse()))
+	expect(flt(second.items[0].qty) == 1, f"the second dispatch offers {second.items[0].qty}, not the 1 left")
+	none_left = refuses(document_from.delivery_note_from_sales_order, order.name, a_warehouse())
+	frappe.db.commit()
+	return f"{order.name}: 2 sent on {first.name}, 1 offered on {second.name}, then {none_left[:50]}"
+
+
+@check("T. Order to invoice", "Dispatching more than the order has outstanding is refused")
+def t_over_dispatch_refused():
+	item = an_item("Acceptance Chain Ladle")
+	a_receipt(item, 10, 1000)
+	order = a_confirmed_order(item, 2, 5000)
+	note = frappe.get_doc(
+		{
+			"doctype": DISPATCH_DT,
+			"sales_order": order.name,
+			"company": COMPANY,
+			"source_warehouse": a_warehouse(),
+			"delivery_note_date": nowdate(),
+			"items": [{"item_code": item, "qty": 3}],
+		}
+	)
+	why = refuses(note.insert, ignore_permissions=True)
+	frappe.db.commit()
+	return f"3 against an order for 2: {why[:100]}"
+
+
+@check("T. Order to invoice", "A dispatch becomes an invoice at the order's price, once only")
+def t_invoice_from_dispatch():
+	from knit360_core.sales import document_from
+
+	item = an_item("Acceptance Chain Ladle")
+	a_receipt(item, 10, 1000)
+	order = a_confirmed_order(item, 2, 5000)
+
+	draft = frappe.get_doc(DISPATCH_DT, document_from.delivery_note_from_sales_order(order.name, a_warehouse()))
+	not_yet = refuses(document_from.sales_invoice_from_delivery_note, draft.name)
+	engine.transition(DISPATCH_DT, draft.name, "Dispatched / In Transit")
+
+	invoice = frappe.get_doc(INVOICE_DT, document_from.sales_invoice_from_delivery_note(draft.name))
+	expect(invoice.delivery_note == draft.name and invoice.sales_order == order.name,
+	       "the invoice does not point back at its dispatch and order")
+	expect(invoice.customer == order.customer, "the invoice is to a different customer")
+	expect(flt(invoice.items[0].qty) == 2 and flt(invoice.items[0].rate) == 5000,
+	       f"billed {invoice.items[0].qty} at {invoice.items[0].rate}, not 2 at 5000")
+	expect(flt(invoice.grand_total) == 10000, f"the invoice totals {invoice.grand_total}")
+	twice = refuses(document_from.sales_invoice_from_delivery_note, draft.name)
+	frappe.db.commit()
+	return f"{draft.name} -> {invoice.name} for 10,000; undispatched refused, second bill refused ({twice[:40]})"
+
+
+# --- U. production ------------------------------------------------------
+#
+# DR-C2C-009: completing production takes the materials out of stock and brings
+# the finished goods in, at what the materials cost.
+
+BOM_DT = "KNIT 360 BOM"
+PRODUCTION_DT = "KNIT 360 Work Order"
+
+
+def a_bom(product, materials, quantity=1, active=1):
+	return frappe.get_doc(
+		{
+			"doctype": BOM_DT,
+			"item_code": product,
+			"quantity": quantity,
+			"company": company(),
+			"is_active": active,
+			"items": [{"item_code": code, "qty": qty} for code, qty in materials],
+		}
+	).insert(ignore_permissions=True).name
+
+
+def a_production_order(product, bom, qty):
+	return frappe.get_doc(
+		{
+			"doctype": PRODUCTION_DT,
+			"production_item": product,
+			"bom": bom,
+			"qty_to_produce": qty,
+			"company": company(),
+			"source_warehouse": a_warehouse(),
+			"target_warehouse": a_warehouse("Acceptance Finished Goods"),
+		}
+	).insert(ignore_permissions=True)
+
+
+def produce(order):
+	engine.transition(PRODUCTION_DT, order.name, "In Process")
+	engine.transition(PRODUCTION_DT, order.name, "Completed")
+	order.reload()
+	return order
+
+
+@check("U. Production", "Completing production uses the materials and brings in the finished goods")
+def u_production_moves_stock():
+	coil = an_item("Acceptance Make Coil")
+	panel = an_item("Acceptance Make Panel")
+	furnace = an_item("Acceptance Make Furnace")
+	a_receipt(coil, 4, 20000)
+	a_receipt(panel, 2, 30000)
+	bom = a_bom(furnace, [(coil, 2), (panel, 1)])
+	order = a_production_order(furnace, bom, 2)
+
+	wanted = {row.item_code: flt(row.required_qty) for row in order.materials}
+	expect(wanted == {coil: 4, panel: 2}, f"the BOM exploded to {wanted}, not 4 coils and 2 panels")
+
+	produce(order)
+	store, finished = a_warehouse(), a_warehouse("Acceptance Finished Goods")
+	expect(stock_ledger.balance(coil, store, COMPANY) == 0, "the coils were not used")
+	expect(stock_ledger.balance(panel, store, COMPANY) == 0, "the panels were not used")
+	expect(stock_ledger.balance(furnace, finished, COMPANY) == 2, "two furnaces did not come in")
+	worth = stock_ledger.value(furnace, finished, COMPANY)
+	expect(abs(worth - 140000) < 0.01, f"the furnaces came in at {worth}, not 140000 of materials")
+	expect(flt(order.produced_unit_cost) == 70000, f"cost per unit {order.produced_unit_cost}, not 70000")
+	frappe.db.commit()
+	return f"{order.name}: 4 coils + 2 panels out, 2 furnaces in at 70,000 each"
+
+
+@check("U. Production", "Production cannot use materials that are not in stock")
+def u_production_short_refused():
+	coil = an_item("Acceptance Short Coil")
+	furnace = an_item("Acceptance Short Furnace")
+	order = a_production_order(furnace, a_bom(furnace, [(coil, 3)]), 1)
+	engine.transition(PRODUCTION_DT, order.name, "In Process")
+	why = refuses(engine.transition, PRODUCTION_DT, order.name, "Completed")
+	expect(not stock_ledger.voucher_movements(PRODUCTION_DT, order.name),
+	       "a refused completion still moved stock")
+	frappe.db.commit()
+	return f"refused with nothing moved: {why[:90]}"
+
+
+@check("U. Production", "A work order cannot use another item's BOM")
+def u_wrong_bom_refused():
+	coil = an_item("Acceptance Make Coil")
+	panel_bom = a_bom(an_item("Acceptance Other Product"), [(coil, 1)])
+	order = frappe.get_doc(
+		{
+			"doctype": PRODUCTION_DT,
+			"production_item": an_item("Acceptance Make Furnace"),
+			"bom": panel_bom,
+			"qty_to_produce": 1,
+			"company": company(),
+		}
+	)
+	why = refuses(order.insert, ignore_permissions=True)
+	frappe.db.commit()
+	return why[:110]
+
+
+@check("U. Production", "Cancelling production puts the materials back, unless the goods have gone")
+def u_cancel_production():
+	coil = an_item("Acceptance Undo Coil")
+	furnace = an_item("Acceptance Undo Furnace")
+	a_receipt(coil, 4, 10000)
+	bom = a_bom(furnace, [(coil, 2)])
+
+	gone = produce(a_production_order(furnace, bom, 1))
+	a_dispatch(furnace, 1, a_warehouse("Acceptance Finished Goods"))
+	refused = refuses(engine.transition, PRODUCTION_DT, gone.name, "Cancelled")
+
+	kept = produce(a_production_order(furnace, bom, 1))
+	engine.transition(PRODUCTION_DT, kept.name, "Cancelled")
+	expect(stock_ledger.balance(coil, a_warehouse(), COMPANY) == 2,
+	       "the cancelled order did not give its two coils back")
+	expect(stock_ledger.balance(furnace, a_warehouse("Acceptance Finished Goods"), COMPANY) == 0,
+	       "the cancelled order left its furnace in stock")
+	frappe.db.commit()
+	return f"shipped goods block the undo ({refused[:50]}...); unshipped order reversed cleanly"
+
+
+@check("U. Production", "Production moves stock but not the accounts")
+def u_production_posts_no_ledger():
+	coil = an_item("Acceptance Ledger Coil")
+	furnace = an_item("Acceptance Ledger Furnace")
+	a_receipt(coil, 2, 15000)
+	order = produce(a_production_order(furnace, a_bom(furnace, [(coil, 2)]), 1))
+	entries = frappe.db.count("KNIT 360 GL Entry", {"voucher_no": order.name})
+	expect(entries == 0, f"production wrote {entries} ledger entries; stock to stock changes no account")
+	moved = sum(flt(m.value_change) for m in stock_ledger.voucher_movements(PRODUCTION_DT, order.name))
+	expect(abs(moved) < 0.01, f"production changed the stock's total value by {moved}")
+	frappe.db.commit()
+	return f"{order.name}: 30,000 of coil became 30,000 of furnace; no ledger entry"
+
+
+# --- V. after-sale service ----------------------------------------------
+#
+# DR-A2S-001 to DR-A2S-011: a delivered unit is registered, commissioned under
+# warranty, reported faulty, repaired with parts, billed for what nothing
+# covered, maintained on a schedule, and its whole life read back.
+
+ASSET_DT = "KNIT 360 Asset"
+CONTRACT_DT = "KNIT 360 Service Contract"
+REQUEST_DT = "KNIT 360 Service Request"
+JOB_DT = "KNIT 360 Field Work Order"
+SCHEDULE_DT = "KNIT 360 Maintenance Schedule"
+SERVICE_LIST = "Acceptance Service List"
+
+
+def a_service_customer():
+	name = "Acceptance Service Customer"
+	a_price_list(SERVICE_LIST, "Selling")
+	if not frappe.db.exists("KNIT 360 Customer", name):
+		frappe.get_doc(
+			{"doctype": "KNIT 360 Customer", "customer_name": name, "company": company(),
+			 "default_price_list": SERVICE_LIST}
+		).insert(ignore_permissions=True)
+	return name
+
+
+def a_furnace(code="Acceptance Service Furnace", months=12):
+	an_item(code)
+	frappe.db.set_value("KNIT 360 Item", code,
+	                    {"is_serial_tracked": 1, "warranty_period_months": months},
+	                    update_modified=False)
+	return code
+
+
+def a_delivered_unit(serial, customer=None):
+	"""A furnace sold, dispatched with its serial number, and so registered."""
+	from knit360_core.sales import document_from
+
+	item = a_furnace()
+	a_receipt(item, 1, 500000)
+	order = a_confirmed_order(item, 1, 900000, customer=customer or a_service_customer())
+	note = frappe.get_doc(DISPATCH_DT, document_from.delivery_note_from_sales_order(order.name, a_warehouse()))
+	note.items[0].serial_numbers = serial
+	note.save(ignore_permissions=True)
+	engine.transition(DISPATCH_DT, note.name, "Dispatched / In Transit")
+	return frappe.db.get_value(ASSET_DT, {"delivery_note": note.name}, "name"), note, order
+
+
+def commission(asset, on=None):
+	frappe.db.set_value(ASSET_DT, asset, "commissioning_date", on or nowdate())
+	engine.transition(ASSET_DT, asset, "Commissioned / Operational")
+
+
+def warranty_in_force(asset, parts=1, labour=0, travel=0):
+	contract = frappe.db.get_value(CONTRACT_DT, {"asset": asset, "contract_type": "Standard Warranty"}, "name")
+	frappe.db.set_value(CONTRACT_DT, contract,
+	                    {"parts_covered": parts, "labor_covered": labour, "travel_covered": travel})
+	engine.transition(CONTRACT_DT, contract, "Active / In Coverage")
+	return contract
+
+
+def a_spare(code, qty=10, rate=3000):
+	an_item(code)
+	a_receipt(code, qty, rate)
+	return code
+
+
+def a_charge(code, price):
+	"""A service item -- labour or travel -- priced on the service list."""
+	an_item(code)
+	a_price(code, a_price_list(SERVICE_LIST, "Selling"), price, uom=stock_uom(code))
+	return code
+
+
+def a_request(asset, problem="Coil overheating", when=None):
+	return frappe.get_doc(
+		{"doctype": REQUEST_DT, "asset": asset, "company": COMPANY,
+		 "problem_description": problem, "request_timestamp": when}
+	).insert(ignore_permissions=True)
+
+
+def a_job(asset, lines, request=None, hours=3, work_type="Breakdown Repair", schedule=None):
+	return frappe.get_doc(
+		{
+			"doctype": JOB_DT,
+			"work_type": work_type,
+			"asset": asset,
+			"service_request": request,
+			"maintenance_schedule": schedule,
+			"company": COMPANY,
+			"posting_date": nowdate(),
+			"actual_labor_hours": hours,
+			"parts_warehouse": a_warehouse(),
+			"items": [{"line_type": kind, "item_code": code, "qty": qty} for kind, code, qty in lines],
+		}
+	).insert(ignore_permissions=True)
+
+
+def complete(job):
+	engine.transition(JOB_DT, job.name, "In Progress")
+	engine.transition(JOB_DT, job.name, "Work Complete")
+	job.reload()
+	return job
+
+
+def gl(voucher, leaf, side):
+	"""What one document posted to one account, on one side."""
+	rows = frappe.get_all(
+		"KNIT 360 GL Entry",
+		filters={"voucher_no": voucher, "account": account(leaf), "is_cancelled": 0},
+		pluck=side,
+	)
+	return flt(sum(flt(value) for value in rows))
+
+
+@check("V. After-sale service", "A furnace dispatched with its serial number becomes an installed unit")
+def v_dispatch_registers_unit():
+	asset, note, order = a_delivered_unit("ACC-SN-0001")
+	unit = frappe.get_doc(ASSET_DT, asset)
+	expect(unit.serial_number == "ACC-SN-0001", f"registered with serial {unit.serial_number}")
+	expect(unit.customer == order.customer, f"the unit belongs to {unit.customer}, not {order.customer}")
+	expect(unit.delivery_note == note.name and unit.sales_order == order.name,
+	       "the unit does not point back at its dispatch and order")
+	expect(engine.current_status(unit) == "Registered", f"a new unit is {engine.current_status(unit)}")
+	frappe.db.commit()
+	return f"{note.name} delivered {asset} ({unit.serial_number}) to {unit.customer}"
+
+
+@check("V. After-sale service", "A serial-tracked item cannot leave without one serial number per unit")
+def v_serials_required():
+	item = a_furnace()
+	a_receipt(item, 2, 500000)
+	note = frappe.get_doc(
+		{
+			"doctype": DISPATCH_DT,
+			"company": COMPANY,
+			"source_warehouse": a_warehouse(),
+			"delivery_note_date": nowdate(),
+			"items": [{"item_code": item, "qty": 2, "serial_numbers": "ACC-SN-ONLY-ONE"}],
+		}
+	).insert(ignore_permissions=True)
+	why = refuses(engine.transition, DISPATCH_DT, note.name, "Dispatched / In Transit")
+	frappe.db.commit()
+	return f"2 units with 1 serial: {why[:100]}"
+
+
+@check("V. After-sale service", "The same serial number cannot be delivered twice")
+def v_serial_once():
+	a_delivered_unit("ACC-SN-0003")
+	item = a_furnace()
+	a_receipt(item, 1, 500000)
+	note = frappe.get_doc(
+		{
+			"doctype": DISPATCH_DT,
+			"company": COMPANY,
+			"source_warehouse": a_warehouse(),
+			"delivery_note_date": nowdate(),
+			"items": [{"item_code": item, "qty": 1, "serial_numbers": "ACC-SN-0003"}],
+		}
+	).insert(ignore_permissions=True)
+	why = refuses(engine.transition, DISPATCH_DT, note.name, "Dispatched / In Transit")
+	frappe.db.commit()
+	return why[:110]
+
+
+@check("V. After-sale service", "Commissioning needs a date and drafts the maker's warranty")
+def v_commissioning_drafts_warranty():
+	from frappe.utils import add_months
+
+	asset, _note, _order = a_delivered_unit("ACC-SN-0004")
+	no_date = refuses(engine.transition, ASSET_DT, asset, "Commissioned / Operational")
+	commission(asset)
+	contract = frappe.get_doc(CONTRACT_DT, {"asset": asset})
+	expect(contract.contract_type == "Standard Warranty", f"drafted a {contract.contract_type}")
+	expect(engine.current_status(contract) == "Draft", "the warranty went into force before its terms were set")
+	expect(getdate(contract.start_date) == getdate(nowdate()), f"it starts {contract.start_date}, not today")
+	expect(getdate(contract.end_date) == getdate(add_days(add_months(nowdate(), 12), -1)),
+	       f"a 12-month warranty ends {contract.end_date}")
+	frappe.db.commit()
+	return f"no date refused ({no_date[:40]}...); {contract.name} drafted {contract.start_date} to {contract.end_date}"
+
+
+@check("V. After-sale service", "Cover is judged on the day the fault was reported")
+def v_cover_on_report_date():
+	from knit360_core.maintenance import make
+
+	asset, _note, _order = a_delivered_unit("ACC-SN-0005")
+	commission(asset)
+	contract = warranty_in_force(asset, parts=1, labour=0)
+
+	request = a_request(asset)
+	expect(request.covering_contract == contract, f"the request found {request.covering_contract}, not {contract}")
+	expect(request.warranty_status.startswith("Standard Warranty"), f"cover shown as {request.warranty_status!r}")
+
+	before = a_request(asset, "Reported before handover", when=add_days(nowdate(), -10))
+	expect(before.warranty_status == "Not covered", f"a fault before the warranty began shows {before.warranty_status!r}")
+
+	job = frappe.get_doc(JOB_DT, make.work_order_from_request(request.name))
+	job.append("items", {"line_type": "Spare Part", "item_code": a_spare("Acceptance Thyristor"), "qty": 1})
+	job.append("items", {"line_type": "Labour", "item_code": a_charge("Acceptance Labour Hour", 1200), "qty": 3})
+	job.save(ignore_permissions=True)
+	cover = {row.line_type: row.coverage for row in job.items}
+	expect(cover == {"Spare Part": "Warranty Covered", "Labour": "Billable to Customer"},
+	       f"lines tagged {cover}")
+	frappe.db.commit()
+	return f"{request.name}: {request.warranty_status}; part free, labour billable"
+
+
+@check("V. After-sale service", "A request against another customer's unit is refused")
+def v_request_wrong_customer():
+	asset, _note, _order = a_delivered_unit("ACC-SN-0006")
+	request = frappe.get_doc(
+		{"doctype": REQUEST_DT, "asset": asset, "customer": a_payer(), "company": COMPANY,
+		 "problem_description": "Not my furnace"}
+	)
+	why = refuses(request.insert, ignore_permissions=True)
+	frappe.db.commit()
+	return why[:110]
+
+
+@check("V. After-sale service", "Spare parts used on a repair leave stock, warranty parts charged to warranty")
+def v_parts_leave_stock():
+	asset, _note, _order = a_delivered_unit("ACC-SN-0007")
+	commission(asset)
+	warranty_in_force(asset, parts=1)
+	part = a_spare("Acceptance Coil Clamp", 10, 3000)
+	before = stock_ledger.balance(part, a_warehouse(), COMPANY)
+
+	job = complete(a_job(asset, [("Spare Part", part, 2)], request=a_request(asset).name))
+	expect(stock_ledger.balance(part, a_warehouse(), COMPANY) == before - 2, "the two clamps did not leave stock")
+	expect(flt(job.parts_cost) == 6000, f"parts cost {job.parts_cost}, not 6000")
+	expect(gl(job.name, "Warranty Expense", "debit") == 6000, "warranty parts were not charged to Warranty Expense")
+	expect(gl(job.name, "Cost of Goods Sold", "debit") == 0, "warranty parts were charged as a cost of sale")
+	expect(gl(job.name, "Stock In Hand", "credit") == 6000, "Stock In Hand did not fall by 6000")
+	frappe.db.commit()
+	return f"{job.name}: 2 clamps out, 6,000 to Warranty Expense"
+
+
+@check("V. After-sale service", "A job needs its hours to be complete and a signature to be signed off")
+def v_job_completion_rules():
+	asset, _note, _order = a_delivered_unit("ACC-SN-0008")
+	job = a_job(asset, [], hours=0)
+	engine.transition(JOB_DT, job.name, "In Progress")
+	no_hours = refuses(engine.transition, JOB_DT, job.name, "Work Complete")
+	frappe.db.set_value(JOB_DT, job.name, "actual_labor_hours", 2)
+	engine.transition(JOB_DT, job.name, "Work Complete")
+	no_signature = refuses(engine.transition, JOB_DT, job.name, "Customer Signed Off")
+	frappe.db.set_value(JOB_DT, job.name, "customer_signature", "R. Patel, plant manager")
+	engine.transition(JOB_DT, job.name, "Customer Signed Off")
+	frappe.db.commit()
+	return f"no hours: {no_hours[:40]}...; no signature: {no_signature[:40]}..."
+
+
+def an_amc_unit(serial, labour=1):
+	"""A unit under a paid contract that covers labour only."""
+	asset, _note, _order = a_delivered_unit(serial)
+	contract = frappe.get_doc(
+		{
+			"doctype": CONTRACT_DT,
+			"asset": asset,
+			"company": COMPANY,
+			"contract_type": "AMC",
+			"start_date": add_days(nowdate(), -30),
+			"end_date": add_days(nowdate(), 335),
+			"labor_covered": labour,
+		}
+	).insert(ignore_permissions=True)
+	engine.transition(CONTRACT_DT, contract.name, "Active / In Coverage")
+	return asset
+
+
+def a_billable_job(serial):
+	asset = an_amc_unit(serial)
+	part = a_spare("Acceptance Insulation Kit", 5, 2500)
+	a_price(part, a_price_list(SERVICE_LIST, "Selling"), 4500, uom=stock_uom(part))
+	labour = a_charge("Acceptance Labour Hour", 1200)
+	travel = a_charge("Acceptance Site Visit", 800)
+	job = a_job(asset, [("Spare Part", part, 1), ("Labour", labour, 2), ("Travel", travel, 1)],
+	            request=a_request(asset).name)
+	return complete(job)
+
+
+@check("V. After-sale service", "Only billable lines reach the service invoice, at the price list's rate")
+def v_service_invoice():
+	from knit360_core.maintenance import service_invoice
+
+	job = a_billable_job("ACC-SN-0009")
+	cover = {row.line_type: row.coverage for row in job.items}
+	expect(cover["Labour"] == "Contract Covered", f"AMC labour tagged {cover['Labour']}")
+
+	invoice = frappe.get_doc(INVOICE_DT, service_invoice.from_field_work_order(job.name))
+	billed = {row.item_code: flt(row.amount) for row in invoice.items}
+	expect(billed == {"Acceptance Insulation Kit": 4500, "Acceptance Site Visit": 800},
+	       f"the invoice bills {billed}")
+	travel_line = next(row for row in invoice.items if row.item_code == "Acceptance Site Visit")
+	expect(travel_line.income_account == account("Service Revenue"),
+	       f"travel credited to {travel_line.income_account}, not Service Revenue")
+	engine.transition(INVOICE_DT, invoice.name, "Posted / Unpaid")
+	expect(frappe.db.get_value(JOB_DT, job.name, "sales_invoice") == invoice.name, "the job does not know its invoice")
+	twice = refuses(service_invoice.from_field_work_order, job.name)
+	expect(gl(job.name, "Cost of Goods Sold", "debit") == 2500, "the billable part was not a cost of sale")
+	frappe.db.commit()
+	return f"{invoice.name}: kit 4,500 + visit 800; AMC labour left off; billed once ({twice[:30]})"
+
+
+@check("V. After-sale service", "A billed repair cannot be cancelled until its invoice is")
+def v_billed_job_cancel():
+	from knit360_core.maintenance import service_invoice
+
+	job = a_billable_job("ACC-SN-0010")
+	invoice = service_invoice.from_field_work_order(job.name)
+	engine.transition(INVOICE_DT, invoice, "Posted / Unpaid")
+	blocked = refuses(engine.transition, JOB_DT, job.name, "Cancelled")
+
+	engine.transition(INVOICE_DT, invoice, "Cancelled")
+	expect(not frappe.db.get_value(JOB_DT, job.name, "sales_invoice"), "the cancelled invoice still bills the job")
+	engine.transition(JOB_DT, job.name, "Cancelled")
+	moved = sum(flt(m.value_change) for m in stock_ledger.voucher_movements(JOB_DT, job.name))
+	expect(abs(moved) < 0.01, "cancelling the job did not put its part back")
+	frappe.db.commit()
+	return f"blocked while billed ({blocked[:40]}...); after the invoice went, the job reversed"
+
+
+@check("V. After-sale service", "A planned visit moves the next due date on")
+def v_schedule_moves_on():
+	from knit360_core.maintenance import make
+
+	asset, _note, _order = a_delivered_unit("ACC-SN-0011")
+	plan = frappe.get_doc(
+		{
+			"doctype": SCHEDULE_DT,
+			"asset": asset,
+			"company": COMPANY,
+			"trigger_type": "Calendar Days",
+			"trigger_value": 90,
+			"next_due_date": nowdate(),
+			"tasks": "Check coil insulation and cooling water flow",
+		}
+	).insert(ignore_permissions=True)
+	job = frappe.get_doc(JOB_DT, make.work_order_from_schedule(plan.name))
+	expect(job.work_type == "Preventive Maintenance" and job.sop == plan.tasks,
+	       "the visit did not carry the schedule's tasks")
+	job.actual_labor_hours = 2
+	job.save(ignore_permissions=True)
+	complete(job)
+
+	plan.reload()
+	expect(getdate(plan.last_done_date) == getdate(nowdate()), f"last visit shows {plan.last_done_date}")
+	expect(getdate(plan.next_due_date) == getdate(add_days(nowdate(), 90)), f"next due {plan.next_due_date}")
+	engine.transition(JOB_DT, job.name, "Cancelled")
+	plan.reload()
+	expect(not plan.last_done_date, "a cancelled visit still counts as done")
+	frappe.db.commit()
+	return f"{plan.name}: visit today -> next due in 90 days; cancelling the visit undid it"
+
+
+@check("V. After-sale service", "A contract past its end date is marked Expired by the daily job")
+def v_contracts_expire():
+	from knit360_core.maintenance import entitlement
+
+	asset, _note, _order = a_delivered_unit("ACC-SN-0012")
+	lapsed = frappe.get_doc(
+		{"doctype": CONTRACT_DT, "asset": asset, "company": COMPANY, "contract_type": "AMC",
+		 "start_date": add_days(nowdate(), -400), "end_date": add_days(nowdate(), -35)}
+	).insert(ignore_permissions=True)
+	engine.transition(CONTRACT_DT, lapsed.name, "Active / In Coverage")
+	current = an_amc_unit("ACC-SN-0013")
+	entitlement.expire_contracts()
+	expect(engine.current_status(frappe.get_doc(CONTRACT_DT, lapsed.name)) == "Expired", "the lapsed contract is still in force")
+	in_date = frappe.db.get_value(CONTRACT_DT, {"asset": current}, "knit360_business_status")
+	expect(in_date == "Active / In Coverage", f"an in-date contract became {in_date}")
+	return f"{lapsed.name} expired; the in-date contract left alone"
+
+
+@check("V. After-sale service", "A unit's history shows its whole life")
+def v_history():
+	from knit360_core.asset_management import history
+	from knit360_core.maintenance import service_invoice
+
+	job = a_billable_job("ACC-SN-0014")
+	engine.transition(INVOICE_DT, service_invoice.from_field_work_order(job.name), "Posted / Unpaid")
+	commission(job.asset)
+	story = history.asset_history(job.asset)
+	seen = {event["what"] for event in story["events"]}
+	for wanted in ("Delivered", "AMC", "Service request", "Breakdown Repair", "Service invoice",
+	               "Became Commissioned / Operational"):
+		expect(wanted in seen, f"the history has no {wanted!r} entry: {sorted(seen)}")
+	totals = story["totals"]
+	expect(totals["breakdown_repairs"] == 1 and totals["service_requests"] == 1, f"counted {totals}")
+	expect(flt(totals["parts_cost"]) == 2500 and flt(totals["billed"]) == 5300, f"totals {totals}")
+	frappe.db.commit()
+	return f"{job.asset}: {len(story['events'])} events; parts 2,500, billed 5,300"
+
+
+@check("V. After-sale service", "A dispatch cannot be cancelled once its unit is in service")
+def v_dispatch_cancel_guard():
+	in_service, used_note, _o = a_delivered_unit("ACC-SN-0015")
+	commission(in_service)
+	refused = refuses(engine.transition, DISPATCH_DT, used_note.name, "Cancelled")
+
+	fresh, fresh_note, _o = a_delivered_unit("ACC-SN-0016")
+	engine.transition(DISPATCH_DT, fresh_note.name, "Cancelled")
+	expect(not frappe.db.exists(ASSET_DT, fresh), "a unit whose dispatch was cancelled is still registered")
+	frappe.db.commit()
+	return f"in-service unit blocks it ({refused[:50]}...); an untouched unit went with its dispatch"
+
+
+@check("V. After-sale service", "The accounts still agree with the stock after production and repairs")
+def v_accounts_match_stock():
+	return n_accounts_match_stock()
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -3959,6 +4645,19 @@ def cleanup():
 		)
 		removed["Stock Ledger Entry"] = stock_rows
 
+	# Production and after-sales documents point at items, warehouses and
+	# dispatches, so they go before those. The submitted ones have their
+	# docstatus cleared for the same reason as the documents further down.
+	for doctype in ("KNIT 360 Field Work Order", "KNIT 360 Work Order"):
+		frappe.db.sql(
+			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
+		)
+		wipe(doctype, {"company": COMPANY}, force=True)
+	for doctype in ("KNIT 360 Service Dispatch", "KNIT 360 Service Request",
+	                "KNIT 360 Maintenance Schedule", "KNIT 360 Service Contract",
+	                "KNIT 360 Asset", "KNIT 360 BOM"):
+		wipe(doctype, {"company": COMPANY}, force=True)
+
 	for doctype in ("KNIT 360 Delivery Note", "KNIT 360 Goods Receipt"):
 		frappe.db.sql(
 			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
@@ -4029,6 +4728,11 @@ def cleanup():
 	if orphaned:
 		removed["Business Status Log"] = len(orphaned)
 
+	# Conversion gives a customer a Contact per person on the lead (DEC-045).
+	# Contact has no company of its own; it goes with its customer.
+	acceptance_customers = frappe.get_all("KNIT 360 Customer", filters={"company": COMPANY}, pluck="name")
+	if acceptance_customers:
+		wipe("KNIT 360 Contact", {"customer": ["in", acceptance_customers]}, force=True)
 	wipe("KNIT 360 Customer", {"company": COMPANY}, force=True)
 
 	# The buying side, and the tax masters the posting checks create. Tax

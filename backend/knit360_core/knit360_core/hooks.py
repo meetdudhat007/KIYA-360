@@ -38,6 +38,8 @@ app_include_js = [
 	# Suppresses Frappe's own product adverts in the list sidebar. Our CRM
 	# module triggers one for a competing CRM product; see the file.
 	"branding.bundle.js",
+	# Field descriptions behind an info icon on the forms it lists (DEC-045).
+	"field_help.bundle.js",
 ]
 
 after_install = [
@@ -75,6 +77,14 @@ jinja = {
 # The framework's own index only holds fields a doctype marks for it, and no
 # KNIT 360 field did, so the bar found nothing. This adds our index as a source.
 awesomebar_search = ["knit360_core.search.api.awesomebar"]
+
+# --- Scheduled work -------------------------------------------------------
+# A warranty or contract past its end date is moved to Expired, so a list of
+# contracts never shows lapsed cover as in force. Cover itself is judged from
+# the dates, so nothing is wrongly covered while this waits for its run.
+scheduler_events = {
+	"daily": ["knit360_core.maintenance.entitlement.expire_contracts"],
+}
 
 # --- Lifecycle integrity -------------------------------------------------
 # CD-002 makes the business status the lifecycle. These refuse a submit or

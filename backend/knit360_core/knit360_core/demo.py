@@ -364,12 +364,16 @@ def pipeline():
 		lead = frappe.get_doc(
 			{
 				"doctype": "KNIT 360 Lead",
-				"lead_name": contact,
 				"organization_name": organisation,
 				"company": COMPANY,
 				"territory": territory,
 				"lead_source": source,
-				"email": f"{contact.split()[0].lower()}@{organisation.split()[0].lower()}.example",
+				"contact_persons": [
+					{
+						"person_name": contact,
+						"email": f"{contact.split()[0].lower()}@{organisation.split()[0].lower()}.example",
+					}
+				],
 				"estimated_requirement": "Induction heating line, capacity to be confirmed.",
 			}
 		).insert(ignore_permissions=True)
@@ -397,11 +401,12 @@ def pipeline():
 		_walk_to("KNIT 360 Opportunity", opportunity, "Proposal Sent")
 
 		quotation = c2c.create_quotation(opportunity)["name"]
-		c2c.set_items(
-			"quotation", quotation,
-			[{"item_code": code, "qty": qty, "unit_rate": rate, "discount_percentage": discount}
-			 for code, qty, rate, discount in QUOTE_LINES[index]],
-		)
+		draft = frappe.get_doc("KNIT 360 Quotation", quotation)
+		draft.set("items", [])
+		for code, qty, rate, discount in QUOTE_LINES[index]:
+			draft.append("items", {"item_code": code, "qty": qty, "unit_rate": rate,
+			                       "discount_percentage": discount})
+		draft.save()
 		made["quotations"] += 1
 
 		customer = frappe.db.get_value("KNIT 360 Quotation", quotation, "customer")

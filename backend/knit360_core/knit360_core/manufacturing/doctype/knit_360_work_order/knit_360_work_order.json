@@ -12,31 +12,42 @@
   "qty_to_produce",
   "company",
   "col_25",
+  "knit360_business_status",
+  "posting_date",
+  "source_warehouse",
+  "target_warehouse",
   "routing_sequence",
   "assigned_workstations",
-  "sales_order"
+  "sales_order",
+  "sec_materials",
+  "materials",
+  "total_material_cost",
+  "produced_unit_cost"
  ],
  "fields": [
   {
    "fieldname": "production_item",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Target Item",
-   "description": "Target item",
+   "description": "The item this order makes.",
    "reqd": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "options": "KNIT 360 Item"
   },
   {
    "fieldname": "bom",
    "fieldtype": "Link",
    "label": "BOM",
-   "description": "BOM reference",
-   "options": "KNIT 360 BOM"
+   "description": "The recipe: which materials, and how many of each, make one batch of the item.",
+   "options": "KNIT 360 BOM",
+   "reqd": 1
   },
   {
    "fieldname": "qty_to_produce",
    "fieldtype": "Float",
    "label": "Quantity to Produce",
-   "description": "Quantity to produce"
+   "description": "How many to make.",
+   "reqd": 1
   },
   {
    "fieldname": "company",
@@ -49,6 +60,38 @@
   {
    "fieldname": "col_25",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Not Started\nIn Process\nStopped\nCompleted\nCancelled",
+   "default": "Not Started",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Production Date",
+   "default": "Today",
+   "description": "The date the materials are used and the finished goods come in."
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Raw Materials From",
+   "options": "KNIT 360 Warehouse",
+   "description": "The store the materials are taken from when production is completed."
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "label": "Finished Goods To",
+   "options": "KNIT 360 Warehouse",
+   "description": "The store the finished items go into."
   },
   {
    "fieldname": "routing_sequence",
@@ -68,6 +111,32 @@
    "label": "Against Sales Order",
    "description": "C2C linkage (DEP-001)",
    "options": "KNIT 360 Sales Order"
+  },
+  {
+   "fieldname": "sec_materials",
+   "fieldtype": "Section Break",
+   "label": "Materials"
+  },
+  {
+   "fieldname": "materials",
+   "fieldtype": "Table",
+   "label": "Materials",
+   "options": "KNIT 360 Work Order Item",
+   "description": "Filled from the BOM for the quantity to produce. Completing the order takes exactly these out of stock."
+  },
+  {
+   "fieldname": "total_material_cost",
+   "fieldtype": "Currency",
+   "label": "Material Cost",
+   "read_only": 1,
+   "description": "What the materials cost, worked out by the stock ledger when they were used."
+  },
+  {
+   "fieldname": "produced_unit_cost",
+   "fieldtype": "Currency",
+   "label": "Cost per Unit Produced",
+   "read_only": 1,
+   "description": "Material cost divided by the quantity made. The finished goods enter stock at this cost."
   }
  ],
  "index_web_pages_for_search": 0,
@@ -88,7 +157,10 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
   }
  ],
  "sort_field": "creation",
@@ -96,5 +168,6 @@
  "states": [],
  "track_changes": 1,
  "title_field": "production_item",
- "autoname": "WO-.YYYY.-.####"
+ "autoname": "WO-.YYYY.-.####",
+ "is_submittable": 1
 }

@@ -66,8 +66,9 @@ PROVEN = "Proven"
 #: the marketing it exists to replace.
 PROVEN_BY = {
 	"FR-PADM-1.1.1": "A company created the ordinary way gets its own books",
-	"FR-CRM-001": "A lead can be created through the web seam",
+	"FR-CRM-001": "A lead entered on the Lead form starts at New",
 	"FR-CRM-002": "A lead converts to a customer and an opportunity",
+	"FR-CRM-004": "Conversion makes a contact for every person, the first one primary",
 	"FR-SALES-002": "An opportunity becomes a quotation carrying its value",
 	"FR-SALES-003": "A sales order totals with the same engine as the quotation",
 	"FR-SALES-004": "Quotation lines compute an amount and a total",
@@ -77,6 +78,15 @@ PROVEN_BY = {
 	"FR-HR-003": "An approved application consumes the balance",
 	"FR-FIN-002": "A supplier's bill totals goods, freight and tax",
 	"FR-TAX-001": "Tax posts to a tax account, never to round-off",
+	"FR-SALES-005": "A confirmed order becomes a delivery note for what is still to go",
+	"FR-MFG-003": "Completing production uses the materials and brings in the finished goods",
+	"FR-AST-001": "A furnace dispatched with its serial number becomes an installed unit",
+	"FR-MFS-002": "A job needs its hours to be complete and a signature to be signed off",
+	"FR-MFS-003": "A planned visit moves the next due date on",
+	"FR-MFS-004": "Cover is judged on the day the fault was reported",
+	"FR-MFS-005": "Spare parts used on a repair leave stock, warranty parts charged to warranty",
+	"FR-MFS-006": "Only billable lines reach the service invoice, at the price list's rate",
+	"FR-AST-006": "A unit's history shows its whole life",
 }
 
 

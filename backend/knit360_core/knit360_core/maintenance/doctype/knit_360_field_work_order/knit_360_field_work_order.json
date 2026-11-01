@@ -7,11 +7,16 @@
  "engine": "InnoDB",
  "description": "FR-MFS-002 / FR-MFS-007 - DR-A2S-007 Field Service Work Order Execution. Deliberately a separate doctype from KNIT 360 Work Order (manufacturing) \u2014 doc 33 forbids sharing that schema.",
  "field_order": [
-  "service_request",
+  "work_type",
   "asset",
-  "assigned_technician",
+  "customer",
+  "service_request",
+  "maintenance_schedule",
   "company",
   "col_34",
+  "knit360_business_status",
+  "posting_date",
+  "assigned_technician",
   "planned_start",
   "planned_end",
   "actual_labor_hours",
@@ -21,15 +26,20 @@
   "findings",
   "col_35",
   "customer_signature",
-  "warranty_entitlement"
+  "warranty_entitlement",
+  "covering_contract",
+  "sec_parts",
+  "parts_warehouse",
+  "items",
+  "parts_cost",
+  "sales_invoice"
  ],
  "fields": [
   {
-   "fieldname": "service_request",
-   "fieldtype": "Link",
-   "label": "Service Request",
-   "description": "Service Request reference",
-   "options": "KNIT 360 Service Request",
+   "fieldname": "work_type",
+   "fieldtype": "Select",
+   "label": "Work Type",
+   "options": "Installation\nPreventive Maintenance\nBreakdown Repair",
    "reqd": 1,
    "in_list_view": 1
   },
@@ -37,15 +47,33 @@
    "fieldname": "asset",
    "fieldtype": "Link",
    "label": "Asset",
-   "description": "Asset identifier",
-   "options": "KNIT 360 Asset"
+   "description": "The unit being worked on.",
+   "options": "KNIT 360 Asset",
+   "reqd": 1,
+   "in_list_view": 1
   },
   {
-   "fieldname": "assigned_technician",
+   "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Assigned Technician",
-   "description": "Assigned technician",
-   "options": "User"
+   "label": "Customer",
+   "options": "KNIT 360 Customer",
+   "fetch_from": "asset.customer",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "service_request",
+   "fieldtype": "Link",
+   "label": "Service Request",
+   "description": "The customer's request this job answers. Not needed for installation or a planned visit.",
+   "options": "KNIT 360 Service Request"
+  },
+  {
+   "fieldname": "maintenance_schedule",
+   "fieldtype": "Link",
+   "label": "Maintenance Schedule",
+   "options": "KNIT 360 Maintenance Schedule",
+   "description": "For a planned visit: the schedule it fulfils. Completing the work moves that schedule's next due date on."
   },
   {
    "fieldname": "company",
@@ -58,6 +86,31 @@
   {
    "fieldname": "col_34",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Scheduled\nIn Progress\nPending Parts / On Hold\nWork Complete\nCustomer Signed Off\nClosed\nCancelled",
+   "default": "Scheduled",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Work Date",
+   "default": "Today",
+   "description": "The day the work was done. Spare parts leave stock on this date. Cover is judged on the service request's date, or on this one when there is no request."
+  },
+  {
+   "fieldname": "assigned_technician",
+   "fieldtype": "Link",
+   "label": "Assigned Technician",
+   "description": "The engineer doing the work.",
+   "options": "User"
   },
   {
    "fieldname": "planned_start",
@@ -75,7 +128,7 @@
    "fieldname": "actual_labor_hours",
    "fieldtype": "Float",
    "label": "Actual Labour Hours",
-   "description": "Actual labor hours"
+   "description": "Hours spent on the job. Must be more than nil before the work can be marked complete."
   },
   {
    "fieldname": "travel_hours",
@@ -108,13 +161,56 @@
    "fieldname": "customer_signature",
    "fieldtype": "Data",
    "label": "Customer Signature",
-   "description": "Customer signature"
+   "description": "Who signed for the work on the customer's side. Needed before the job can be marked Customer Signed Off.",
+   "allow_on_submit": 1
   },
   {
    "fieldname": "warranty_entitlement",
    "fieldtype": "Check",
    "label": "Under Warranty",
-   "description": "Warranty entitlement flag"
+   "description": "Ticked when a warranty or contract covered the unit on the date that counts. Worked out, not typed.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "covering_contract",
+   "fieldtype": "Link",
+   "label": "Covering Contract",
+   "options": "KNIT 360 Service Contract",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_parts",
+   "fieldtype": "Section Break",
+   "label": "Parts and Charges"
+  },
+  {
+   "fieldname": "parts_warehouse",
+   "fieldtype": "Link",
+   "label": "Spare Parts From",
+   "options": "KNIT 360 Warehouse",
+   "description": "The store or van the spare parts are taken from."
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Parts and Charges",
+   "options": "KNIT 360 Field Work Order Item"
+  },
+  {
+   "fieldname": "parts_cost",
+   "fieldtype": "Currency",
+   "label": "Parts Cost",
+   "read_only": 1,
+   "description": "What the spare parts used cost us, from the stock ledger."
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Service Invoice",
+   "options": "KNIT 360 Sales Invoice",
+   "read_only": 1,
+   "allow_on_submit": 1,
+   "description": "The invoice raised for the billable lines of this job."
   }
  ],
  "index_web_pages_for_search": 0,
@@ -135,13 +231,17 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
   }
  ],
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": [],
  "track_changes": 1,
- "title_field": "service_request",
- "autoname": "FWO-.YYYY.-.####"
+ "title_field": "asset",
+ "autoname": "FWO-.YYYY.-.####",
+ "is_submittable": 1
 }

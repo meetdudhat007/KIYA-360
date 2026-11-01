@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-28 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "FR-MFG-003 - materials a production work order uses, taken from its BOM (DR-C2C-009).",
+ "field_order": [
+  "item_code",
+  "required_qty",
+  "valuation_rate",
+  "cost_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Material",
+   "options": "KNIT 360 Item",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "required_qty",
+   "fieldtype": "Float",
+   "label": "Quantity",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "From the BOM, for the quantity being produced."
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Currency",
+   "label": "Cost",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "What one unit of this material cost, worked out by the stock ledger when it was used."
+  },
+  {
+   "fieldname": "cost_amount",
+   "fieldtype": "Currency",
+   "label": "Cost Total",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-28 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Manufacturing",
+ "name": "KNIT 360 Work Order Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}

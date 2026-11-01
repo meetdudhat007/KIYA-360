@@ -15,6 +15,7 @@
   "hsn_sac_code",
   "is_batch_tracked",
   "is_serial_tracked",
+  "warranty_period_months",
   "sec_15",
   "safety_stock",
   "col_17",
@@ -75,6 +76,12 @@
    "fieldtype": "Check",
    "label": "Serial Tracked",
    "description": "Batch / Serial Tracking"
+  },
+  {
+   "fieldname": "warranty_period_months",
+   "fieldtype": "Int",
+   "label": "Standard Warranty (Months)",
+   "description": "How long the maker's warranty runs from commissioning. Leave blank if the item carries none. When a unit is commissioned, a warranty of this length is drafted for it, for you to confirm."
   },
   {
    "fieldname": "sec_15",
