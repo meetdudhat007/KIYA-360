@@ -4855,6 +4855,115 @@ def w_no_loop():
 	return f"Head reporting to Rep, who is below them, refused: {refused[:80]}"
 
 
+# --- X. lead tasks ----------------------------------------------------------
+#
+# DEC-058: a user's own calls, meetings and emails on a lead, listed on the
+# lead and by day on the CRM page, with a bell when one falls due.
+
+TASK = "KNIT 360 Task"
+
+
+def as_user(user, fn, *args, **kwargs):
+	"""fn run as `user`, as a request from that login would be."""
+	frappe.set_user(user)
+	try:
+		return fn(*args, **kwargs)
+	finally:
+		frappe.set_user("Administrator")
+
+
+def a_task(lead, user, **overrides):
+	"""A task `user` sets on `lead`, by default late today."""
+	fields = {"doctype": TASK, "lead": lead, "task_type": "Call", "due_date": nowdate(),
+	          "due_time": "23:59:00", "description": "Acceptance call"}
+	fields.update(overrides)
+	return as_user(user, frappe.get_doc(fields).insert)
+
+
+@check("X. Lead tasks", "A task is its creator's alone, and a lead lists only its own")
+def x_task_private():
+	from knit360_core.crm import lead_tasks
+
+	team = a_sales_team()
+	rep, manager = team["Rep"][1], team["Manager"][1]
+	lead = a_lead(person="Task Contact", assigned_to=team["Rep"][0])
+	other = a_lead(person="Other Task Contact", assigned_to=team["Rep"][0])
+	frappe.db.commit()
+	task = a_task(lead.name, rep)
+	a_task(other.name, rep, task_type="Email", description="Acceptance email")
+	frappe.db.commit()
+
+	on_lead = [t.description for t in as_user(rep, lead_tasks.for_lead, lead.name)]
+	on_day = sorted(t.description for t in as_user(rep, lead_tasks.on_day, nowdate()))
+	# The manager can read the lead (DEC-048), but not the rep's task on it.
+	manager_lead = as_user(manager, lead_tasks.for_lead, lead.name)
+	manager_day = as_user(manager, lead_tasks.on_day, nowdate())
+	manager_opens = frappe.has_permission(TASK, "read", doc=task.name, user=manager)
+	# An Administrator is past every permission; the CRM page still shows only theirs.
+	admin_day = [t.name for t in lead_tasks.on_day(nowdate())]
+
+	expect(on_lead == ["Acceptance call"], f"the lead's panel listed {on_lead}")
+	expect(on_day == ["Acceptance call", "Acceptance email"], f"the rep's day listed {on_day}")
+	expect(not manager_lead and not manager_day, "the manager was shown the rep's tasks")
+	expect(not manager_opens, "the manager can open the rep's task")
+	expect(task.name not in admin_day, "an Administrator's day listed the rep's task")
+	return ("the lead lists 1 task of the rep's 2 that day; the manager, who reads the lead, "
+	        "sees none and cannot open it; an Administrator's day leaves it out")
+
+
+@check("X. Lead tasks", "A task can be set only on a lead the user can open")
+def x_task_needs_the_lead():
+	team = a_sales_team()
+	lead = a_lead(person="Task Contact", assigned_to=team["Rep"][0])
+	frappe.db.commit()
+	refused = refuses(a_task, lead.name, team["Outsider"][1])
+	frappe.db.rollback()
+	return f"an outsider's task on the rep's lead refused: {refused[:80]}"
+
+
+@check("X. Lead tasks", "The bell reminds a task's creator once, when it falls due, and never for a done one")
+def x_task_reminder():
+	from frappe.utils import add_to_date, now_datetime
+
+	from knit360_core.crm import lead_tasks
+
+	team = a_sales_team()
+	rep = team["Rep"][1]
+	lead = a_lead(person="Reminder Contact", assigned_to=team["Rep"][0])
+	frappe.db.commit()
+	at = lambda moment: {"due_date": moment.date(), "due_time": moment.strftime("%H:%M:%S")}
+	later = add_to_date(now_datetime(), hours=1)
+	due = a_task(lead.name, rep, description="Acceptance due", **at(later))
+	done = a_task(lead.name, rep, description="Acceptance done", **at(later))
+	waiting = a_task(lead.name, rep, description="Acceptance waiting", **at(later))
+	logged = a_task(lead.name, rep, description="Acceptance logged",
+	                **at(add_to_date(now_datetime(), hours=-1)))
+	# The hour passes for two of them; one of those is done by then.
+	for task in (due, done):
+		frappe.db.set_value(TASK, task.name, at(add_to_date(now_datetime(), minutes=-1)))
+	frappe.db.set_value(TASK, done.name, "done", 1)
+	frappe.db.commit()
+
+	def bells():
+		return frappe.get_all("Notification Log", filters={"for_user": rep, "document_name": lead.name},
+		                      pluck="subject")
+
+	try:
+		lead_tasks.send_reminders()
+		first = bells()
+		lead_tasks.send_reminders()
+		second = bells()
+		expect(len(first) == 1 and "Acceptance due" in first[0], f"the first run rang for {first}")
+		expect(second == first, f"a second run rang again: {second}")
+		expect(not frappe.db.get_value(TASK, waiting.name, "reminder_sent"), "a task not yet due was marked reminded")
+		expect(frappe.db.get_value(TASK, logged.name, "reminder_sent"),
+		       "a task set for a time already past was left to ring")
+	finally:
+		frappe.db.delete("Notification Log", {"for_user": rep})
+		frappe.db.commit()
+	return f"rang once for the due task ({first[0][:60]}); not for the done one, the one not yet due, or one logged after its time"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -5004,6 +5113,10 @@ def cleanup():
 	wipe("KNIT 360 Leave Period", {"company": COMPANY}, force=True)
 	# Leave Type is not company-scoped, so the acceptance ones are named.
 	wipe("KNIT 360 Leave Type", {"leave_type_name": ["like", "Acceptance %"]}, force=True)
+
+	# Tasks point at leads, so they go before them. Only the acceptance logins
+	# set any.
+	wipe("KNIT 360 Task", {"owner": ["like", "acceptance.%@example.com"]}, force=True)
 
 	# Then the documents, children before parents.
 	#

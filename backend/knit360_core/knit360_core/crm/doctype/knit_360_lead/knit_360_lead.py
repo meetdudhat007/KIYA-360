@@ -20,7 +20,7 @@ search box (crm.lead_search, DEC-053).
 import frappe
 from frappe.model.document import Document
 
-from knit360_core.crm import lead_access, lead_contacts, lead_search, lead_stages
+from knit360_core.crm import lead_access, lead_contacts, lead_search, lead_stages, lead_tasks
 
 #: Each list column on the lead, and the person's field it lists, in the
 #: order the list shows them.
@@ -59,6 +59,8 @@ class KNIT360Lead(Document):
 	def onload(self):
 		# The form offers only the current stage's steps.
 		self.set_onload("stage_details", lead_stages.STAGE_DETAILS)
+		# The Tasks panel's Type dropdown.
+		self.set_onload("task_types", lead_tasks.types())
 
 	def validate(self):
 		self.update(columns(self.contact_persons))

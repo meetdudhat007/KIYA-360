@@ -19,7 +19,7 @@ const KNIT360_PERSON = "KNIT 360 Lead Person";
 // Left column, then right column, of each person's block.
 const KNIT360_PERSON_LAYOUT = [
 	["person_name", "designation", "department"],
-	["email", "phone"],
+	["email", "phone", "address"],
 ];
 const KNIT360_ACCESS = "lead_access";
 const KNIT360_ACCESS_LEVELS = ["Read Only", "Read & Write"];
@@ -37,10 +37,16 @@ frappe.ui.form.on("KNIT 360 Lead", {
 		knit360_contact_blocks(frm);
 		knit360_access_rows(frm);
 		knit360_access_summary(frm);
+		knit360.tasks.panel(frm);
+		knit360_comment_type(frm);
 		// Frappe's own Assign and Share in the sidebar would grant access the
 		// Assignment section knows nothing of, and its next save would take
 		// that access away again. So on this form the section is the one way.
-		frm.sidebar?.sidebar?.find(".form-assignments, .form-shared").addClass("hidden");
+		// Tags, the like heart and Follow are left off at the owner's request
+		// (DEC-058).
+		frm.sidebar?.sidebar
+			?.find(".form-assignments, .form-shared, .form-tags, .form-stats-likes, .form-stats-likes + .mx-2, .form-follow")
+			.addClass("hidden");
 	},
 
 	assigned_to: (frm) => knit360_access_summary(frm),
@@ -276,6 +282,29 @@ function knit360_access_html(entries) {
 	return `<div class="control-label" style="margin-bottom: var(--margin-xs)">${__("Who Can Open This Lead")}</div>
 		${body}
 		<p class="text-muted small">${__("System Managers can open every lead.")}</p>`;
+}
+
+// A comment can say what it reports on -- a Call, Meeting, Email or Other, the
+// types a task has -- picked beside the Comments heading (DEC-059). The type
+// is written in bold above the text; Activity shows when it was written.
+function knit360_comment_type(frm) {
+	const box = frm.comment_box;
+	if (!box || box.knit360_typed) return;
+	box.knit360_typed = true;
+	const types = (frm.doc.__onload && frm.doc.__onload.task_types) || [];
+	const $type = $(`<select class="form-control input-xs" style="width: auto; display: inline-block"></select>`)
+		.append($("<option>").val("").text(__("Type")))
+		.append(types.map((type) => $("<option>").val(type).text(__(type))));
+	frm.$wrapper
+		.find(".comment-box .comment-input-header")
+		.addClass("flex justify-between align-center")
+		.append($type);
+	const submit = box.on_submit;
+	box.on_submit = (comment) => {
+		const type = $type.val();
+		$type.val("");
+		submit(type ? `<p><strong>${frappe.utils.escape_html(__(type))}</strong></p>${comment}` : comment);
+	};
 }
 
 // Stage Detail offers only the steps of the stage the lead is at (DEC-050).

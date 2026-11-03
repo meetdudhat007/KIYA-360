@@ -1015,10 +1015,21 @@
   "department": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes; asked for by the owner (DEC-045)",
   "email": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
   "phone": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
-  "contact": "FR-CRM-004: the contact this person is kept as, from the lead's first save (DEC-049)"
+  "contact": "FR-CRM-004: the contact this person is kept as, from the lead's first save (DEC-049)",
+  "address": "FR-CRM-001: contact details (DR-C2C-001 Inputs); each person's own address at the owner's request (DEC-059)"
  },
  "KNIT 360 Lead Access": {
   "employee": "FR-PADM-1.3.6: who is given access to the lead (DEC-048)",
   "access": "FR-PADM-1.2.3: Read Only or Read & Write, the two levels the owner asked for (DEC-048)"
+ },
+ "KNIT 360 Task": {
+  "lead": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): the lead the task is for",
+  "organization_name": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): the lead's organization, shown with the task",
+  "task_type": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): Call, Meeting, Email or Other, as Salesforce and HubSpot type tasks",
+  "due_date": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): the day it is due",
+  "due_time": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): the time it is due",
+  "done": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): ticked when done",
+  "description": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): what is to be done",
+  "reminder_sent": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): set once the bell has reminded its creator, so it rings once"
  }
 }

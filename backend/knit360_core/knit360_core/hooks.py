@@ -40,12 +40,17 @@ app_include_js = [
 	"branding.bundle.js",
 	# Field descriptions behind an info icon on the forms it lists (DEC-045).
 	"field_help.bundle.js",
+	# Tasks on the lead page and the CRM page's My Tasks block (DEC-058).
+	"tasks.bundle.js",
+	# The look every CRM list shares (DEC-056, DEC-059).
+	"crm_lists.bundle.js",
 ]
 
 after_install = [
 	"knit360_core.branding.after_install",
 	"knit360_core.desk.after_migrate",
 	"knit360_core.dashboards.after_migrate",
+	"knit360_core.crm.task_board.board.install",
 ]
 after_migrate = [
 	"knit360_core.branding.after_migrate",
@@ -60,6 +65,9 @@ after_migrate = [
 	# nothing missing, and self-healing after an import or a restore; a full
 	# rebuild stays an explicit command.
 	"knit360_core.search.index.top_up",
+	# The CRM page's My Tasks block. Last, because desk.py rebuilds the
+	# workspace's blocks and dashboards.py puts its own on top. DEC-058.
+	"knit360_core.crm.task_board.board.install",
 ]
 
 # --- Printing -------------------------------------------------------------
@@ -84,6 +92,8 @@ awesomebar_search = ["knit360_core.search.api.awesomebar"]
 # the dates, so nothing is wrongly covered while this waits for its run.
 scheduler_events = {
 	"daily": ["knit360_core.maintenance.entitlement.expire_contracts"],
+	# A task's bell reminder goes out within a minute of its time. DEC-058.
+	"cron": {"* * * * *": ["knit360_core.crm.lead_tasks.send_reminders"]},
 }
 
 # --- Lifecycle integrity -------------------------------------------------

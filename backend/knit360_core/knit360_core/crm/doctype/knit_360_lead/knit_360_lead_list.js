@@ -6,10 +6,8 @@
 // -- along with the dot Frappe puts between the comment count and the heart.
 // Every other list keeps Frappe's likes.
 //
-// List Settings, where the list's columns are chosen, is moved out of the menu
-// onto a button of its own beside Add, and the menu's three dots become
-// Frappe's gear (DEC-051). Frappe offers List Settings to System Managers only,
-// and so does the button.
+// The List Settings button, the gear and the sized grid are every CRM list's
+// (public/js/crm_lists.bundle.js); this list alone has no sidebar (DEC-057).
 //
 // Above the list is a filter bar of the owner's design (DEC-053, in place of
 // DEC-052's lone Filter button): one search box that finds a lead by any word
@@ -21,7 +19,7 @@ const KNIT360_DROPDOWNS = ["knit360_business_status", "stage_detail", "assigned_
 
 frappe.listview_settings["KNIT 360 Lead"] = {
 	onload(listview) {
-		knit360_list_settings_button(listview);
+		knit360.crm_list.setup(listview, { sidebar: false });
 		knit360_filter_bar(listview);
 		knit360_sidebar_without_assignments(listview);
 
@@ -36,33 +34,28 @@ frappe.listview_settings["KNIT 360 Lead"] = {
 
 		const meta = listview.get_meta_html.bind(listview);
 		listview.get_meta_html = (doc) =>
-			without(meta(doc), ".list-row-like, .list-row-activity .mx-2");
+			knit360_created_on(without(meta(doc), ".list-row-like, .list-row-activity .mx-2"), doc);
 
 		// The header is drawn before onload runs, so take its heart out here.
 		listview.$result.find(".list-liked-by-me").remove();
 	},
+	add_fields: ["creation"],
 };
 
-function knit360_list_settings_button(listview) {
-	// The Report view of leads has its own column picker; leave it as it is.
-	if (listview.view !== "List") return;
-	const page = listview.page;
-	const label = __("List Settings", null, "Button in list view menu");
-
-	page.menu
-		.find(".menu-item-label")
-		.filter((i, el) => $(el).text().trim() === label)
-		.closest("li")
-		.remove();
-	if (frappe.user.has_role("System Manager")) {
-		// On a phone the button shrinks to its icon, so it names itself on hover.
-		page.set_secondary_action(label, () => listview.show_list_settings(), "table").attr("title", label);
-	}
-
-	page.menu_btn_group.find(".menu-btn-group-label use").attr("href", "#icon-setting-gear");
-	page.menu_btn_group
-		.find("[data-toggle=dropdown]")
-		.attr({ "aria-label": __("Settings"), title: __("Settings") });
+// Each row shows the date the lead was created, in place of Frappe's "2 d" or
+// "4 w" since it was last changed (DEC-055); the time is on hover. A plain
+// span, because Frappe rewrites its own relative times every minute.
+function knit360_created_on(html, doc) {
+	const $html = $("<div>").html(html);
+	$html
+		.find(".list-row-activity .modified")
+		.empty()
+		.append(
+			$("<span>")
+				.text(frappe.datetime.str_to_user(doc.creation, false, true))
+				.attr("title", __("Created {0}", [frappe.datetime.str_to_user(doc.creation)]))
+		);
+	return $html.html();
 }
 
 function knit360_filter_bar(listview) {
@@ -167,7 +160,8 @@ function knit360_search_box(listview, $bar) {
 }
 
 // The sidebar's Assigned To lists Frappe's to-do assignments, which leads do
-// not use (DEC-048); beside the bar's Assigned To it would only mislead.
+// not use (DEC-048); beside the bar's Assigned To it would only mislead. This
+// matters in the Report view of leads, which keeps its sidebar.
 function knit360_sidebar_without_assignments(listview) {
 	const group_by = listview.list_sidebar && listview.list_sidebar.list_group_by;
 	if (!group_by) return;
