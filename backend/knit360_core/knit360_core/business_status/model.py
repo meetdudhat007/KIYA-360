@@ -581,6 +581,24 @@ WORK_ORDER = Lifecycle(
 	happy_path=("Not Started", "In Process", "Completed"),
 )
 
+# DEC-054 (client change request, not in the BRD). Building a main product
+# from its group: a draft lists what it will use, Built moves the stock, and
+# a built one is undone by cancelling. PROPOSED -- the owner asked for the
+# build, not for its states.
+PRODUCT_BUILD = Lifecycle(
+	name="Product Build",
+	initial="Draft",
+	transitions={
+		"Draft": {"Built", "Cancelled"},
+		"Built": {"Cancelled"},
+		"Cancelled": set(),
+	},
+	draft_states={"Draft"},
+	submitted_states={"Built"},
+	cancelling_states={"Cancelled"},
+	happy_path=("Draft", "Built"),
+)
+
 # FR-FIN-001. No DR- record specifies a journal entry lifecycle, so this is the
 # minimum a manual posting needs: it is drafted, it may be reviewed, it posts,
 # and a posted entry is reversed rather than edited. PROPOSED.
@@ -695,6 +713,7 @@ REGISTRY = {
 	"KNIT 360 Service Request": SERVICE_REQUEST,
 	"KNIT 360 Field Work Order": FIELD_WORK_ORDER,
 	"KNIT 360 Work Order": WORK_ORDER,
+	"KNIT 360 Product Build": PRODUCT_BUILD,
 	"KNIT 360 Leave Allocation": LEAVE_ALLOCATION,
 	"KNIT 360 Leave Application": LEAVE_APPLICATION,
 }

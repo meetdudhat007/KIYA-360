@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-04 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "description": "DEC-054 (client change request) - building a main product: its group's raw materials leave stock and the product comes in.",
+ "field_order": [
+  "product",
+  "qty",
+  "company",
+  "col_pb",
+  "knit360_business_status",
+  "posting_date",
+  "source_warehouse",
+  "target_warehouse",
+  "sec_materials",
+  "materials",
+  "total_material_cost",
+  "unit_cost"
+ ],
+ "fields": [
+  {
+   "fieldname": "product",
+   "fieldtype": "Link",
+   "label": "Main Product",
+   "options": "KNIT 360 Item",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "The product to build. Its raw materials and counts come from its group on the Item."
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Quantity to Build",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "KNIT 360 Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_pb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "knit360_business_status",
+   "fieldtype": "Select",
+   "label": "Business Status",
+   "options": "Draft\nBuilt\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed."
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Build Date",
+   "default": "Today",
+   "description": "The date the raw materials are used and the product comes in."
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Raw Materials From",
+   "options": "KNIT 360 Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "label": "Finished Product To",
+   "options": "KNIT 360 Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_materials",
+   "fieldtype": "Section Break",
+   "label": "Raw Materials"
+  },
+  {
+   "fieldname": "materials",
+   "fieldtype": "Table",
+   "label": "Raw Materials",
+   "options": "KNIT 360 Product Build Item",
+   "description": "Filled from the product's group for the quantity to build. Marking the build Built takes exactly these out of stock."
+  },
+  {
+   "fieldname": "total_material_cost",
+   "fieldtype": "Currency",
+   "label": "Material Cost",
+   "read_only": 1,
+   "description": "What the raw materials cost, worked out by the stock ledger when they were used."
+  },
+  {
+   "fieldname": "unit_cost",
+   "fieldtype": "Currency",
+   "label": "Cost per Product Built",
+   "read_only": 1,
+   "description": "Material cost divided by the quantity built. The products enter stock at this cost."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-04 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "KNIT 360 Product Build",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "is_submittable": 1,
+ "autoname": "PB-.YYYY.-.####",
+ "title_field": "product"
+}

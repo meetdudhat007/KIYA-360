@@ -13,6 +13,14 @@
   "col_ip",
   "rate",
   "currency",
+  "is_main_product",
+  "sec_product_price",
+  "cost_price_list",
+  "material_cost",
+  "col_product_price",
+  "margin_type",
+  "margin",
+  "unpriced_materials",
   "sec_ip",
   "valid_from",
   "col_ip2",
@@ -52,10 +60,11 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate",
-   "description": "Pricing & Discounts -- price per unit",
+   "description": "Pricing & Discounts -- price per unit. For a main product this is worked out: material cost plus margin.",
    "reqd": 1,
    "options": "currency",
-   "in_list_view": 1
+   "in_list_view": 1,
+   "read_only_depends_on": "is_main_product"
   },
   {
    "fieldname": "currency",
@@ -64,6 +73,61 @@
    "description": "Currency Master -- copied from the price list",
    "options": "Currency",
    "read_only": 1
+  },
+  {
+   "fieldname": "is_main_product",
+   "fieldtype": "Check",
+   "label": "Main Product",
+   "read_only": 1,
+   "hidden": 1,
+   "fetch_from": "item_code.is_main_product"
+  },
+  {
+   "fieldname": "sec_product_price",
+   "fieldtype": "Section Break",
+   "label": "Priced from Raw Materials",
+   "depends_on": "is_main_product"
+  },
+  {
+   "fieldname": "cost_price_list",
+   "fieldtype": "Link",
+   "label": "Raw Material Prices From",
+   "options": "KNIT 360 Price List",
+   "description": "The buying list the raw materials' prices are read from. Left empty, the default buying list is used."
+  },
+  {
+   "fieldname": "material_cost",
+   "fieldtype": "Currency",
+   "label": "Material Cost",
+   "options": "currency",
+   "read_only": 1,
+   "description": "Each raw material's price times its count, added up. Worked out again on its own whenever one of those prices changes."
+  },
+  {
+   "fieldname": "col_product_price",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "margin_type",
+   "fieldtype": "Select",
+   "label": "Margin Type",
+   "options": "Percentage\nAmount",
+   "default": "Percentage",
+   "description": "Percentage of the material cost, or a fixed amount added to it."
+  },
+  {
+   "fieldname": "margin",
+   "fieldtype": "Float",
+   "label": "Margin",
+   "description": "Added to the material cost to give the rate."
+  },
+  {
+   "fieldname": "unpriced_materials",
+   "fieldtype": "Small Text",
+   "label": "Raw Materials Without a Price",
+   "read_only": 1,
+   "depends_on": "unpriced_materials",
+   "description": "These have no price on the list above, so they add nothing to the material cost. Price them and this product is repriced."
   },
   {
    "fieldname": "sec_ip",
@@ -89,7 +153,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-03 00:00:00.000000",
+ "modified": "2026-11-04 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "KNIT 360 Item Price",
