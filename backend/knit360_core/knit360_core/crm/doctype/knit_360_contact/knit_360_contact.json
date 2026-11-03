@@ -8,7 +8,9 @@
  "description": "FR-CRM-004 - Contact persons against a Customer.",
  "field_order": [
   "contact_name",
+  "organization_name",
   "customer",
+  "lead",
   "is_primary",
   "col1",
   "email",
@@ -26,11 +28,26 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "organization_name",
+   "fieldtype": "Data",
+   "label": "Organization",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
    "description": "Contacts belong to the unified Customer Master",
    "options": "KNIT 360 Customer"
+  },
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "KNIT 360 Lead",
+   "read_only": 1
   },
   {
    "fieldname": "is_primary",
@@ -47,14 +64,16 @@
    "fieldtype": "Data",
    "label": "Email",
    "description": "Contact details",
-   "options": "Email"
+   "options": "Email",
+   "in_list_view": 1
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
    "description": "Contact details",
-   "options": "Phone"
+   "options": "Phone",
+   "in_list_view": 1
   },
   {
    "fieldname": "designation",
@@ -70,7 +89,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-01 00:00:00.000000",
+ "modified": "2026-11-01 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "KNIT 360 Contact",

@@ -129,23 +129,39 @@ DEFAULT = Lifecycle(
 	cancelling_states={CANCELLED},
 )
 
-# DR-C2C-001: "New -> Contacted -> Qualified -> Converted (or Disqualified / Lost)".
-# The happy path is quoted. Which active states may branch to Disqualified or
-# Lost is inferred, since the source gives the branch without placing it.
+# DR-C2C-001 gave "New -> Contacted -> Qualified -> Converted (or Disqualified /
+# Lost)". On 1 November 2026 the owner replaced it with the first five rows of
+# their client's own sales sheet (DEC-050): New Lead, Initial Contact,
+# Requirement Pending, Requirement Received, then the qualification outcome --
+# Qualified, Potential Customer or Not Qualified. A lead moves one stage at a
+# time, as the owner chose; Potential Customer is a qualified lead not yet
+# ready, which becomes Qualified before it can convert. Not Qualified and Lost
+# end a lead at any stage. The sheet's later rows belong to the documents that
+# do them (Opportunity, Quotation, Sales Order, Work Order, Invoice), and the
+# small steps within a stage are its Stage Detail (crm.lead_stages).
 # A Lead posts no ledger or stock effect, so it is never submitted.
 LEAD = Lifecycle(
 	name="Lead",
-	initial="New",
+	initial="New Lead",
 	transitions={
-		"New": {"Contacted", "Disqualified", "Lost"},
-		"Contacted": {"Qualified", "Disqualified", "Lost"},
-		"Qualified": {"Converted", "Disqualified", "Lost"},
+		"New Lead": {"Initial Contact", "Not Qualified", "Lost"},
+		"Initial Contact": {"Requirement Pending", "Not Qualified", "Lost"},
+		"Requirement Pending": {"Requirement Received", "Not Qualified", "Lost"},
+		"Requirement Received": {"Qualified", "Potential Customer", "Not Qualified", "Lost"},
+		"Qualified": {"Converted", "Not Qualified", "Lost"},
+		"Potential Customer": {"Qualified", "Not Qualified", "Lost"},
 		"Converted": set(),
-		"Disqualified": set(),
+		"Not Qualified": set(),
 		"Lost": set(),
 	},
-	draft_states={"New", "Contacted", "Qualified", "Converted", "Disqualified", "Lost"},
-	happy_path=("New", "Contacted", "Qualified", "Converted"),
+	draft_states={
+		"New Lead", "Initial Contact", "Requirement Pending", "Requirement Received",
+		"Qualified", "Potential Customer", "Converted", "Not Qualified", "Lost",
+	},
+	happy_path=(
+		"New Lead", "Initial Contact", "Requirement Pending", "Requirement Received",
+		"Qualified", "Converted",
+	),
 )
 
 # DR-C2C-002: "Open -> In Negotiation -> Proposal Sent -> Won (or Lost)".

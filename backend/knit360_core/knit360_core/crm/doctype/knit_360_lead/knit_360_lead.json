@@ -19,15 +19,23 @@
   "company",
   "territory",
   "knit360_business_status",
+  "stage_detail",
   "sec1",
   "contact_editor",
   "contact_persons",
   "address",
+  "sec_assign",
+  "assigned_to",
+  "lead_access",
+  "access_editor",
+  "col_assign",
+  "access_summary",
   "sec2",
   "estimated_requirement",
   "sec3",
   "converted_customer",
-  "converted_opportunity"
+  "converted_opportunity",
+  "search_keywords"
  ],
  "fields": [
   {
@@ -116,11 +124,21 @@
    "fieldtype": "Select",
    "label": "Business Status",
    "description": "Where this document has got to. Moved with the buttons at the top of this form, never typed.",
-   "options": "New\nContacted\nQualified\nConverted\nDisqualified\nLost",
-   "default": "New",
+   "options": "New Lead\nInitial Contact\nRequirement Pending\nRequirement Received\nQualified\nPotential Customer\nConverted\nNot Qualified\nLost",
+   "default": "New Lead",
    "read_only": 1,
    "in_standard_filter": 1,
    "in_list_view": 1
+  },
+  {
+   "fieldname": "stage_detail",
+   "fieldtype": "Select",
+   "label": "Stage Detail",
+   "options": "\nWhatsApp Sent\nEmail Sent\nCold Call\nIntroductory Meeting\nCourtesy Meeting\nCourtesy Call\nRequirement Clarification\nRequirement Confirmed",
+   "description": "The step reached within the current stage. Only the current stage's steps are offered, and it is cleared when the stage moves on.",
+   "depends_on": "eval:['Initial Contact', 'Requirement Pending', 'Requirement Received'].includes(doc.knit360_business_status)",
+   "in_list_view": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "sec1",
@@ -146,6 +164,42 @@
    "label": "Address",
    "description": "Contact details",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "sec_assign",
+   "fieldtype": "Section Break",
+   "label": "Assignment"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "options": "KNIT 360 Employee",
+   "description": "The employee who handles this lead. They can open and change it, and the people they report to can open it to read.",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "lead_access",
+   "fieldtype": "Table",
+   "label": "Others With Access",
+   "options": "KNIT 360 Lead Access",
+   "description": "Anyone else who should open this lead, with Read Only or Read & Write.",
+   "depends_on": "eval:0"
+  },
+  {
+   "fieldname": "access_editor",
+   "fieldtype": "HTML",
+   "label": "Others With Access"
+  },
+  {
+   "fieldname": "col_assign",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "access_summary",
+   "fieldtype": "HTML",
+   "label": "Who Can Open This Lead"
   },
   {
    "fieldname": "sec2",
@@ -181,11 +235,22 @@
    "options": "KNIT 360 Opportunity",
    "read_only": 1,
    "in_list_view": 1
+  },
+  {
+   "description": "Every word in this lead, for the lead list's search box. Filled in on every save.",
+   "fieldname": "search_keywords",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Search Keywords",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1,
+   "report_hide": 1
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-01 12:00:00.000000",
+ "modified": "2026-11-03 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "KNIT 360 Lead",
@@ -201,6 +266,26 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "if_owner": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "if_owner": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
    "write": 1
   }
  ],

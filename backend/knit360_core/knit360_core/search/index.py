@@ -59,7 +59,7 @@ def is_indexable(doctype):
 	return not meta.istable and not meta.issingle
 
 
-def _values(doc, meta):
+def searchable_values(doc, meta):
 	"""Every searchable value on a document, including its child rows."""
 	out = [doc.name]
 	for field in meta.fields:
@@ -67,7 +67,7 @@ def _values(doc, meta):
 			continue
 		if field.fieldtype == "Table":
 			for row in doc.get(field.fieldname) or []:
-				out.extend(_values(row, frappe.get_meta(field.options)))
+				out.extend(searchable_values(row, frappe.get_meta(field.options)))
 			continue
 		if field.fieldtype not in INDEXED_TYPES:
 			continue
@@ -135,7 +135,7 @@ def index_document(doc, method=None):
 	fresh = {
 		"title": _title(doc, meta),
 		"subtitle": _subtitle(doc, meta),
-		"content": " ".join(_values(doc, meta)),
+		"content": " ".join(searchable_values(doc, meta)),
 	}
 	existing = frappe.db.get_value(
 		INDEX,

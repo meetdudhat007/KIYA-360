@@ -36,7 +36,12 @@ knit360.business_status = {
 		if (!frm || !frm.doc || frm.is_new()) return;
 		// Cheap local check first, so forms without a lifecycle cost no request.
 		if (!frm.meta || !frm.meta.fields.some((f) => f.fieldname === this.FIELD)) return;
+		// Every button here changes the document, so someone who may only read
+		// it gets none (DEC-048); the server refuses them as well.
+		if (!frm.has_perm("write")) return;
 
+		frm.knit360_status_primary = false;
+		this.guard_save_shortcut();
 		this.disown_framework_buttons(frm);
 
 		// Actions first, so the statuses they claim are known before the plain
@@ -238,10 +243,33 @@ knit360.business_status = {
 			// Frappe collapses custom buttons into a menu below 768px.
 			if (step === forward && !frm.is_dirty()) {
 				frm.page.set_primary_action(__(step.status), () => this.confirm(frm, step));
+				frm.knit360_status_primary = true;
 				return;
 			}
 			frm.add_custom_button(__(step.status), () => this.confirm(frm, step));
 		});
+	},
+
+	// Ctrl+S runs the page's primary button, and on a form with nothing to
+	// save that button is the next status. So the shortcut moved a document
+	// on without a word: a lead pushed to its next stage by a habit of
+	// pressing Ctrl+S. On these forms the shortcut saves instead -- with
+	// nothing changed, Frappe says so -- and a status moves only by its button.
+	guard_save_shortcut() {
+		if (this.save_shortcut_guarded || !frappe.app || !frappe.app.trigger_primary_action) return;
+		this.save_shortcut_guarded = true;
+		const trigger = frappe.app.trigger_primary_action.bind(frappe.app);
+		frappe.app.trigger_primary_action = () => {
+			const frm = window.cur_frm;
+			if (!frm || !frm.knit360_status_primary) return trigger();
+			// As Frappe does: let a field being typed in register first.
+			$(document.activeElement).blur();
+			setTimeout(() => {
+				const dialog = window.cur_dialog && cur_dialog.display && !cur_dialog.is_minimized;
+				if (dialog || frm.is_dirty()) return trigger();
+				frm.save();
+			}, 100);
+		};
 	},
 
 	confirm(frm, step) {

@@ -49,12 +49,13 @@ This guide is written in **plain, layman terms**, walking through every click, f
 ### Rule 2: How Documents Move (Business Status)
 - **You cannot type a document's status** — the **Business Status** box is greyed out.
 - Look at the **top right** of a saved document:
-  - The dark button is the **next normal step** (e.g. **Contacted**, **Qualified**, **Confirmed / Booked**, **Dispatched / In Transit**).
+  - The dark button is the **next normal step** (e.g. **Initial Contact**, **Qualified**, **Confirmed / Booked**, **Dispatched / In Transit**).
   - Any other step allowed at that moment (e.g. **Lost**, **Cancelled**) appears as a **separate button beside it**.
   - The system only shows steps that are allowed from where the document is now. You cannot confirm an unaccepted quotation or ship an unconfirmed order.
 
 ### Rule 3: Save First, Then Press the Status Button
 - If you change anything on a form, press **Save** (`Ctrl + S`) **before** pressing a status button. The status button works on the saved copy. Unsaved hours or a typed signature are not seen, and the step will be refused.
+- `Ctrl + S` only ever saves. It never moves a document to its next status; only clicking a status button does.
 
 ### Rule 4: Never Re-Type
 One document creates the next, using the button at the top right:
@@ -212,6 +213,8 @@ A Goods Receipt brings everything into **one** warehouse, so you need **two** re
 
 ### Step 4: CRM — From Customer Enquiry to Lead & Opportunity
 
+> **Before salespeople use leads (admin, once per person):** give each salesperson a login with the role **Sales User** (a sales head: **Sales Manager**), not System Manager — a System Manager sees every lead. Then open their **Employee** record, set **Linked User** to that login and **Reports To** to their manager. A salesperson sees only leads they created or were given; their manager can read their leads but not change them.
+
 Now a prospective foundry client calls wanting a furnace.
 
 1. Go to **CRM** → **Lead** → **Add KNIT 360 Lead**:
@@ -223,13 +226,17 @@ Now a prospective foundry client calls wanting a furnace.
      - **Person Name** `Rajesh Patel`, **Designation** `Plant Head`, **Department** `Production`
      - **Email** `rajesh@sardarfoundry.in`, **Phone** `+91 98250 11223`
      - A contact you added but left completely empty is ignored when you save.
+   - **Assignment** → **Assigned To**: pick the salesperson who handles this lead. They can open and change it; the people they report to can open it to read. Under **Others With Access**, click **+ Add Person**, pick the employee from the dropdown and choose **Read Only** or **Read & Write**; **Remove** takes them off again. **Who Can Open This Lead** on the right shows everyone and why. (If you leave Assigned To empty while signed in as a salesperson, the lead is assigned to you.)
    - **Estimated Requirement**: `One 1000 kg induction furnace with commissioning`
    - Click **Save**.
+   - Each person is now also in **CRM** → **Contact**, under the organization's name. After conversion they appear on the **Customer** page, under **Contacts**.
    - The small outline **ⓘ** next to a field's name explains the field: hover over it, or tap it on a phone.
-   - In the lead list, **Organization Name** is the first column, followed by **Person Name**, **Designation**, **Phone**, **Email** and **Department**. Each of these cells lists every person on the lead in the same order (for example `Rajesh Patel, Anil Shah`); a `-` stands for a person who has no value there. How many columns fit depends on your screen width. To choose your own columns, switch the list to **Report** view (the view menu at the top). There you can add or hide any column, and your choice is saved for you only.
-2. **Move the Lead along**:
-   - At the top right, click **Contacted**.
-   - After discussing requirements, click **Qualified**.
+   - In the lead list, **Organization Name** is the first column, followed by **Person Name**, **Designation**, **Phone**, **Email** and **Department**. Each of these cells lists every person on the lead in the same order (for example `Rajesh Patel, Anil Shah`); a `-` stands for a person who has no value there. How many columns fit depends on your screen width. To choose your own columns, switch the list to **Report** view (the view menu at the top). There you can add or hide any column, and your choice is saved for you only. A System Manager can also set the columns everyone sees in the lead list: click **List Settings**, the button beside **Add KNIT 360 Lead**, tick or drag the fields, and **Save**. The gear button next to it holds the list's other settings (permissions, Customize, Toggle Sidebar). To find leads, use the bar above the list. Type any word into **Search leads by any word**: an organization, a person's name, part of a phone number or email, a city, a requirement or a salesperson's name. Only leads containing every word you type are listed, in any order (for example `steel meera`). Next to it, pick from the **Business Status**, **Stage Detail** or **Assigned To** dropdowns; the blank at the top of each means any. For anything else, such as dates, use the **Filter** button after them. The **x** clears the search, the dropdowns and the Filter button together.
+2. **Move the Lead along** — one stage at a time, with the dark button at the top right:
+   - **New Lead** → **Initial Contact** → **Requirement Pending** → **Requirement Received** → **Qualified**.
+   - At Requirement Received you can instead choose **Potential Customer** (qualified, not ready yet); it becomes **Qualified** later.
+   - **Not Qualified** or **Lost** ends a lead at any stage.
+   - At Initial Contact, Requirement Pending and Requirement Received, **Stage Detail** (under Business Status) records the step reached, e.g. *WhatsApp Sent*, *Courtesy Call* or *Requirement Confirmed*. Pick it and **Save**. It offers only the current stage's steps and empties when the stage moves on.
 3. **Convert to Customer**:
    - On the Qualified lead, click the button **Convert to Customer + Opportunity** at the top right.
    - *Result*: the ERP creates linked records and opens the Opportunity:

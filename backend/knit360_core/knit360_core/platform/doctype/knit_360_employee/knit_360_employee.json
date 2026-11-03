@@ -13,6 +13,7 @@
   "col_e1",
   "designation",
   "department",
+  "reports_to",
   "branch",
   "sec_e1",
   "email",
@@ -67,6 +68,13 @@
    "label": "Department",
    "description": "Department Master",
    "options": "KNIT 360 Department"
+  },
+  {
+   "fieldname": "reports_to",
+   "fieldtype": "Link",
+   "label": "Reports To",
+   "options": "KNIT 360 Employee",
+   "description": "The manager above this employee. They can open, to read, every lead assigned to this employee or to anyone below them."
   },
   {
    "fieldname": "branch",
@@ -137,7 +145,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-03 00:00:00.000000",
+ "modified": "2026-11-01 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Platform",
  "name": "KNIT 360 Employee",
@@ -154,6 +162,14 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "role": "Sales User",
+   "select": 1
+  },
+  {
+   "role": "Sales Manager",
+   "select": 1
   }
  ],
  "sort_field": "creation",
@@ -161,5 +177,7 @@
  "states": [],
  "track_changes": 1,
  "autoname": "EMP-.####",
- "title_field": "employee_name"
+ "title_field": "employee_name",
+ "show_title_field_in_link": 1,
+ "search_fields": "employee_name"
 }

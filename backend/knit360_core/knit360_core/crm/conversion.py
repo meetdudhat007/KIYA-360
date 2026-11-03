@@ -16,6 +16,7 @@ transition matrix and the audit log stay the single authority on lifecycle.
 import frappe
 
 from knit360_core.business_status import engine
+from knit360_core.crm import lead_contacts
 
 LEAD = "KNIT 360 Lead"
 CUSTOMER = "KNIT 360 Customer"
@@ -70,33 +71,36 @@ def _find_or_create_customer(lead):
 
 
 def _contacts_for(customer, lead):
-	"""A Contact under the customer for every person on the lead (FR-CRM-004).
+	"""Hand the lead's contacts to the customer (FR-CRM-004).
 
-	A person the customer already has a contact of the same name for is skipped,
-	so converting a second lead for an existing customer does not repeat its
-	people. The first new contact is marked primary only when the customer has
-	no primary contact yet -- a customer has one primary, not one per lead.
+	Every person on a lead is already a contact (crm.lead_contacts, DEC-049);
+	conversion puts those contacts under the customer rather than making new
+	ones. A person the customer already has a contact of the same name for is
+	not repeated: the lead's copy is dropped and the person points at the
+	customer's. The first contact handed over is marked primary only when the
+	customer has no primary contact yet -- a customer has one primary, not one
+	per lead.
 	"""
+	lead_contacts.sync(lead)
 	has_primary = bool(frappe.db.exists(CONTACT, {"customer": customer, "is_primary": 1}))
-	made = []
+	handed = []
 	for person in lead.contact_persons:
-		if frappe.db.exists(CONTACT, {"customer": customer, "contact_name": person.person_name}):
+		existing = frappe.db.get_value(
+			CONTACT, {"customer": customer, "contact_name": person.person_name}, "name"
+		)
+		if existing:
+			if person.contact != existing:
+				frappe.delete_doc(CONTACT, person.contact, ignore_permissions=True, force=True)
+				person.db_set("contact", existing, update_modified=False)
 			continue
-		contact = frappe.get_doc(
-			{
-				"doctype": CONTACT,
-				"contact_name": person.person_name,
-				"customer": customer,
-				"is_primary": 0 if has_primary else 1,
-				"designation": person.designation,
-				"department": person.department,
-				"email": person.email,
-				"phone": person.phone,
-			}
-		).insert()
+		frappe.db.set_value(
+			CONTACT,
+			person.contact,
+			{"customer": customer, "organization_name": customer, "is_primary": 0 if has_primary else 1},
+		)
 		has_primary = True
-		made.append(contact.name)
-	return made
+		handed.append(person.contact)
+	return handed
 
 
 @frappe.whitelist()

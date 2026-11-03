@@ -21,7 +21,9 @@
   "customer_group",
   "default_price_list",
   "credit_limit",
-  "credit_hold"
+  "credit_hold",
+  "sec_contacts",
+  "contacts_html"
  ],
  "fields": [
   {
@@ -119,11 +121,21 @@
    "label": "On Credit Hold",
    "default": "0",
    "description": "Refuses new orders and invoices for this customer whatever their balance. A hold is about trust -- a dispute, a bounced payment -- where a limit is about size."
+  },
+  {
+   "fieldname": "sec_contacts",
+   "fieldtype": "Section Break",
+   "label": "Contacts"
+  },
+  {
+   "fieldname": "contacts_html",
+   "fieldtype": "HTML",
+   "label": "Contacts"
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-09-22 00:00:00.000000",
+ "modified": "2026-11-01 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "KNIT 360 Customer",

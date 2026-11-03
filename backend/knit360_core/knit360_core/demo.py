@@ -334,9 +334,9 @@ def _walk_to(doctype, name, target):
 
 #: (contact, organisation, territory, source, how far to take it)
 PIPELINE = [
-	("Rakesh Menon", "Northline Forgings Ltd", "North", "Website", "New"),
-	("Sunita Rao", "Deccan Heat Treat Pvt Ltd", "South", "Referral", "Contacted"),
-	("Imran Qureshi", "State Metals Corporation", "West", "Tender Portal", "Contacted"),
+	("Rakesh Menon", "Northline Forgings Ltd", "North", "Website", "New Lead"),
+	("Sunita Rao", "Deccan Heat Treat Pvt Ltd", "South", "Referral", "Initial Contact"),
+	("Imran Qureshi", "State Metals Corporation", "West", "Tender Portal", "Initial Contact"),
 	("Daniel Okafor", "Gulf Thermal Trading FZE", "Export", "Trade Show", "Qualified"),
 	("Priya Nair", "Vertex Castings Pvt Ltd", "South", "Cold Call", "Qualified"),
 	("Harish Gupta", "Ambar Alloys Ltd", "North", "Website", "Converted"),

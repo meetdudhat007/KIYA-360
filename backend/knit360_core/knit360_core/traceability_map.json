@@ -111,7 +111,9 @@
   "email": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
   "is_primary": "FR-CRM-004: PROPOSED: DR-C2C-001 requires a primary contact channel before conversion",
   "phone": "FR-CRM-004: contact details (DR-C2C-001 Inputs)",
-  "department": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes; carried from a lead's person (DEC-045)"
+  "department": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes; carried from a lead's person (DEC-045)",
+  "organization_name": "FR-CRM-004: BRD-DERIVED; the organization the contact belongs to, so the Contacts list reads by organization (DEC-049)",
+  "lead": "FR-CRM-004 / FR-CRM-001: the lead the contact was entered on, before there is a customer (DEC-049)"
  },
  "KNIT 360 Cost Center": {
   "company": "FR-PADM-1.1.1: a cost centre belongs to one company",
@@ -242,7 +244,8 @@
   "employee_number": "FR-PADM-1.4.4: Employee Master -- payroll or staff number",
   "is_active": "FR-PADM-1.4.4: BRD-DERIVED: currently employed",
   "phone": "FR-PADM-1.4.4: Employee Master -- contact",
-  "user": "FR-PADM-1.2.1: User Management -- the login this person signs in with, when they have one"
+  "user": "FR-PADM-1.2.1: User Management -- the login this person signs in with, when they have one",
+  "reports_to": "FR-PADM-1.4.4: employee master; BRD-DERIVED reporting line, which gives managers read access to their team's leads at the owner's request (DEC-048)"
  },
  "KNIT 360 Enquiry": {
   "company": "FR-SALES-001: BRD-DERIVED: company context (FR-PADM-1.1.1)",
@@ -426,7 +429,7 @@
   "converted_customer": "FR-CRM-001: conversion creates or links a unified Customer Master (DR-C2C-001)",
   "converted_opportunity": "FR-CRM-001: conversion generates an Opportunity (DR-C2C-001)",
   "estimated_requirement": "FR-CRM-001: estimated requirement (DR-C2C-001 Inputs)",
-  "knit360_business_status": "FR-CRM-001: CD-002 lifecycle (PROPOSED, DR-C2C-001). Set only via knit360_core.business_status.engine.transition",
+  "knit360_business_status": "FR-CRM-001: CD-002 lifecycle (PROPOSED, DR-C2C-001), its stages replaced by the owner's client's (DEC-050). Set only via knit360_core.business_status.engine.transition",
   "lead_source": "FR-CRM-001: lead source (DR-C2C-001 Inputs); source master is BRD-DERIVED and TBD",
   "organization_name": "FR-CRM-001: organization name (DR-C2C-001 Inputs)",
   "territory": "FR-CRM-001: assigned territory (DR-C2C-001 Inputs); now a master",
@@ -435,7 +438,11 @@
   "designations": "FR-CRM-004: BRD-DERIVED; every person's designation in one lead-list cell at the owner's request (DEC-046)",
   "phones": "FR-CRM-001: contact details (DR-C2C-001 Inputs); every person's phone in one lead-list cell at the owner's request (DEC-046)",
   "emails": "FR-CRM-001: contact details (DR-C2C-001 Inputs); every person's email in one lead-list cell at the owner's request (DEC-046)",
-  "departments": "FR-CRM-004: BRD-DERIVED; every person's department in one lead-list cell at the owner's request (DEC-046)"
+  "departments": "FR-CRM-004: BRD-DERIVED; every person's department in one lead-list cell at the owner's request (DEC-046)",
+  "assigned_to": "FR-PADM-1.3.6: access control on FR-CRM-001 leads; the employee who handles the lead, given read and write, at the owner's request (DEC-048). BRD-DERIVED: the BRD does not specify lead ownership.",
+  "lead_access": "FR-PADM-1.2.3: permission management on FR-CRM-001 leads; further people given Read Only or Read & Write on one lead, at the owner's request (DEC-048)",
+  "stage_detail": "FR-CRM-001: BRD-DERIVED; the step reached within the lead's current stage, from the owner's client's sales sheet (DEC-050)",
+  "search_keywords": "FR-CRM-001: PROPOSED; every word in the lead, matched by the lead list's search box at the owner's request (DEC-053). Written only by knit360_core.crm.lead_search"
  },
  "KNIT 360 Leave Allocation": {
   "carried_forward": "FR-HR-003: days brought in from the previous period. Carrying forward is not calculated automatically; this is entered.",
@@ -1007,6 +1014,11 @@
   "designation": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes; asked for by the owner (DEC-045)",
   "department": "FR-CRM-004: BRD-DERIVED; the BRD does not specify contact attributes; asked for by the owner (DEC-045)",
   "email": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
-  "phone": "FR-CRM-001: contact details (DR-C2C-001 Inputs)"
+  "phone": "FR-CRM-001: contact details (DR-C2C-001 Inputs)",
+  "contact": "FR-CRM-004: the contact this person is kept as, from the lead's first save (DEC-049)"
+ },
+ "KNIT 360 Lead Access": {
+  "employee": "FR-PADM-1.3.6: who is given access to the lead (DEC-048)",
+  "access": "FR-PADM-1.2.3: Read Only or Read & Write, the two levels the owner asked for (DEC-048)"
  }
 }

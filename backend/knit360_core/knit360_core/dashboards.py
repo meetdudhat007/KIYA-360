@@ -91,7 +91,7 @@ CHARTS = [
 #: label, so the label IS the document name and PLACEMENT must match it.
 CARDS = [
 	{"name": "Open Leads", "doctype": PREFIX + "Lead", "function": "Count",
-	 "filters": [[PREFIX + "Lead", STATUS, "not in", ["Converted", "Disqualified", "Lost"]]],
+	 "filters": [[PREFIX + "Lead", STATUS, "not in", ["Converted", "Not Qualified", "Lost"]]],
 	 "color": "#1d4ed8"},
 	{"name": "Open Opportunities", "doctype": PREFIX + "Opportunity", "function": "Count",
 	 "filters": [[PREFIX + "Opportunity", STATUS, "not in", ["Won", "Lost"]]],

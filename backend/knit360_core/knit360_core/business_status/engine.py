@@ -93,6 +93,9 @@ def transition(reference_doctype, reference_name, to_status, reason=None):
 		)
 
 	doc = frappe.get_doc(reference_doctype, reference_name)
+	# Moving a status is changing the document. Someone who may only read it
+	# -- a manager reading a lead their team handles (DEC-048) -- cannot.
+	doc.check_permission("write")
 	from_status = current_status(doc)
 
 	if from_status == to_status:

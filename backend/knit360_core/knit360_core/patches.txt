@@ -2,3 +2,6 @@
 
 [post_model_sync]
 knit360_core.patches.lead_persons
+knit360_core.patches.lead_contacts
+knit360_core.patches.lead_stages
+knit360_core.patches.lead_keywords

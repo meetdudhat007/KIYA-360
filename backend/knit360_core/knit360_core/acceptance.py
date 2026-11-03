@@ -326,6 +326,91 @@ def d_create_lead():
 	return f"{lead.name} at status {status!r}"
 
 
+@check("D. Customer to Cash", "A lead moves through the client's stages one step at a time")
+def d_lead_stages():
+	lead_doctype = "KNIT 360 Lead"
+	lifecycle = model.for_doctype(lead_doctype)
+	lead = a_lead()
+	skipped = refuses(engine.transition, lead_doctype, lead.name, "Requirement Received")
+	walked = [lifecycle.initial]
+	for status in ("Initial Contact", "Requirement Pending", "Requirement Received",
+	               "Potential Customer", "Qualified"):
+		engine.transition(lead_doctype, lead.name, status)
+		walked.append(status)
+	frappe.db.commit()
+	expect(set(lifecycle.allowed_next("Qualified")) == {"Converted", "Not Qualified", "Lost"},
+	       f"from Qualified: {lifecycle.allowed_next('Qualified')}")
+	still_open = [s for s in lifecycle.states if s not in lifecycle.terminal_states]
+	stuck = [s for s in still_open if not {"Not Qualified", "Lost"} <= set(lifecycle.allowed_next(s))]
+	expect(not stuck, f"cannot be ended as Not Qualified or Lost from: {stuck}")
+	return " -> ".join(walked) + f"; skipping a stage refused ({skipped[:50]})"
+
+
+@check("D. Customer to Cash", "Stage Detail offers only the current stage's steps, and clears when the stage moves")
+def d_stage_detail():
+	from knit360_core.crm import lead_stages
+
+	lead_doctype = "KNIT 360 Lead"
+	offered = {o for o in (frappe.get_meta(lead_doctype).get_field("stage_detail").options or "").split("\n") if o}
+	steps = {step for stage in lead_stages.STAGE_DETAILS.values() for step in stage}
+	expect(offered == steps, f"the field offers {sorted(offered ^ steps)} differently from the stages")
+
+	lead = a_lead()
+	engine.transition(lead_doctype, lead.name, "Initial Contact")
+	lead.reload()
+	lead.stage_detail = "Cold Call"
+	lead.save(ignore_permissions=True)
+	lead.reload()
+	lead.stage_detail = "Courtesy Call"  # a step of Requirement Pending, not of Initial Contact
+	stray = refuses(lead.save, ignore_permissions=True)
+	kept = frappe.db.get_value(lead_doctype, lead.name, "stage_detail")
+	engine.transition(lead_doctype, lead.name, "Requirement Pending")
+	after_move = frappe.db.get_value(lead_doctype, lead.name, "stage_detail")
+	frappe.db.commit()
+	expect(kept == "Cold Call", f"the refused step left {kept!r}")
+	expect(not after_move, f"moving the stage kept the old step {after_move!r}")
+	return f"Cold Call kept at Initial Contact; Courtesy Call refused ({stray[:50]}); cleared at Requirement Pending"
+
+
+@check("D. Customer to Cash", "The lead list's search box finds a lead by any of its words, in any order")
+def d_lead_search():
+	from knit360_core.crm import lead_search
+
+	lead_doctype, employee_doctype = "KNIT 360 Lead", "KNIT 360 Employee"
+	handler = an_employee("Acceptance Search Handler")
+	lead = a_lead(person="Ravindra Keyword", organization_name="Searchable Furnaces Pvt Ltd",
+	              assigned_to=handler)
+	frappe.db.commit()
+
+	def found(text):
+		filters = [[lead_doctype, lead_search.FIELD, "like", f"%{word}%"] for word in text.split()]
+		return lead.name in frappe.get_all(lead_doctype, filters=filters, pluck="name")
+
+	wanted = ["searchable", "keyword ravindra", "FURNACES searchable", "Search Handler"]
+	missed = [text for text in wanted if not found(text)]
+	stray = found("ravindra nowhere")
+
+	engine.transition(lead_doctype, lead.name, "Initial Contact")
+	frappe.db.commit()
+	if not found("initial contact"):
+		missed.append("initial contact (after the move)")
+
+	employee = frappe.get_doc(employee_doctype, handler)
+	employee.employee_name = "Acceptance Renamed Handler"
+	employee.save(ignore_permissions=True)
+	try:
+		if not found("Renamed Handler"):
+			missed.append("Renamed Handler (after the rename)")
+	finally:
+		employee.employee_name = "Acceptance Search Handler"
+		employee.save(ignore_permissions=True)
+		frappe.db.commit()
+
+	expect(not missed, f"not found by: {missed}")
+	expect(not stray, "a word the lead does not have still found it")
+	return f"found by {len(wanted) + 2} searches, including after a status move and a rename; not by a word it lacks"
+
+
 @check("D. Customer to Cash", "A lead needs an organization name and at least one person")
 def d_lead_needs_org_and_person():
 	base = {"doctype": "KNIT 360 Lead", "company": company()}
@@ -359,10 +444,53 @@ def d_persons_in_one_cell():
 	expect(cells == expected, f"the cells read {cells!r}")
 	meta = frappe.get_meta("KNIT 360 Lead")
 	expect(meta.title_field == "organization_name", f"the list leads with {meta.title_field!r}")
-	listed = [f.fieldname for f in meta.fields if f.in_list_view]
+	# The columns the lead ships with. A site can choose others with List
+	# Settings (DEC-051), so the site's own meta is not the thing to read.
+	shipped = frappe.get_file_json(frappe.get_app_path(
+		"knit360_core", "crm", "doctype", "knit_360_lead", "knit_360_lead.json"))
+	listed = [f["fieldname"] for f in shipped["fields"] if f.get("in_list_view")]
 	expect(listed[: len(expected) + 1] == ["organization_name", *expected],
 	       f"the list's first columns are {listed[:6]}")
 	return "; ".join(f"{meta.get_label(c)}: {v or '(empty)'}" for c, v in expected.items())
+
+
+@check("D. Customer to Cash", "A lead's people are in the Contacts list from its first save")
+def d_lead_contacts():
+	contact = "KNIT 360 Contact"
+	lead = a_lead(
+		organization_name="Contact List Foundry Pvt Ltd",
+		contact_persons=[
+			{"person_name": "Nisha Jain", "designation": "Purchase Head", "phone": "+91 98250 00021"},
+			{"person_name": "Arun Mehta", "email": "arun@contactlist.example"},
+		],
+	)
+	made = {
+		c.contact_name: c
+		for c in frappe.get_all(contact, filters={"lead": lead.name},
+		                        fields=["name", "contact_name", "organization_name", "customer", "designation", "phone"])
+	}
+	expect(sorted(made) == ["Arun Mehta", "Nisha Jain"], f"contacts made: {sorted(made)}")
+	expect(all(c.organization_name == lead.organization_name and not c.customer for c in made.values()),
+	       "a contact lacks the organization, or already has a customer")
+	expect((made["Nisha Jain"].designation, made["Nisha Jain"].phone) == ("Purchase Head", "+91 98250 00021"),
+	       "the person's details were not carried")
+	expect([p.contact for p in lead.contact_persons] == [made["Nisha Jain"].name, made["Arun Mehta"].name],
+	       "a person does not point at their contact")
+
+	# A change to a person changes their contact; a person removed takes theirs.
+	lead.reload()
+	lead.contact_persons[1].phone = "+91 98250 00022"
+	lead.remove(lead.contact_persons[0])
+	lead.save(ignore_permissions=True)
+	nisha, arun = made["Nisha Jain"].name, made["Arun Mehta"].name
+	expect(not frappe.db.exists(contact, nisha), "a removed person's contact stayed")
+	expect(frappe.db.get_value(contact, arun, "phone") == "+91 98250 00022", "a changed phone did not reach the contact")
+	expect(frappe.db.count(contact, {"lead": lead.name}) == 1, "a change made a second contact")
+
+	frappe.delete_doc("KNIT 360 Lead", lead.name, ignore_permissions=True)
+	expect(not frappe.db.exists(contact, arun), "the contact outlived its lead")
+	frappe.db.commit()
+	return f"{lead.name}: 2 contacts on save, 1 changed with its person, 1 removed with its person, none after the lead"
 
 
 @check("D. Customer to Cash", "Conversion makes a contact for every person, the first one primary")
@@ -370,7 +498,7 @@ def d_conversion_contacts():
 	from knit360_core.api import c2c
 
 	def qualified(lead):
-		for status in ("Contacted", "Qualified"):
+		for status in ("Initial Contact", "Requirement Pending", "Requirement Received", "Qualified"):
 			engine.transition("KNIT 360 Lead", lead.name, status)
 		return lead
 
@@ -404,6 +532,9 @@ def d_conversion_contacts():
 	added = [frappe.get_doc("KNIT 360 Contact", n) for n in again["contacts"]]
 	expect([c.contact_name for c in added] == ["Sunita Das"], f"repeated a person: {[c.contact_name for c in added]}")
 	expect(not added[0].is_primary, "the customer now has two primary contacts")
+	ravis = frappe.get_all("KNIT 360 Contact", filters={"contact_name": "Ravi Kumar", "organization_name": organization},
+	                       pluck="name")
+	expect(len(ravis) == 1, f"Ravi Kumar is in the Contacts list {len(ravis)} times")
 	frappe.db.commit()
 	return f"{first['customer']}: {', '.join(c.name for c in contacts + added)}; one primary"
 
@@ -1154,7 +1285,7 @@ def h_actions_for():
 		c2c.actions_for("KNIT 360 Item", "nothing") == [],
 		"actions_for raised on a doctype that has no actions",
 	)
-	return f"disabled when New ({convert['reason'][:60]}...), enabled when Qualified"
+	return f"disabled when New Lead ({convert['reason'][:60]}...), enabled when Qualified"
 
 
 @check("H. Desk actions", "An action declares the status it reaches on its own")
@@ -4543,6 +4674,187 @@ def v_accounts_match_stock():
 	return n_accounts_match_stock()
 
 
+# --- W. lead access --------------------------------------------------------
+
+LEAD = "KNIT 360 Lead"
+EMPLOYEE = "KNIT 360 Employee"
+
+
+def a_login(name):
+	"""A login with Sales User only. Not a System Manager, who would see every
+	lead whatever the access rules say."""
+	email = f"acceptance.{frappe.scrub(name)}@example.com"
+	if not frappe.db.exists("User", email):
+		user = frappe.get_doc({"doctype": "User", "email": email, "first_name": name, "send_welcome_email": 0})
+		user.append("roles", {"role": "Sales User"})
+		user.insert(ignore_permissions=True)
+	return email
+
+
+def a_sales_team():
+	"""Rep reports to Manager, who reports to Head; Outsider is in nobody's line.
+
+	Every call puts the reporting lines back, so a check that changed one does
+	not leak into the next. Returns {who: (employee, login)}.
+	"""
+	team = {}
+	for who, manager in (("Head", None), ("Manager", "Head"), ("Rep", "Manager"), ("Outsider", None)):
+		employee = frappe.get_doc(EMPLOYEE, an_employee(f"Access {who}"))
+		employee.update({"user": a_login(f"Access {who}"), "is_active": 1,
+		                 "reports_to": team[manager][0] if manager else None})
+		employee.save(ignore_permissions=True)
+		team[who] = (employee.name, employee.user)
+	return team
+
+
+def can(user, ptype, lead):
+	return bool(frappe.has_permission(LEAD, ptype, frappe.get_doc(LEAD, lead), user=user))
+
+
+def access_of(team, lead):
+	return {who: "write" if can(user, "write", lead) else "read" if can(user, "read", lead) else "none"
+	        for who, (_, user) in team.items()}
+
+
+@check("W. Lead access", "The assigned employee can change a lead; everyone above them can only read it")
+def w_assigned_and_managers():
+	team = a_sales_team()
+	lead = a_lead(person="Access Contact", assigned_to=team["Rep"][0])
+	frappe.db.commit()
+	seen = access_of(team, lead.name)
+	expect(seen == {"Head": "read", "Manager": "read", "Rep": "write", "Outsider": "none"}, f"access: {seen}")
+	return ", ".join(f"{who} {level}" for who, level in seen.items())
+
+
+@check("W. Lead access", "Others With Access gives exactly Read Only or Read & Write")
+def w_access_table():
+	team = a_sales_team()
+	outsider = {"Outsider": team["Outsider"]}
+	lead = a_lead(person="Access Contact", lead_access=[{"employee": team["Outsider"][0], "access": "Read & Write"}])
+	steps = [access_of(outsider, lead.name)["Outsider"]]
+	lead.lead_access[0].access = "Read Only"
+	lead.save(ignore_permissions=True)
+	steps.append(access_of(outsider, lead.name)["Outsider"])
+	lead.remove(lead.lead_access[0])
+	lead.save(ignore_permissions=True)
+	steps.append(access_of(outsider, lead.name)["Outsider"])
+	frappe.db.commit()
+	expect(steps == ["write", "read", "none"], f"Read & Write, Read Only, removed gave {steps}")
+	return "Read & Write -> write, Read Only -> read, removed -> none"
+
+
+@check("W. Lead access", "Reassigning a lead, or changing a manager, moves its access")
+def w_reassign():
+	team = a_sales_team()
+	lead = a_lead(person="Access Contact", assigned_to=team["Rep"][0])
+	lead.assigned_to = team["Outsider"][0]
+	lead.save(ignore_permissions=True)
+	after_move = access_of(team, lead.name)
+	expect(after_move == {"Head": "none", "Manager": "none", "Rep": "none", "Outsider": "write"},
+	       f"after reassigning: {after_move}")
+
+	outsider = frappe.get_doc(EMPLOYEE, team["Outsider"][0])
+	outsider.reports_to = team["Head"][0]
+	outsider.save(ignore_permissions=True)
+	head_with_line = access_of(team, lead.name)["Head"]
+	outsider.reports_to = None
+	outsider.save(ignore_permissions=True)
+	head_without_line = access_of(team, lead.name)["Head"]
+	frappe.db.commit()
+	expect((head_with_line, head_without_line) == ("read", "none"),
+	       f"a new manager got {head_with_line!r}, and had {head_without_line!r} once the line was removed")
+	return "the old assignee and their line lose it; a new manager reads it, and loses it with the line"
+
+
+@check("W. Lead access", "A sales login sees only the leads it created or was given")
+def w_private():
+	team = a_sales_team()
+	rep_user, outsider_user = team["Rep"][1], team["Outsider"][1]
+	given = a_lead(person="Access Contact", assigned_to=team["Outsider"][0])
+	the_company = company()
+	try:
+		frappe.set_user(rep_user)
+		own = frappe.get_doc({
+			"doctype": LEAD, "organization_name": "Private Foundry Pvt Ltd", "company": the_company,
+			"contact_persons": [{"person_name": "Private Contact"}],
+		}).insert()
+		both = {"name": ["in", [own.name, given.name]]}
+		rep_sees = frappe.get_list(LEAD, filters=both, pluck="name")
+		frappe.set_user(outsider_user)
+		outsider_sees = frappe.get_list(LEAD, filters=both, pluck="name")
+	finally:
+		frappe.set_user("Administrator")
+	frappe.db.commit()
+	expect(rep_sees == [own.name], f"the creator sees {rep_sees}")
+	expect(outsider_sees == [given.name], f"someone else sees {outsider_sees}")
+	# Entered without an assignee, the lead is its creator's, so their
+	# manager reads it like any other lead of theirs.
+	expect(own.assigned_to == team["Rep"][0], f"a lead the rep entered went to {own.assigned_to!r}")
+	expect(access_of({"Manager": team["Manager"]}, own.name)["Manager"] == "read",
+	       "the creator's manager cannot read the lead they entered")
+	return (f"the creator sees only {own.name}, which is assigned to them and read by their manager; "
+	        f"the assignee of {given.name} sees only that")
+
+
+@check("W. Lead access", "Someone who may only read a lead cannot move its status")
+def w_read_only_cannot_move():
+	team = a_sales_team()
+	lead = a_lead(person="Access Contact", assigned_to=team["Rep"][0])
+	frappe.db.commit()
+	# Refused for want of permission in particular: any other error would
+	# also stop the move, and would prove nothing about read-only access.
+	try:
+		frappe.set_user(team["Manager"][1])
+		try:
+			engine.transition(LEAD, lead.name, "Initial Contact")
+			refused = False
+		except frappe.PermissionError:
+			refused = True
+		frappe.set_user(team["Rep"][1])
+		engine.transition(LEAD, lead.name, "Initial Contact")
+	finally:
+		frappe.set_user("Administrator")
+	frappe.db.commit()
+	expect(refused, "the read-only manager moved the status")
+	status = engine.current_status(frappe.get_doc(LEAD, lead.name))
+	expect(status == "Initial Contact", f"the assignee's move left it at {status!r}")
+	return "the read-only manager was refused with a permission error; the assignee moved it to Initial Contact"
+
+
+@check("W. Lead access", "Access waits for a login, and ends when the employee leaves")
+def w_login_and_leaving():
+	employee = frappe.get_doc(EMPLOYEE, an_employee("Access Newcomer"))
+	employee.update({"user": None, "is_active": 1})
+	employee.save(ignore_permissions=True)
+	lead = a_lead(person="Access Contact", assigned_to=employee.name)
+	user = a_login("Access Newcomer")
+	before = can(user, "read", lead.name)
+	employee.user = user
+	employee.save(ignore_permissions=True)
+	linked = can(user, "write", lead.name)
+	employee.is_active = 0
+	employee.save(ignore_permissions=True)
+	left = can(user, "read", lead.name)
+	refused = refuses(a_lead, person="Access Contact", assigned_to=employee.name)
+	employee.is_active = 1
+	employee.save(ignore_permissions=True)
+	frappe.db.commit()
+	expect((before, linked, left) == (False, True, False),
+	       f"before the login {before}, once linked {linked}, after leaving {left}")
+	return f"none until a login is linked, then write, none after leaving; a new lead for a leaver refused ({refused[:60]})"
+
+
+@check("W. Lead access", "A reporting line cannot loop back on itself")
+def w_no_loop():
+	team = a_sales_team()
+	frappe.db.commit()
+	head = frappe.get_doc(EMPLOYEE, team["Head"][0])
+	head.reports_to = team["Rep"][0]
+	refused = refuses(head.save, ignore_permissions=True)
+	frappe.db.rollback()
+	return f"Head reporting to Rep, who is below them, refused: {refused[:80]}"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -4763,6 +5075,12 @@ def cleanup():
 		frappe.db.sql("DELETE FROM `tabKNIT 360 Search Index` WHERE name = %s", (name,))
 	if orphan_index:
 		removed["Search Index"] = len(orphan_index)
+
+	# The logins the lead-access checks made (DEC-048). Last, because the
+	# leads above were shared with them.
+	for user in frappe.get_all("User", filters={"name": ["like", "acceptance.%@example.com"]}, pluck="name"):
+		frappe.delete_doc("User", user, ignore_permissions=True, force=True)
+		removed["User"] = removed.get("User", 0) + 1
 
 	# Accounts are a tree: a node cannot go before its children. In a nested
 	# set the width `rgt - lft` is 1 for a leaf and grows with depth of

@@ -105,11 +105,12 @@ class TestLifecycleRegistry(unittest.TestCase):
 			self.assertEqual(lc.draft_states & lc.cancelling_states, set(), lc.name)
 
 	def test_lead_happy_path_matches_dr_c2c_001(self):
-		# "New -> Contacted -> Qualified -> Converted"
-		path = ["New", "Contacted", "Qualified", "Converted"]
+		# The owner's client's stages (DEC-050), replacing DR-C2C-001's four.
+		path = ["New Lead", "Initial Contact", "Requirement Pending", "Requirement Received",
+		        "Qualified", "Converted"]
 		for a, b in zip(path, path[1:]):
 			self.assertTrue(model.LEAD.is_allowed(a, b), f"{a} -> {b}")
-		self.assertEqual(model.LEAD.terminal_states, {"Converted", "Disqualified", "Lost"})
+		self.assertEqual(model.LEAD.terminal_states, {"Converted", "Not Qualified", "Lost"})
 
 	def test_opportunity_happy_path_matches_dr_c2c_002(self):
 		# "Open -> In Negotiation -> Proposal Sent -> Won"
@@ -125,7 +126,7 @@ class TestLifecycleRegistry(unittest.TestCase):
 				self.assertEqual(lc.required_docstatus(state, 0), 0, f"{lc.name}.{state}")
 
 	def test_lifecycles_reject_each_others_states(self):
-		self.assertFalse(model.LEAD.is_allowed("New", model.APPROVED))
+		self.assertFalse(model.LEAD.is_allowed("New Lead", model.APPROVED))
 		with self.assertRaises(ValueError):
 			model.LEAD.required_docstatus(model.APPROVED, 0)
 

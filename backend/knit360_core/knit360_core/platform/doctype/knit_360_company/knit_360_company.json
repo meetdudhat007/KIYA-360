@@ -6,7 +6,7 @@
  "doctype": "DocType",
  "editable_grid": 0,
  "engine": "InnoDB",
- "description": "FR-PADM-1.1.1 \u2014 Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
+ "description": "FR-PADM-1.1.1 — Company Master -- company details, business type, legal entity, fiscal year, currency, tax registration",
  "field_order": [
   "company_name",
   "business_type",
@@ -276,7 +276,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-09-22 00:00:00.000000",
+ "modified": "2026-11-01 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Platform",
  "name": "KNIT 360 Company",
@@ -293,6 +293,14 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "role": "Sales User",
+   "select": 1
+  },
+  {
+   "role": "Sales Manager",
+   "select": 1
   }
  ],
  "sort_field": "creation",

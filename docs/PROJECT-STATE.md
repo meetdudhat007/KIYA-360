@@ -168,17 +168,17 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 75 parent, 27 child — 102 total, across 18 application modules |
+| Record types | 75 parent, 28 child — 103 total, across 18 application modules |
 | BRD modules with record types | **15 of 28** |
 | Lifecycle definitions (`CD-002`) | 29 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
 | Front end | The Desk (`/app`) only. The simplified `/knit360` sales page was removed on 31 October 2026 at the owner's request; leads are entered on the Lead form (`DEC-044`). |
-| Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; conversion makes a Contact per person (`DEC-045`, `DEC-046`). |
-| Automated checks | **221** — 44 structural, 177 runtime |
-| Last full run | 44/44 and 177/177, 1 November 2026, site `knit360.localhost` |
+| Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; every person is a Contact from the first save and conversion hands them to the customer, whose page lists them; leads are private and assigned to an employee, read by the managers above them and shared Read Only or Read & Write with others its statuses are the client's: New Lead -> Initial Contact -> Requirement Pending -> Requirement Received -> Qualified (or Potential Customer) -> Converted, with Not Qualified and Lost, one stage at a time, and a Stage Detail dropdown for the step within a stage (`DEC-045`, `DEC-046`, `DEC-048`, `DEC-049`, `DEC-050`). |
+| Automated checks | **232** — 44 structural, 188 runtime |
+| Last full run | 44/44 and 188/188, 3 November 2026, site `knit360.localhost` |
 | Document numbering | Per record type, per year. 36 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
-| BRD requirement coverage (live report) | **74 of 238 — 22 proven, 52 modelled, 164 not started** |
+| BRD requirement coverage (live report) | **76 of 238 — 22 proven, 54 modelled, 162 not started** |
 | Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `.kiya/archive/03-guides-backup/06-the-money-decisions-in-plain-language.md`. |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),

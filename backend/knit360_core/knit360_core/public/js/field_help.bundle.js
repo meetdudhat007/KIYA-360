@@ -34,6 +34,20 @@ knit360.field_help = {
 		const text = field.df && field.df.description;
 		if (!text || !field.$wrapper) return;
 
+		// A table draws its label, help slot and description itself, the
+		// first time it is shown -- on a new form that can be after this
+		// runs. So a table that has not drawn yet is iconised when it does.
+		const grid = field.grid;
+		if (grid && !grid.knit_field_help) {
+			grid.knit_field_help = true;
+			const describe = grid.set_grid_description.bind(grid);
+			grid.set_grid_description = () => {
+				describe();
+				this.iconise(field);
+			};
+		}
+		if (grid) field.$wrapper.find(".grid-description").first().hide();
+
 		// set_description re-renders only when the description differs from
 		// _description, so clearing the text once keeps it clear on refresh.
 		if (field.set_empty_description) field.set_empty_description();
@@ -42,20 +56,23 @@ knit360.field_help = {
 		const $slot = field.$wrapper.find("span.help").first();
 		if (!$slot.length || $slot.find(".knit-field-info").length) return;
 
-		const label = __(field.df.label || "");
+		this.icon(field.df.label, text).appendTo($slot);
+	},
+
+	// The icon on its own, for a label a form script draws itself.
+	icon(label, text) {
 		const $icon = $(
 			`<span class="knit-field-info text-muted" role="button" tabindex="0"></span>`
 		)
-			.attr("aria-label", __("About {0}", [label]))
-			.html(this.ICON)
-			.appendTo($slot);
-
+			.attr("aria-label", __("About {0}", [__(label || "")]))
+			.html(this.ICON);
 		$icon.popover({
 			trigger: "hover focus",
 			placement: "top",
 			html: false,
 			content: () => __(text),
 		});
+		return $icon;
 	},
 };
 
