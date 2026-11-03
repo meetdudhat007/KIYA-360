@@ -381,7 +381,11 @@
   "safety_stock": "FR-INV-001 / FR-PADM-1.4.3: safety stock thresholds (DR-C2C-008 Inputs)",
   "stock_uom": "FR-INV-001 / FR-PADM-1.4.3: UOM (BRD 1.4.2 worked example); UOM Master is FR-PADM-1.4.7; now a master; 'Nos' and 'nos' were previously different units",
   "valuation_method": "FR-INV-006: Stock Valuation -- DEC-023. Ind AS 2 paragraph 25 permits only these two, so LIFO is not offered. The same paragraph requires one formula per class of similar inventory, which is why this is per item rather than per company. Left empty, FIFO applies.",
-  "warranty_period_months": "FR-MFS-006 / FR-AST-003: Item Master warranty template (DR-A2S-003 Inputs); warranty activation on commissioning (DR-A2S-002 BRD-DERIVED)."
+  "warranty_period_months": "FR-MFS-006 / FR-AST-003: Item Master warranty template (DR-A2S-003 Inputs); warranty activation on commissioning (DR-A2S-002 BRD-DERIVED).",
+  "is_main_product": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: marks a product made from other items (product grouping).",
+  "raw_material_count": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: how many different raw materials the product's group lists.",
+  "total_units": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: the group's counts added up.",
+  "raw_materials": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: the product's group -- raw materials and a count each; a raw material may be in many groups."
  },
  "KNIT 360 Item Group": {
   "description": "FR-INV-001: BRD-DERIVED: what belongs in this group",
@@ -399,7 +403,13 @@
   "rate": "FR-SALES-004: Pricing & Discounts -- price per unit",
   "uom": "FR-PADM-1.4.7: UOM Master -- the unit the rate is per",
   "valid_from": "FR-SALES-004: Pricing & Discounts -- when this price takes effect",
-  "valid_upto": "FR-SALES-004: Pricing & Discounts -- when it lapses"
+  "valid_upto": "FR-SALES-004: Pricing & Discounts -- when it lapses",
+  "is_main_product": "FR-SALES-004: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: whether this price is worked out from raw materials.",
+  "cost_price_list": "FR-SALES-004: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: the buying list raw material prices are read from. Price source is TBD with the client.",
+  "material_cost": "FR-SALES-004 / FR-INV-006: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: raw material prices times counts, added up; recomputed when any of them changes.",
+  "margin_type": "FR-SALES-004: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: margin as a percentage or an amount. Margin form is TBD with the client.",
+  "margin": "FR-SALES-004: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: added to the material cost to give the product's rate.",
+  "unpriced_materials": "FR-SALES-004: Pricing & Discounts -- PROPOSED -- client change request DEC-054, not in the BRD: raw materials with no price on the cost list, so the shortfall is visible."
  },
  "KNIT 360 Journal Entry": {
   "accounts": "FR-FIN-001: General Ledger -- the lines of the entry",
@@ -1031,5 +1041,31 @@
   "done": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): ticked when done",
   "description": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): what is to be done",
   "reminder_sent": "FR-CRM-005: Activities (BRD-REQUIRED; detail TBD in the BRD); a user's own task on a lead at the owner's request (DEC-058): set once the bell has reminded its creator, so it rings once"
+ },
+ "KNIT 360 Item Raw Material": {
+  "item_code": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: a raw material in a main product's group.",
+  "item_name": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: the raw material's name, fetched for reading the group.",
+  "qty": "FR-INV-001: Item Master -- PROPOSED -- client change request DEC-054, not in the BRD: how many of the raw material one product uses.",
+  "stock_uom": "FR-INV-001 / FR-PADM-1.4.7: UOM Master -- PROPOSED -- client change request DEC-054, not in the BRD: the unit the count is in, fetched from the raw material."
+ },
+ "KNIT 360 Product Build": {
+  "product": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: the main product being built from its group.",
+  "qty": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: how many are built; scales the group's counts.",
+  "knit360_business_status": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: lifecycle Draft, Built, Cancelled (CD-002 adapter).",
+  "posting_date": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: when the raw materials leave and the product arrives.",
+  "source_warehouse": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: the store the raw materials are taken from.",
+  "target_warehouse": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: the store the built product goes into.",
+  "materials": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: the raw materials the build uses, from the product's group.",
+  "total_material_cost": "FR-INV-006: Stock Valuation -- PROPOSED -- client change request DEC-054, not in the BRD: what the raw materials cost, from the stock ledger.",
+  "unit_cost": "FR-INV-006: Stock Valuation -- PROPOSED -- client change request DEC-054, not in the BRD: material cost per product built; the product enters stock at this cost.",
+  "company": "FR-PADM-1.1.1: Company context"
+ },
+ "KNIT 360 Product Build Item": {
+  "item_code": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: a raw material the build takes out of stock.",
+  "per_unit_qty": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: the count from the product's group.",
+  "required_qty": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: count times quantity to build.",
+  "available_qty": "FR-INV-002: Stock Quantity -- PROPOSED -- client change request DEC-054, not in the BRD: stock held when the build was last saved, for the shortage and safety-stock warnings.",
+  "valuation_rate": "FR-INV-006: Stock Valuation -- PROPOSED -- client change request DEC-054, not in the BRD: cost of one unit used, from the stock ledger.",
+  "cost_amount": "FR-INV-006: Stock Valuation -- PROPOSED -- client change request DEC-054, not in the BRD: quantity times cost of the raw material used."
  }
 }

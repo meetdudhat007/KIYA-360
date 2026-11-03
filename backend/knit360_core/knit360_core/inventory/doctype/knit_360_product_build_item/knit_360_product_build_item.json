@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-04 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "description": "DEC-054 (client change request) - a raw material a product build takes out of stock, from the product's group.",
+ "field_order": [
+  "item_code",
+  "per_unit_qty",
+  "required_qty",
+  "available_qty",
+  "valuation_rate",
+  "cost_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Raw Material",
+   "options": "KNIT 360 Item",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 3
+  },
+  {
+   "fieldname": "per_unit_qty",
+   "fieldtype": "Float",
+   "label": "Count per Product",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "From the product's group."
+  },
+  {
+   "fieldname": "required_qty",
+   "fieldtype": "Float",
+   "label": "Needed",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "Count per product times the quantity to build."
+  },
+  {
+   "fieldname": "available_qty",
+   "fieldtype": "Float",
+   "label": "In Stock",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 1,
+   "description": "What Raw Materials From held when this build was last saved."
+  },
+  {
+   "fieldname": "valuation_rate",
+   "fieldtype": "Currency",
+   "label": "Cost",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2,
+   "description": "What one unit cost, worked out by the stock ledger when it was used."
+  },
+  {
+   "fieldname": "cost_amount",
+   "fieldtype": "Currency",
+   "label": "Cost Total",
+   "read_only": 1,
+   "in_list_view": 1,
+   "columns": 2
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-04 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "KNIT 360 Product Build Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "istable": 1
+}
