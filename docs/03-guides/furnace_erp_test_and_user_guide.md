@@ -210,6 +210,38 @@ A Goods Receipt brings everything into **one** warehouse, so you need **two** re
 
 ---
 
+### Step 3A: Group Raw Materials Under a Main Product, Price It, and Build It
+
+Use this when one product (a control board such as ITC or SL) is assembled from parts that other products also use. The steps use the coil and panel from Step 1 as the raw materials; with real boards, list the board's parts instead.
+
+**Make the group**
+1. Go to **Inventory** → **Item** → **Add KNIT 360 Item**. **Item Code** `BOARD-ITC`, **Stock UOM** `Nos`.
+2. In **Product Grouping**, tick **Main Product**. A **Raw Materials** table appears.
+3. Add a row per part with how many **one** board uses:
+   - Row 1: **Raw Material** `RM-COIL-1000` | **Count** `1`
+   - Row 2: **Raw Material** `RM-PANEL-500KW` | **Count** `1`
+4. Click **Save**. **Raw Materials Used** shows `2` and **Total Units Used** shows `2`.
+5. Open `RM-COIL-1000`. At the bottom, **Where Used** lists `BOARD-ITC` with its count. A part used on several boards lists every one.
+
+The system refuses a board listed inside itself, the same part on two lines, a count of 0, and a loop (A inside B inside A).
+
+**Price it**
+6. Give the parts a buying price: **Inventory** → **Item Price** → **Add**, **Price List** `Standard Buying`, one record each: `RM-COIL-1000` at `350000`, `RM-PANEL-500KW` at `450000`.
+7. Add an **Item Price** for `BOARD-ITC` on `Standard Selling`. As soon as the item is chosen, **Priced from Raw Materials** appears: **Raw Material Prices From** fills with `Standard Buying` and **Material Cost** shows `8,00,000`.
+8. Set **Margin Type** `Percentage` and **Margin** `20`. **Rate** becomes `9,60,000` — you cannot type it. **Save**.
+9. Change the coil's buying price to `400000` and save. Reopen the board's price: **Material Cost** is now `8,50,000` and **Rate** `10,20,000`. Nobody touched it.
+   - A part with no buying price adds nothing, and is named under **Raw Materials Without a Price**.
+
+**Build it**
+10. Go to **Inventory** → **Product Build** → **Add**. **Main Product** `BOARD-ITC`, **Quantity to Build** `1`, **Company** `Bharat Induction Furnaces Pvt Ltd`, **Raw Materials From** `Raw Material Store - BIF`, **Finished Product To** `Finished Goods Store - BIF`. **Save**: the **Raw Materials** table fills in, with what is in stock.
+11. Click **Built** at the top right. One coil and one panel leave the store, and one `BOARD-ITC` comes in at their cost.
+    - **Not enough stock:** the build is stopped with a message listing each short part — needed, held and how many short.
+    - **About to run out:** if a part would end below its **Safety Stock** (on the item's **Planning** section), you get an orange warning naming it. The build still goes ahead.
+
+> Step 3 received two coils and two panels. This build uses one of each and the Work Order in Step 7 uses the other, so both steps have enough.
+
+---
+
 ### Step 4: CRM — From Customer Enquiry to Lead & Opportunity
 
 Now a prospective foundry client calls wanting a furnace.

@@ -168,15 +168,16 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | | |
 | --- | --- |
 | Application | `backend/knit360_core`, on bare Frappe v15 (MIT). No ERPNext, no HRMS. |
-| Record types | 75 parent, 27 child — 102 total, across 18 application modules |
+| Record types | 76 parent, 29 child — 105 total, across 18 application modules |
 | BRD modules with record types | **15 of 28** |
-| Lifecycle definitions (`CD-002`) | 29 |
+| Lifecycle definitions (`CD-002`) | 30 |
 | Desk workspaces | 17, with 8 charts and 6 number cards |
 | Front end | The Desk (`/app`) only. The simplified `/knit360` sales page was removed on 31 October 2026 at the owner's request; leads are entered on the Lead form (`DEC-044`). |
 | Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; conversion makes a Contact per person (`DEC-045`, `DEC-046`). |
-| Automated checks | **221** — 44 structural, 177 runtime |
-| Last full run | 44/44 and 177/177, 1 November 2026, site `knit360.localhost` |
-| Document numbering | Per record type, per year. 36 counters, no shared pool. |
+| Automated checks | **228** — 44 structural, 184 runtime |
+| Last full run | 44/44 and 184/184, 4 November 2026, site `knit360.localhost` |
+| Product grouping (`DEC-048`, client change request) | Main products list raw materials with counts; Where Used on every item; product price = raw material cost + margin, repriced automatically; Product Build moves the stock, warns below safety stock, refuses when short. Margin and price source TBD with the client. |
+| Document numbering | Per record type, per year. 37 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
 | BRD requirement coverage (live report) | **74 of 238 — 22 proven, 52 modelled, 164 not started** |
 | Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `.kiya/archive/03-guides-backup/06-the-money-decisions-in-plain-language.md`. |

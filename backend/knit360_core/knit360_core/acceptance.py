@@ -19,6 +19,7 @@ demo or live data, and every check is written to be re-runnable.
 A failing check prints the exception that caused it. Nothing is swallowed.
 """
 
+import json
 import pathlib
 import traceback
 
@@ -27,6 +28,7 @@ from frappe.utils import add_days, flt, getdate, nowdate
 
 from knit360_core.business_status import engine, guard, model
 from knit360_core.finance import chart_of_accounts, credit, ledger, settlement
+from knit360_core.inventory import grouping
 from knit360_core.pricing import price_list
 from knit360_core.stock import ledger as stock_ledger
 
@@ -4543,6 +4545,192 @@ def v_accounts_match_stock():
 	return n_accounts_match_stock()
 
 
+# --- W. product grouping -----------------------------------------------
+#
+# DEC-048, a client change request: a main product lists its raw materials
+# and a count each, its price is their cost plus a margin and follows their
+# prices, and building it moves each raw material out of stock.
+
+BUILD_DT = "KNIT 360 Product Build"
+
+
+def a_product(code, materials):
+	"""A main product whose group is exactly `materials`: [(item, count), ...]."""
+	an_item(code)
+	item = frappe.get_doc("KNIT 360 Item", code)
+	item.is_main_product = 1
+	item.set("raw_materials", [{"item_code": c, "qty": q} for c, q in materials])
+	item.save(ignore_permissions=True)
+	return code
+
+
+def a_build(product, qty):
+	return frappe.get_doc(
+		{
+			"doctype": BUILD_DT,
+			"product": product,
+			"qty": qty,
+			"company": company(),
+			"source_warehouse": a_warehouse(),
+			"target_warehouse": a_warehouse("Acceptance Finished Goods"),
+		}
+	).insert(ignore_permissions=True)
+
+
+def _messages():
+	return json.dumps(frappe.local.message_log or [], default=str)
+
+
+@check("W. Product grouping", "A main product lists its raw materials and counts them")
+def w_group_counts():
+	parts = [(an_item("Acceptance RM Resistor"), 9), (an_item("Acceptance RM Capacitor"), 4),
+	         (an_item("Acceptance RM Trim Pot"), 2)]
+	board = frappe.get_doc("KNIT 360 Item", a_product("Acceptance Board ITC", parts))
+	expect(board.raw_material_count == 3, f"{board.raw_material_count} raw materials counted, not 3")
+	expect(flt(board.total_units) == 15, f"{board.total_units} units counted, not 15")
+	frappe.db.commit()
+	return f"{board.name}: 3 raw materials, 15 units"
+
+
+@check("W. Product grouping", "A group refuses itself, a repeated line, a nil count and a loop")
+def w_group_refusals():
+	part = an_item("Acceptance RM Relay")
+	outer = a_product("Acceptance Board Loop A", [(part, 1)])
+	inner = a_product("Acceptance Board Loop B", [(outer, 1)])
+	frappe.db.commit()
+
+	def adding(line):
+		item = frappe.get_doc("KNIT 360 Item", outer)
+		item.append("raw_materials", line)
+		return item.save
+
+	refuses(adding({"item_code": outer, "qty": 1}))
+	refuses(adding({"item_code": part, "qty": 2}))
+	refuses(adding({"item_code": an_item("Acceptance RM Spacer"), "qty": 0}))
+	loop = refuses(adding({"item_code": inner, "qty": 1}))
+	expect("already contains" in loop, f"the loop was refused for another reason: {loop}")
+	frappe.db.commit()
+	return f"loop refused: {loop[:90]}"
+
+
+@check("W. Product grouping", "Where Used lists every product, counting through sub-groups")
+def w_where_used():
+	diode = an_item("Acceptance RM Shared Diode")
+	sub = a_product("Acceptance Board Sub", [(diode, 3)])
+	top = a_product("Acceptance Board Top", [(sub, 2), (diode, 1)])
+	other = a_product("Acceptance Board Other", [(diode, 5)])
+	rows = {row["product"]: row for row in grouping.where_used(diode)}
+	expect(set(rows) == {sub, top, other}, f"where used found {sorted(rows)}")
+	expect(rows[top]["qty"] == 7, f"top takes {rows[top]['qty']} diodes, not 2 x 3 + 1 = 7")
+	expect(rows[top]["direct"] and rows[top]["through"] == [sub],
+	       f"top should be listed directly and through {sub}: {rows[top]}")
+	frappe.db.commit()
+	return f"3 products; {top} takes 7 (1 direct, 6 through {sub})"
+
+
+@check("W. Product grouping", "A product's price is material cost plus margin, and follows its raw materials")
+def w_price_follows():
+	buying = a_price_list("Acceptance Buying", "Buying")
+	selling = a_price_list("Acceptance Selling", "Selling")
+	coil, pad = an_item("Acceptance RM Priced Coil"), an_item("Acceptance RM Priced Pad")
+	sub = a_product("Acceptance Board Priced Sub", [(coil, 2)])
+	top = a_product("Acceptance Board Priced Top", [(sub, 1), (pad, 3)])
+	a_price(coil, buying, 10)
+	a_price(pad, buying, 5)
+
+	price = frappe.get_doc(
+		{
+			"doctype": "KNIT 360 Item Price",
+			"item_code": top,
+			"price_list": selling,
+			"rate": 1,
+			"currency": CURRENCY,
+			"cost_price_list": buying,
+			"margin_type": "Percentage",
+			"margin": 20,
+		}
+	).insert(ignore_permissions=True)
+	expect(flt(price.material_cost) == 35 and flt(price.rate) == 42,
+	       f"cost {price.material_cost}, rate {price.rate}; expected 2x10 + 3x5 = 35 and 42 at 20%")
+
+	a_price(coil, buying, 15)
+	price.reload()
+	expect(flt(price.rate) == 54, f"after the coil went to 15 the rate is {price.rate}, not 45 + 20% = 54")
+
+	price.margin_type, price.margin = "Amount", 100
+	price.save(ignore_permissions=True)
+	expect(flt(price.rate) == 145, f"with a fixed margin of 100 the rate is {price.rate}, not 145")
+
+	wire = an_item("Acceptance RM Unpriced Wire")
+	a_product(top, [(sub, 1), (pad, 3), (wire, 4)])
+	price.reload()
+	expect(price.unpriced_materials == wire, f"unpriced shows {price.unpriced_materials!r}, not {wire}")
+	frappe.db.commit()
+	return "35 + 20% = 42; coil 10 -> 15 repriced it to 54; +100 fixed = 145; an unpriced line is named"
+
+
+@check("W. Product grouping", "Building a product takes its raw materials out and puts the product in")
+def w_build_moves_stock():
+	resistor, chip = an_item("Acceptance Build RM Resistor"), an_item("Acceptance Build RM Chip")
+	a_receipt(resistor, 20, 10)
+	a_receipt(chip, 10, 50)
+	board = a_product("Acceptance Build Board", [(resistor, 4), (chip, 1)])
+	build = a_build(board, 3)
+	wanted = {row.item_code: flt(row.required_qty) for row in build.materials}
+	expect(wanted == {resistor: 12, chip: 3}, f"the group exploded to {wanted}")
+
+	engine.transition(BUILD_DT, build.name, "Built")
+	build.reload()
+	store, finished = a_warehouse(), a_warehouse("Acceptance Finished Goods")
+	expect(stock_ledger.balance(resistor, store, COMPANY) == 8, "12 resistors did not leave")
+	expect(stock_ledger.balance(chip, store, COMPANY) == 7, "3 chips did not leave")
+	expect(stock_ledger.balance(board, finished, COMPANY) == 3, "3 boards did not come in")
+	expect(flt(build.unit_cost) == 90, f"cost per board {build.unit_cost}, not 4 x 10 + 50 = 90")
+	moves = stock_ledger.voucher_movements(BUILD_DT, build.name)
+	expect(len(moves) == 3, f"{len(moves)} stock movements, not 2 out and 1 in")
+
+	engine.transition(BUILD_DT, build.name, "Cancelled")
+	expect(stock_ledger.balance(resistor, store, COMPANY) == 20, "cancelling did not return the resistors")
+	expect(stock_ledger.balance(board, finished, COMPANY) == 0, "cancelling did not take the boards back out")
+	frappe.db.commit()
+	return f"{build.name}: 12 + 3 out, 3 boards in at 90; cancelling put it all back"
+
+
+@check("W. Product grouping", "A build short of stock is stopped, naming what is missing")
+def w_build_short_refused():
+	part = an_item("Acceptance Short RM")
+	a_receipt(part, 5, 10)
+	build = a_build(a_product("Acceptance Short Board", [(part, 3)]), 2)
+	try:
+		engine.transition(BUILD_DT, build.name, "Built")
+	except frappe.ValidationError as exc:
+		why = str(exc)
+	else:
+		raise AssertionError("a build needing 6 with 5 in stock was allowed")
+	expect(f"{part}: needs 6, has 5 (1 short)" in why, f"the refusal does not say what is short: {why[:160]}")
+	expect(not stock_ledger.voucher_movements(BUILD_DT, build.name), "a refused build still moved stock")
+	frappe.db.commit()
+	return f"refused: {part} needs 6, has 5 (1 short); nothing moved"
+
+
+@check("W. Product grouping", "A build that leaves a raw material below safety stock warns and goes ahead")
+def w_build_low_warns():
+	part = an_item("Acceptance Low RM")
+	frappe.db.set_value("KNIT 360 Item", part, "safety_stock", 10, update_modified=False)
+	a_receipt(part, 15, 10)
+	board = a_product("Acceptance Low Board", [(part, 2)])
+	frappe.local.message_log = []
+	build = a_build(board, 3)
+	expect("below safety stock" in _messages(), "saving a build that leaves 9 against a safety stock of 10 gave no warning")
+	frappe.local.message_log = []
+	engine.transition(BUILD_DT, build.name, "Built")
+	expect("below safety stock" in _messages(), "building it gave no warning")
+	expect(stock_ledger.balance(part, a_warehouse(), COMPANY) == 9, "the build did not go ahead")
+	frappe.local.message_log = []
+	frappe.db.commit()
+	return "9 left against safety stock 10: warned on save and on build, and built"
+
+
 # --- the runner ---------------------------------------------------------
 
 
@@ -4648,7 +4836,7 @@ def cleanup():
 	# Production and after-sales documents point at items, warehouses and
 	# dispatches, so they go before those. The submitted ones have their
 	# docstatus cleared for the same reason as the documents further down.
-	for doctype in ("KNIT 360 Field Work Order", "KNIT 360 Work Order"):
+	for doctype in ("KNIT 360 Field Work Order", "KNIT 360 Work Order", "KNIT 360 Product Build"):
 		frappe.db.sql(
 			f"UPDATE `tab{doctype}` SET docstatus = 0 WHERE company = %s", (COMPANY,)
 		)

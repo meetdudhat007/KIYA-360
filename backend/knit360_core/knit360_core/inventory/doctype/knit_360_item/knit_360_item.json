@@ -16,6 +16,15 @@
   "is_batch_tracked",
   "is_serial_tracked",
   "warranty_period_months",
+  "sec_grouping",
+  "is_main_product",
+  "col_grouping",
+  "raw_material_count",
+  "total_units",
+  "sec_raw_materials",
+  "raw_materials",
+  "sec_where_used",
+  "where_used_html",
   "sec_15",
   "safety_stock",
   "col_17",
@@ -84,6 +93,62 @@
    "description": "How long the maker's warranty runs from commissioning. Leave blank if the item carries none. When a unit is commissioned, a warranty of this length is drafted for it, for you to confirm."
   },
   {
+   "fieldname": "sec_grouping",
+   "fieldtype": "Section Break",
+   "label": "Product Grouping"
+  },
+  {
+   "fieldname": "is_main_product",
+   "fieldtype": "Check",
+   "label": "Main Product",
+   "in_standard_filter": 1,
+   "description": "Tick for a product made from other items, such as a board. Its raw materials, and how many of each, are listed below."
+  },
+  {
+   "fieldname": "col_grouping",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "raw_material_count",
+   "fieldtype": "Int",
+   "label": "Raw Materials Used",
+   "read_only": 1,
+   "depends_on": "is_main_product",
+   "description": "How many different raw materials the group lists."
+  },
+  {
+   "fieldname": "total_units",
+   "fieldtype": "Float",
+   "label": "Total Units Used",
+   "read_only": 1,
+   "depends_on": "is_main_product",
+   "description": "The counts added up: how many pieces one product takes."
+  },
+  {
+   "fieldname": "sec_raw_materials",
+   "fieldtype": "Section Break",
+   "label": "Raw Materials",
+   "depends_on": "is_main_product"
+  },
+  {
+   "fieldname": "raw_materials",
+   "fieldtype": "Table",
+   "label": "Raw Materials",
+   "options": "KNIT 360 Item Raw Material",
+   "description": "Everything one of this product uses. A raw material can be in any number of products. A line can be another main product, which puts that product's group inside this one."
+  },
+  {
+   "fieldname": "sec_where_used",
+   "fieldtype": "Section Break",
+   "label": "Where Used",
+   "depends_on": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "where_used_html",
+   "fieldtype": "HTML",
+   "label": "Where Used"
+  },
+  {
    "fieldname": "sec_15",
    "fieldtype": "Section Break",
    "label": "Planning"
@@ -142,7 +207,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-09-22 00:00:00.000000",
+ "modified": "2026-11-04 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Inventory",
  "name": "KNIT 360 Item",
