@@ -157,7 +157,7 @@ PHASE 1 COMPLETE WITH CONTROLLED OPEN ITEMS — READY FOR PHASE 2
 - Mobile offline synchronization and state collisions in intermittent connectivity (`RSK-05`). Mitigated by client-generated UUIDs, outbox sync, and `PoC-04`.
 
 
-## Implementation State — 5 October 2026, updated 28 October 2026
+## Implementation State — 5 October 2026, updated 5 November 2026
 
 Recorded so another agent can continue without re-deriving it. The product name
 is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
@@ -175,11 +175,11 @@ is **KNIT 360** (`CD-010`); `KIYA 360` survives in the BRD filename and in
 | Front end | The Desk (`/app`) only. The simplified `/knit360` sales page was removed on 31 October 2026 at the owner's request; leads are entered on the Lead form (`DEC-044`). |
 | Lead | Organization first; each person typed as a block of plain fields (Person Name, Designation, Department, Email, Phone) with **+ Add New Contact**, stored as Contact Persons rows; the list has Person Name, Designation, Phone, Email and Department columns, each listing every person; descriptions behind an outline info icon; every person is a Contact from the first save and conversion hands them to the customer, whose page lists them; leads are private and assigned to an employee, read by the managers above them and shared Read Only or Read & Write with others its statuses are the client's: New Lead -> Initial Contact -> Requirement Pending -> Requirement Received -> Qualified (or Potential Customer) -> Converted, with Not Qualified and Lost, one stage at a time, and a Stage Detail dropdown for the step within a stage (`DEC-045`, `DEC-046`, `DEC-048`, `DEC-049`, `DEC-050`). |
 | Automated checks | **242** — 44 structural, 198 runtime |
-| Last full run | 44/44 and 198/198, 4 November 2026, site `knit360.localhost` |
+| Last full run | Runtime 198/198, 5 November 2026; structural 44/44, 4 November 2026 (not repeated on 5 November: this site has `allow_tests` false). Site `knit360.localhost` |
 | Product grouping (`DEC-054`, client change request) | Main products list raw materials with counts; Where Used on every item; product price = raw material cost + margin, repriced automatically; Product Build moves the stock, warns below safety stock, refuses when short. Margin and price source TBD with the client. |
 | Document numbering | Per record type, per year. 38 counters, no shared pool. |
 | Search | KNIT 360's own index, 243 of 243 documents, wired to the search bar. |
-| BRD requirement coverage (live report) | **76 of 238 — 22 proven, 54 modelled, 162 not started** |
+| BRD requirement coverage (live report) | **77 of 238 — 22 proven, 55 modelled, 161 not started** |
 | Blocking decisions outstanding | **0.** `D1`–`D6` were closed on 6 October 2026 as `DEC-020`–`DEC-026`; see `.kiya/archive/03-guides-backup/06-the-money-decisions-in-plain-language.md`. |
 
 BRD modules with **no** record types: Marketing (4), Customer Service (5),
@@ -238,13 +238,65 @@ Added 28 October 2026, for a furnace manufacturing and repair client
 - **The nightly contract-expiry job does not run locally.** The dev stack starts
   `bench serve` only, with no scheduler process. Cover does not depend on it.
 
+### Sales, Procurement and MRP — state on 5 November 2026
+
+Read from the code and the live requirement report before the owner sets the
+next work. These are observed gaps, not decided changes: no requirement or
+decision is altered here.
+
+| Module | Proven | Modelled | Not started |
+| --- | --- | --- | --- |
+| Sales (`FR-SALES`, 8) | 4 | 3 | 1 |
+| Procurement (`FR-PROC`, 7) | 0 | 6 | 1 |
+| MRP (`FR-MRP`, 7) | 0 | 2 | 5 |
+
+The report calls a requirement Proven only when a named check is mapped to it,
+so it undersells Goods Receipt: that is listed Modelled but does post stock and
+ledger, and the acceptance run exercises it.
+
+- **Sales.** Opportunity, Quotation, Sales Order, Delivery Note and Sales
+  Invoice are joined by buttons; pricing, the credit check, the dispatch limits
+  and the postings work. Gaps: Enquiry has no button to raise a Quotation,
+  though `sales/quotation_from.py` has the code; statuses move only by hand
+  (`DEC-039`); Stock Reservation is a record that nothing reads, so it holds no
+  stock (DR-C2C-007); Returns and Credit Memos have no mapped check; Sales
+  Analytics is not started; rows 6-13 of the client's 13-stage sheet are not
+  done; sales logins lack Customer, Opportunity and Quotation permissions.
+- **Procurement.** Goods Receipt and Supplier Invoice post, and payment settles
+  the bill. RFQ, Supplier Quotation and Purchase Order have lifecycles. Gaps: no
+  buttons join any of these documents, so lines are retyped at each step;
+  Purchase Requisition has no lifecycle and no approval; Goods Receipt does not
+  read its Purchase Order, so nothing limits it to what was ordered
+  (FR-PROC-005); a Purchase Order never reaches Partially Received by itself;
+  three-way matching is not enforced (see Not working); approval limits are TBD
+  (`OQ-003`); Procurement Analytics is not started.
+- **MRP.** Material Plan is a form of typed fields with an empty controller and
+  no lifecycle. It computes nothing, reads no order, stock or parts list, and
+  raises nothing (FR-MRP-002, FR-MRP-004). Demand, capacity, supply and schedule
+  planning and MRP Analytics are not started.
+- **Product grouping across the three (`DEC-054`).** Sales picks up a main
+  product's calculated price from the selling list, but nothing starts a build
+  from an order: Product Build has no Sales Order field, and a Work Order has
+  one but needs a BOM. Procurement feeds grouping only through the buying list;
+  rates on a Purchase Order or Goods Receipt do not update that list, so a
+  product's price can drift from its real cost. Material Plan links to a BOM and
+  cannot see groups. Safety stock is read only by Product Build, which warns and
+  raises nothing; no reorder rule exists.
+- **Item codes are free text** on the Enquiry, Quotation, Sales Order, Purchase
+  Requisition, RFQ, Supplier Quotation, Purchase Order and Material Plan lines,
+  and on Stock Reservation. A wrong code is not caught there, only at Delivery
+  Note or Goods Receipt, whose lines are links.
+
 ### How to verify
 
 ```
 bench --site knit360.localhost run-tests --app knit360_core          # 44 structural
-bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 177 runtime
+bench --site knit360.localhost execute knit360_core.acceptance.run_and_clean   # 198 runtime
 bench --site knit360.localhost execute knit360_core.demo.seed        # sample data
 ```
+
+`run-tests` needs `allow_tests` true for the site; it is false on the local site
+as of 5 November 2026.
 
 ### Operational guides
 
@@ -290,5 +342,7 @@ Antigravity (Phase 1 seal)
 Claude Opus 5 — 5 October 2026, implementation state and operational guides
 
 Claude Opus 5.5 — 28 October 2026, furnace-business fine-tune (`DEC-039`..`DEC-043`)
+
+Claude Opus 5.5 — 5 November 2026, Sales, Procurement and MRP state; local site update
 
 

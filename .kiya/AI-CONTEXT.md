@@ -14,9 +14,9 @@ AI scope is limited to BRD-level AI Insights, Predictive Analytics, Process Auto
 
 ## Current State
 
-Current phase: **Phase 0B-1C — Clarification Decision & Approval Framework**. Phases 0A, 0B-0, 0B-1A, 0B-1A.5, 0B-1B, and 0B-1C are complete. The next action is stakeholder clarification and controlled decision approval, beginning with CG-01; detailed requirements expansion remains blocked until applicable decisions are approved.
+Phases 0 and 1 are complete and implementation exists: `backend/knit360_core`, on Frappe v15. The current record is `docs/PROJECT-STATE.md`, section "Implementation State", and the top of `.kiya/AI-HANDOFF.md`.
 
-The project is requirements-first, evidence-based, traceable, cross-module aware, technology-neutral, and explicit about uncertainty. No application implementation exists.
+The project remains requirements-first, evidence-based, traceable, cross-module aware, and explicit about uncertainty.
 
 ## Non-Negotiable Rules
 
@@ -34,6 +34,7 @@ The project is requirements-first, evidence-based, traceable, cross-module aware
 - `docs/00-requirements/15`: critical clarification plan and session template.
 - `docs/00-requirements/16`–`17`: clarification-decision approval framework, initial register, and reusable decision template.
 - `docs/00-requirements/18`–`20`: assessment-only ERPNext/Frappe feasibility report, fit matrix, and PoC plan; no platform selection.
+- `docs/03-guides/`: the client's test and user guide.
 - `.kiya/AI-DECISIONS.md`: decision register.
 - `.kiya/AI-HANDOFF.md`: current task continuation record.
 - `.kiya/AI-CHANGELOG.md`: concise project history.
@@ -56,4 +57,4 @@ Do not read the entire repository by default; load only what the task needs.
 
 ## Git Compatibility
 
-Git is not initialized in this workspace. Do not initialize, commit, or tag unless explicitly instructed. If Git is later used, suggested milestone names are `phase-0a-complete`, `phase-0b-0-complete`, `phase-0b-1a-complete`, and `phase-0b-1a5-complete`; these are recommendations only, not existing tags.
+This workspace is a Git repository (`main`, remote `origin`). Commit or push only when asked.
